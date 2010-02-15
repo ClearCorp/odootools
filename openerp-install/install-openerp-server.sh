@@ -204,7 +204,7 @@ fi
 # Change postgre user password
 echo "Changing postgre user password on request."
 if [[ $set_postgre_admin_passwd =~ ^[Yy]$ ]]; then
-	echo -e "$postgre_admin_passwd\n$postgre_admin_passwd" | (passwd --stdin postgre)
+	chpasswd postgre:$postgre_admin_passwd
 	sudo -u postgres psql template1 -U postgres -c "alter user postgres with password '$postgre_admin_passwd'"
 fi
 
