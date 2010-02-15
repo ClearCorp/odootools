@@ -1,33 +1,40 @@
 #!/bin/bash
 
+# Libraries import
+. ../main/checkRoot.sh
+. ../main/getDist.sh
+
+# Check user is root
+checkRoot
+
+# Print title
 echo "OpenERP installation script."
 echo ""
 
-source checkRoot.sh
-checkRoot
+# Set distribution
+dist=""
+getDist dist
 
-OS_804=`awk '/Ubuntu 8.04.3 LTS/ {print $0}' /etc/issue`
-OS_910=`awk '/Ubuntu 9.10/ {print $0}' /etc/issue`
-if [ -z "$OS_804" -a -z "$OS_910" ]; then
-	echo "This program must be executed on Ubuntu 8.04.3 LTS or Ubuntu 9.10 (Desktop or Server)"
-	exit 1
-fi
-if [ -n "$OS_804" ]; then
+# Sets vars corresponding to the distro
+if [[ $dist == "hardy" ]]; then
 	# Ubuntu 8.04, python 2.5
 	posgresql_rel=8.3
 	python_rel=python2.5
 	ubuntu_rel=8.04
 	install_path=/usr
 	addons_path=$install_path/lib/$python_rel/site-packages/openerp-server/addons/
-else
+elif [[ $dist == "karmic" ]]; then
 	# Ubuntu 9.10, python 2.6
 	posgresql_rel=8.4
 	python_rel=python2.6
 	ubuntu_rel=9.10
 	install_path=/usr/local
 	addons_path=$install_path/lib/$python_rel/dist-packages/openerp-server/addons/
+else
+	# Check that the script is run on Ubuntu Hardy or Ubuntu Karmic
+	echo "This program must be executed on Ubuntu 8.04.3 LTS or Ubuntu 9.10 (Desktop or Server)"
+	exit 1
 fi
-
 
 # Run the Ubuntu preparation script.
 while [[ ! $run_preparation_script =~ ^[YyNn]$ ]]; do
@@ -39,7 +46,7 @@ while [[ ! $run_preparation_script =~ ^[YyNn]$ ]]; do
 done
 if [[ $run_preparation_script =~ ^[Yy]$ ]]; then
         echo ""
-	./prepare-rs-machine.sh
+	../ubuntu-server-install/prepare-rs-machine.sh
 fi
 
 
@@ -89,25 +96,52 @@ while [[ $fqdn == "" ]]; do
         echo ""
 done
 
-#Set the admin password
-admin_passwd=""
-while [[ $admin_passwd == "" ]]; do
-        read -p "Enter the OpenERP administrator password: " admin_passwd
-        if [[ $admin_passwd == "" ]]; then
-                echo "The password cannot be empty."
+#Set the openerp admin password
+openerp_admin_passwd=""
+while [[ $openerp_admin_passwd == "" ]]; do
+	read -p "Enter the OpenERP administrator password: " openerp_admin_passwd
+	if [[ $openerp_admin_passwd == "" ]]; then
+		echo "The password cannot be empty."
 	else
-		read -p "Enter the OpenERP administrator password: " admin_passwd2
+		read -p "Enter the OpenERP administrator password: " openerp_admin_passwd2
 		echo ""
-		if [[ $admin_passwd == $admin_passwd2 ]]; then
+		if [[ $openerp_admin_passwd == $openerp_admin_passwd2 ]]; then
 			echo "OpenERP administrator password set."
 		else
-			admin_passwd=""
+			openerp_admin_passwd=""
 			echo "Passwords don't match."
 		fi
+	fi
+	echo ""
+done
+
+#Set the postgre admin password
+while [[ ! $set_postgre_admin_passwd =~ ^[YyNn]$ ]]; do
+        read -p "Would you like to change the postgre user password (Y/n)? " -n 1 set_postgre_admin_passwd
+        if [[ $set_postgre_admin_passwd == "" ]]; then
+                set_postgre_admin_passwd="y"
         fi
         echo ""
 done
-
+if [[ $set_postgre_admin_passwd =~ ^[Yy]$ ]]; then
+	postgre_admin_passwd=""
+	while [[ $postgre_admin_passwd == "" ]]; do
+		read -p "Enter the postgre user password: " postgre_admin_passwd
+		if [[ $postgre_admin_passwd == "" ]]; then
+			echo "The password cannot be empty."
+		else
+			read -p "Enter the postgre user password again: " postgre_admin_passwd2
+			echo ""
+			if [[ $openerp_admin_passwd == $openerp_admin_passwd2 ]]; then
+				echo "postgre user password set."
+			else
+				postgre_admin_passwd=""
+				echo "Passwords don't match."
+			fi
+		fi
+		echo ""
+	done
+fi
 
 #Preparing installation
 #######################
@@ -164,7 +198,14 @@ while [[ ! $create_pguser =~ ^[YyNn]$ ]]; do
 done
 if [[ $create_pguser =~ ^[Yy]$ ]]; then
 	sudo -u postgres createuser openerp --no-superuser --createdb --no-createrole
-	sudo -u postgres psql template1 -U postgres -c "alter user openerp with password '$admin_passwd'"
+	sudo -u postgres psql template1 -U postgres -c "alter user openerp with password '$openerp_admin_passwd'"
+fi
+
+# Change postgre user password
+echo "Changing postgre user password on request."
+if [[ $set_postgre_admin_passwd =~ ^[Yy]$ ]]; then
+	echo -e "$postgre_admin_passwd\n$postgre_admin_passwd" | (passwd --stdin postgre)
+	sudo -u postgres psql template1 -U postgres -c "alter user postgres with password '$postgre_admin_passwd'"
 fi
 
 
@@ -178,30 +219,30 @@ cd /usr/local/src
 
 # Download openerp-server latest stable/trunk release.
 echo "Downloading openerp-server latest stable/trunk release."
-bzr branch lp:openobject-server/$branch openerp-server
+bzr branch -r :last lp:openobject-server/$branch openerp-server
 echo ""
 
 # Download openerp-client-web latest stable release.
 echo "Downloading openerp-client-web latest stable release."
-bzr branch lp:openobject-client-web/$branch openerp-web
+bzr branch -r :last lp:openobject-client-web/$branch openerp-web
 echo ""
 
 # Download openerp addons latest stable/trunk branch.
 echo "Downloading openerp addons latest stable/trunk branch."
-bzr branch lp:openobject-addons/$branch addons
+bzr branch -r :last lp:openobject-addons/$branch addons
 echo ""
 
 # Download extra addons
 if [[ $install_extra_addons =~ ^[Yy]$ ]]; then
 	echo "Downloading extra addons"
-	bzr branch lp:openobject-addons/extra-$branch extra-addons
+	bzr branch -r :last lp:openobject-addons/extra-$branch extra-addons
 	echo ""
 fi
 
 # Download magentoerpconnect
 if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then
 	echo "Downloading magentoerpconnect."
-	bzr branch lp:magentoerpconnect magentoerpconnect
+	bzr branch -r :last lp:magentoerpconnect magentoerpconnect
 	echo ""
 fi
 
@@ -382,7 +423,7 @@ db_user = openerp
 db_password = 
 
 # Specify the database host (default localhost).
-db_host = localhost
+#db_host = localhost
 
 # Specify the database port (default None).
 db_port = 5432
