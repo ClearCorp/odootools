@@ -1,6 +1,12 @@
 #!/bin/bash
 
-source checkRoot.sh
+#import functions
+. ../main/checkRoot.sh
+. ../main/setSources.sh
+. ../main/regenSSHKeys.sh
+. ../main/getDist.sh
+
+# Check user is root
 checkRoot
 
 # Sets the root password.
@@ -39,22 +45,6 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 	sed -i "s/`cat /etc/hostname`/$new_hostname/g" /etc/hosts
 	sed -i "s/`cat /etc/hostname`/$new_hostname/g" /etc/hostname
 	echo "Hostname set to: $new_hostname"
-fi
-echo ""
-
-# Sets the local time.
-REPLY='none'
-while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to set the localtime (Y/n)? " -n 1
-	if [[ $REPLY == "" ]]; then
-		REPLY="y"
-	fi
-	echo ""
-done
-
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-	echo "Setting localtime..."
-	dpkg-reconfigure tzdata
 fi
 echo ""
 
@@ -101,6 +91,22 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 fi
 echo ""
 
+# Sets the local time.
+REPLY='none'
+while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
+	read -p "Do you want to set the localtime (Y/n)? " -n 1
+	if [[ $REPLY == "" ]]; then
+		REPLY="y"
+	fi
+	echo ""
+done
+
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+	echo "Setting localtime..."
+	dpkg-reconfigure tzdata
+fi
+echo ""
+
 # Sets apt sources.
 REPLY='none'
 while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
@@ -112,14 +118,9 @@ while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
 done
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-	if [[ `cat /etc/issue | grep -c 8.04` == 1 ]]; then
-		dist="hardy"
-	else
-		if [[ `cat /etc/issue | grep -c 9.10` == 1 ]]; then
-			dist="karmic"
-		fi
-	fi
-	source sources.sh
+	dist=""
+	getDist dist
+	setSources $dist
 	echo "Apt sources set."
 fi
 echo ""
@@ -219,14 +220,7 @@ while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
 done
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-	cat << EOF > /etc/rc2.d/S15ssh_gen_host_keys
-#!/bin/bash
-rm -f /etc/ssh/ssh_host_*
-ssh-keygen -f /etc/ssh/ssh_host_rsa_key -t rsa -N ''
-ssh-keygen -f /etc/ssh/ssh_host_dsa_key -t dsa -N ''
-rm -f \$0
-EOF
-	chmod a+x /etc/rc2.d/S15ssh_gen_host_keys
+	regenSSHKeys
 	echo "SSH keys will be regenerated on next reboot."
 fi
 echo ""
