@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Check the script is running as root.
-# Another line
 function checkRoot(){
 	if [[ $EUID -ne 0 ]]; then
 		# Exits with return = 1 if user is not root.
