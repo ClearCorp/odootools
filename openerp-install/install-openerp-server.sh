@@ -219,30 +219,30 @@ cd /usr/local/src
 
 # Download openerp-server latest stable/trunk release.
 echo "Downloading openerp-server latest stable/trunk release."
-bzr branch -r :last lp:openobject-server/$branch openerp-server
+bzr branch -r last:1 lp:openobject-server/$branch openerp-server
 echo ""
 
 # Download openerp-client-web latest stable release.
 echo "Downloading openerp-client-web latest stable release."
-bzr branch -r :last lp:openobject-client-web/$branch openerp-web
+bzr branch -r last:1 lp:openobject-client-web/$branch openerp-web
 echo ""
 
 # Download openerp addons latest stable/trunk branch.
 echo "Downloading openerp addons latest stable/trunk branch."
-bzr branch -r :last lp:openobject-addons/$branch addons
+bzr branch -r last:1 lp:openobject-addons/$branch addons
 echo ""
 
 # Download extra addons
 if [[ $install_extra_addons =~ ^[Yy]$ ]]; then
 	echo "Downloading extra addons"
-	bzr branch -r :last lp:openobject-addons/extra-$branch extra-addons
+	bzr branch -r last:1 lp:openobject-addons/extra-$branch extra-addons
 	echo ""
 fi
 
 # Download magentoerpconnect
 if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then
 	echo "Downloading magentoerpconnect."
-	bzr branch -r :last lp:magentoerpconnect magentoerpconnect
+	bzr branch -r last:1 lp:magentoerpconnect magentoerpconnect
 	echo ""
 fi
 
@@ -422,8 +422,8 @@ db_user = openerp
 # Specify the database password for db_user (default None).
 db_password = 
 
-# Specify the database host (default localhost).
-#db_host = localhost
+# Specify the database host (default localhost). THIS LINE MUST REMAIN COMMENTED FOR THE OPENERP TO WORK CORRECTLY
+#db_host = localhost 
 
 # Specify the database port (default None).
 db_port = 5432
@@ -709,5 +709,188 @@ chmod 644 /etc/openerp-web.conf
 
 update-rc.d openerp-server start 21 2 3 4 5 . stop 21 0 1 6 .
 update-rc.d openerp-web start 70 2 3 4 5 . stop 20 0 1 6 .
+
+## Apache installation
+
+#while [[ ! $install_apache =~ ^[YyNn]$ ]]; do
+#        read -p "Would you like to install apache (Y/n)? " -n 1 install_apache
+#        if [[ $install_apache == "" ]]; then
+#                install_apache="y"
+#        fi
+#        echo ""
+#done
+echo "Installing Apache"
+
+apt-get -y install apache2
+
+if [[ $dist == "hardy" ]]; then
+
+cat > /tmp/default <<"EOF3"
+NameVirtualHost *:80
+<VirtualHost *:80>
+        ServerAdmin webmaster@localhost
+        ServerName openerpweb.com
+        #Redirect / https://openerpweb.com/
+
+        DocumentRoot /var/www/
+        <Directory />
+                Options FollowSymLinks
+                AllowOverride None
+        </Directory>
+        <Directory /var/www/>
+                Options Indexes FollowSymLinks MultiViews
+                AllowOverride None
+                Order allow,deny
+                allow from all
+        </Directory>
+
+        ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+        <Directory "/usr/lib/cgi-bin">
+                AllowOverride None
+                Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+                Order allow,deny
+                Allow from all
+        </Directory>
+
+        ErrorLog /var/log/apache2/error.log
+
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+
+        CustomLog /var/log/apache2/access.log combined
+        ServerSignature On
+
+    Alias /doc/ "/usr/share/doc/"
+    <Directory "/usr/share/doc/">
+        Options Indexes MultiViews FollowSymLinks
+        AllowOverride None
+        Order deny,allow
+        Deny from all
+        Allow from 127.0.0.0/255.0.0.0 ::1/128
+    </Directory>
+
+</VirtualHost>
+EOF3
+
+sudo cp /tmp/default /etc/apache2/sites-available/default
+sudo chown root.root /etc/apache2/sites-available/default
+sudo chmod 644 /etc/apache2/sites-available/default
+
+cat > /tmp/default-ssl <<"EOF4"
+NameVirtualHost *:443
+<VirtualHost *:443>
+	ServerName openerpweb.com
+        ServerAdmin webmaster@localhost
+	SSLEngine on
+	SSLOptions +FakeBasicAuth +ExportCertData +StrictRequire	
+	SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
+	SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+                
+	<Proxy *>
+	  Order deny,allow
+	  Allow from all
+	</Proxy>
+	ProxyRequests Off
+	ProxyPass        /   http://127.0.0.1:8080/
+	ProxyPassReverse /   http://127.0.0.1:8080/
+
+        RequestHeader set "X-Forwarded-Proto" "https"
+
+        # Fix IE problem (http error 408/409)
+        SetEnv proxy-nokeepalive 1
+
+        ErrorLog /var/log/apache2/error-ssl.log
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+        CustomLog /var/log/apache2/access-ssl.log combined
+        ServerSignature On
+</VirtualHost>
+EOF4
+
+sudo cp /tmp/default-ssl /etc/apache2/sites-available/default-ssl
+sudo chown root.root /etc/apache2/sites-available/default-ssl
+sudo chmod 644 /etc/apache2/sites-available/default-ssl
+
+echo "Making SSL certificate for Apache";
+sudo /usr/sbin/make-ssl-cert generate-default-snakeoil --force-overwrite
+# Snakeoil certificate files:
+# /usr/share/ssl-cert/ssleay.cnf
+# /etc/ssl/certs/ssl-cert-snakeoil.pem
+# /etc/ssl/private/ssl-cert-snakeoil.key
+
+echo "Enabling Apache Modules";
+
+# Apache Modules:
+sudo a2enmod ssl
+# We enable default-ssl site after creating "/etc/apache2/sites-available/default-ssl" file (not available in Ubuntu8.04)
+sudo a2ensite default-ssl
+sudo a2enmod rewrite
+sudo a2enmod suexec
+sudo a2enmod include
+sudo a2enmod proxy
+sudo a2enmod proxy_http
+sudo a2enmod proxy_connect
+sudo a2enmod proxy_ftp
+sudo a2enmod headers
+
+#Add your server’s IP address and URL in /etc/hosts:
+#    $ sudo vi /etc/hosts
+#Replace
+#    127.0.0.1 localhost
+#    127.0.0.1 yourhostname yourhostnamealias
+#With
+#
+#    127.0.0.1 localhost
+#    192.168.x.x openerpweb.com yourhostname yourhostnamealias
+sudo sed -i "s/\(^127\.0\.1\.1[[:space:]]*\)\([[:alnum:]].*\)/#\0\n$ipaddrvar $url \2/g" /etc/hosts
+sudo sed -i "s/openerpweb\.com/$url/g" /etc/apache2/sites-available/default
+sudo sed -i "s/openerpweb\.com/$url/g" /etc/apache2/sites-available/default-ssl
+
+
+elif [[ $dist == "karmic" ]]; then
+a2enmod ssl
+a2ensite default-ssl
+a2enmod rewrite
+a2enmod suexec
+a2enmod include
+a2enmod proxy
+a2enmod proxy_http
+a2enmod proxy_connect
+a2enmod proxy_ftp
+
+sudo sed -i "s/\(^ServerRoot.*\)/\1\nServerName localhost/g" /etc/apache2/apache2.conf
+#Forcing Apache to redirect HTTP traffic to HTTPS
+#sudo sed -i "s/\(ServerAdmin.*\)/\1\nServerName $url\nRedirect \/ https:\/\/$url\//g" /etc/apache2/sites-available/default
+sudo sed -i "s/\(ServerAdmin.*\)/\1\nServerName $url\n\<Proxy \*\>\nOrder deny,allow\nAllow from all\n\<\/Proxy\>\nProxyRequests Off\nProxyPass        \/   http:\/\/127.0.0.1:8080\/\nProxyPassReverse \/   http:\/\/127.0.0.1:8080\/\nSetEnv proxy-nokeepalive 1/g" /etc/apache2/sites-available/default-ssl
+sudo sed -i "s/\(^127\.0\.1\.1[[:space:]]*\)\([[:alnum:]].*\)/#\0\n$ipaddrvar $url \2/g" /etc/hosts
+else
+
+
+echo "Restarting Apache";
+sudo /etc/init.d/apache2 restart
+
+
+echo "Enabling Firewall settings";
+# FIREWALL:
+sudo ufw enable
+sudo ufw allow ssh
+sudo ufw allow http
+sudo ufw allow https
+# OpenERP port (GTK client):
+sudo ufw allow 8069/tcp 
+# OpenERP port (GTK client):
+sudo ufw allow 8070/tcp 
+echo "Starting openerp-server and openerp-web services";
+sudo /etc/init.d/openerp-server start
+sudo /etc/init.d/openerp-web start
+
+
+echo "Installing Postgre Web Administrator (phppgadmin)"
+apt-get install phppgadmin
+
+
+
 
 
