@@ -889,8 +889,7 @@ sudo /etc/init.d/openerp-web start
 
 echo "Installing Postgre Web Administrator (phppgadmin)"
 apt-get install phppgadmin
-
-
+exit 0
 
 
 
