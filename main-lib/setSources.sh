@@ -1,9 +1,17 @@
 #!/bin/bash
 
-function setSources(){
+function setSources {
+	setSources_ubuntu
+	setSources_webmin
+	setSources_bazaar
+}
+
+function setSources_ubuntu{
+# Libraries import
+. addKey.sh
 
 # Ubuntu repository
-cat > /etc/apt/sources.list << EOF
+	cat > /etc/apt/sources.list << EOF
 # See http://help.ubuntu.com/community/UpgradeNotes for how to upgrade to
 # newer versions of the distribution.
 
@@ -73,12 +81,26 @@ deb http://archive.ubuntu.com/ubuntu/ $1-security multiverse
 deb http://archive.canonical.com/ubuntu $1 partner
 #deb-src http://archive.canonical.com/ubuntu $1 partner
 EOF
+}
 
-# Webmin repository
-cat > /etc/apt/sources.list.d/webmin.list << EOF
+function setSources_webmin {
+	# Webmin repository
+	cat > /etc/apt/sources.list.d/webmin.list << EOF
 # Webmin repository
 deb http://download.webmin.com/download/repository sarge contrib
 EOF
+	wget -q http://www.webmin.com/jcameron-key.asc -O - | apt-key add -
+}
 
-wget -q http://www.webmin.com/jcameron-key.asc -O - | apt-key add -
+function setSources_bazaar {
+	# Bazaar repository
+	cat > /etc/apt/sources.list.d/bzr.list << EOF
+# Bazaar repository
+deb http://ppa.launchpad.net/bzr/ppa/ubuntu $1 main
+#deb-src http://ppa.launchpad.net/bzr/ppa/ubuntu $1 main
+deb http://ppa.launchpad.net/bzr-explorer-dev/ppa/ubuntu $1 main
+#deb-src http://ppa.launchpad.net/bzr-explorer-dev/ppa/ubuntu $1 main
+EOF
+	addKey "68489A05"
+	addKey "8C6C1EFD"
 }
