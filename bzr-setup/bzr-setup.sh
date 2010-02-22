@@ -54,6 +54,9 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 			bzr init-repo --no-trees
 		fi
 		
+		#Make symbolic link to /var/lib/bzr
+		ln -s /var/lib/bzr /bzr
+		
 		#Make libbash-ccorp dir
 		mkdir /var/lib/bzr/libbash-ccorp
 		cd /var/lib/bzr/libbash-ccorp
