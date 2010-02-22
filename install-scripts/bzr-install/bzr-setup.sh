@@ -5,12 +5,13 @@
 #			server01.rs.clearcorp.co.cr when you update this file.
 #			In order to do this, run /var/www/bzr-make.sh
 
+# Libraries import
+. ../../main-lib/checkRoot.sh
+. ../../main-lib/getDist.sh
+. ../../main-lib/setSources.sh
+
 # Check user is root
-if [[ $EUID -ne 0 ]]; then
-	# Exits with return = 1 if user is not root.
-	echo "This script must be executed as root."
-	exit 1
-fi
+checkRoot
 
 # Instals bzr
 REPLY='none'
@@ -23,6 +24,9 @@ while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
 done
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
+	dist=""
+	getDist dist
+	setSources_bazaar $dist
 	apt-get -y update
 	apt-get -y install bzr
 fi
