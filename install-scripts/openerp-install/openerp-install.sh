@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Libraries import
-. ../main/checkRoot.sh
-. ../main/getDist.sh
+. ../../main-lib/checkRoot.sh
+. ../../main-lib/getDist.sh
 
 # Check user is root
 checkRoot

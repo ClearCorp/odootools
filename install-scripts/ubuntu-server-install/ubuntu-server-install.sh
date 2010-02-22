@@ -1,10 +1,10 @@
 #!/bin/bash
 
 #import functions
-. ../main/checkRoot.sh
-. ../main/setSources.sh
-. ../main/regenSSHKeys.sh
-. ../main/getDist.sh
+. ../../main-lib/checkRoot.sh
+. ../../main-lib/setSources.sh
+. ../../main-lib/regenSSHKeys.sh
+. ../../main-lib/getDist.sh
 
 # Check user is root
 checkRoot
@@ -91,10 +91,10 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 fi
 echo ""
 
-# Sets the local time.
+# Sets the timezone.
 REPLY='none'
 while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to set the localtime (Y/n)? " -n 1
+	read -p "Do you want to set the timezone (Y/n)? " -n 1
 	if [[ $REPLY == "" ]]; then
 		REPLY="y"
 	fi
@@ -102,8 +102,31 @@ while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
 done
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-	echo "Setting localtime..."
+	echo "Setting timezone..."
 	dpkg-reconfigure tzdata
+fi
+echo ""
+
+# Sync time with NTP
+REPLY='none'
+while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
+	read -p "Do you want to sync the system time with NTP (Y/n)? " -n 1
+	if [[ $REPLY == "" ]]; then
+		REPLY="y"
+	fi
+	echo ""
+done
+
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+	echo "Setting system time syncronization..."
+	apt-get -y install ntp
+	# Adds 4 north america servers and comment out ntp.ubuntu.com (default)
+	newserver=""
+	newserver=$newserver"server 0.north-america.pool.ntp.org\\n"
+	newserver=$newserver"server 1.north-america.pool.ntp.org\\n"
+	newserver=$newserver"server 2.north-america.pool.ntp.org\\n"
+	newserver=$newserver"server 3.north-america.pool.ntp.org\\n"
+	sed -i "s/\(server .*\)/$newserver#\1/g" /etc/ntp.conf
 fi
 echo ""
 
