@@ -9,6 +9,8 @@ libbash_ccorp_path="/usr/local/share/libbash-ccorp"
 
 bzr update $libbash_ccorp_path
 
+rm bzr-install.tar.gz
+
 mkdir -p bzr-install/main-lib
 cp $libbash_ccorp_path/main-lib/checkRoot.sh bzr-install/main-lib/checkRoot.sh
 cp $libbash_ccorp_path/main-lib/checkRoot.sh bzr-install/main-lib/getDist.sh
