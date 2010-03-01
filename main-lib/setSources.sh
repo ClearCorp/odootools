@@ -1,9 +1,9 @@
 #!/bin/bash
 
-function setSources_ubuntu {
 # Libraries import
 . addKey.sh
 
+function setSources_ubuntu {
 # Ubuntu repository
 	cat > /etc/apt/sources.list << EOF
 # See http://help.ubuntu.com/community/UpgradeNotes for how to upgrade to
