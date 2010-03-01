@@ -5,22 +5,20 @@
 #				Its function is to prepare a tar archive with the latest
 #				version of bzr-setup and all needed files in it.
 
-mkdir bzr-temp
-bzr checkout --lightweight /bzr/libbash-ccorp/trunk bzr-temp
+libbash_ccorp_path="/usr/local/share/libbash-ccorp"
 
-mkdir bzr-install
+bzr update $libbash_ccorp_path
 
-mkdir bzr-install/main-lib
-cp bzr-temp/main-lib/checkRoot.sh bzr-install/checkRoot.sh
-cp bzr-temp/main-lib/checkRoot.sh bzr-install/getDist.sh
-cp bzr-temp/main-lib/checkRoot.sh bzr-install/setSources.sh
-cp bzr-temp/main-lib/checkRoot.sh bzr-install/addKey.sh
+mkdir -p bzr-install/main-lib
+cp $libbash_ccorp_path/main-lib/checkRoot.sh bzr-install/main-lib/checkRoot.sh
+cp $libbash_ccorp_path/main-lib/checkRoot.sh bzr-install/main-lib/getDist.sh
+cp $libbash_ccorp_path/main-lib/checkRoot.sh bzr-install/main-lib/setSources.sh
+cp $libbash_ccorp_path/main-lib/checkRoot.sh bzr-install/main-lib/addKey.sh
 
-mkdir bzr-install/install-scripts
-mkdir bzr-install/install-scripts/bzr-install
-cp bzr-temp/install-scripts/bzr-install/bzr-setup.sh bzr-install/install-scripts/bzr-install/bzr-setup.sh
+mkdir -p bzr-install/install-scripts/bzr-install
+cp $libbash_cccorp_path/install-scripts/bzr-install/bzr-setup.sh bzr-install/install-scripts/bzr-install/bzr-setup.sh
 
-cat > bzr-temp/install.sh << EOF
+cat > bzr-install/install.sh << EOF
 #!/bin/bash
 #install.sh
 
@@ -30,4 +28,3 @@ EOF
 
 tar cvzf bzr-install.tar.gz bzr-install
 rm -r bzr-install
-rm -r bzr-temp
