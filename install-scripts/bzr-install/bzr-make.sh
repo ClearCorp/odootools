@@ -16,7 +16,7 @@ cp $libbash_ccorp_path/main-lib/checkRoot.sh bzr-install/main-lib/setSources.sh
 cp $libbash_ccorp_path/main-lib/checkRoot.sh bzr-install/main-lib/addKey.sh
 
 mkdir -p bzr-install/install-scripts/bzr-install
-cp $libbash_cccorp_path/install-scripts/bzr-install/bzr-setup.sh bzr-install/install-scripts/bzr-install/bzr-setup.sh
+cp $libbash_ccorp_path/install-scripts/bzr-install/bzr-setup.sh bzr-install/install-scripts/bzr-install/bzr-setup.sh
 
 cat > bzr-install/install.sh << EOF
 #!/bin/bash
