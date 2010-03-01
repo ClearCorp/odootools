@@ -1,12 +1,6 @@
 #!/bin/bash
 
-function setSources {
-	setSources_ubuntu
-	setSources_webmin
-	setSources_bazaar
-}
-
-function setSources_ubuntu{
+function setSources_ubuntu {
 # Libraries import
 . addKey.sh
 
@@ -101,6 +95,15 @@ deb http://ppa.launchpad.net/bzr/ppa/ubuntu $1 main
 deb http://ppa.launchpad.net/bzr-explorer-dev/ppa/ubuntu $1 main
 #deb-src http://ppa.launchpad.net/bzr-explorer-dev/ppa/ubuntu $1 main
 EOF
+
+	#Add bzr ppa key
 	addKey "68489A05"
+	#Add bzr-explorer ppa key
 	addKey "8C6C1EFD"
+}
+
+function setSources {
+	setSources_ubuntu
+	setSources_webmin
+	setSources_bazaar
 }

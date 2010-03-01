@@ -4,6 +4,7 @@
 # WARNING:	Update the bzr checkout at /var/www/bzr-setup on
 #			server01.rs.clearcorp.co.cr when you update this file.
 #			In order to do this, run /var/www/bzr-make.sh
+#			If you make structure changes update bzr-make.sh
 
 # Libraries import
 . ../../main-lib/checkRoot.sh
@@ -35,7 +36,7 @@ echo ""
 # Setup bzr repository
 REPLY='none'
 while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to setup ClearCorp default repository (Y/n)? " -n 1
+	read -p "Do you want to install libbash-ccorp (Y/n)? " -n 1
 	if [[ $REPLY == "" ]]; then
 		REPLY="y"
 	fi
@@ -43,31 +44,12 @@ while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
 done
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-	if [ -d /var/lib/bzr ]; then
-		echo "Error cannot setup bzr repository: /var/lib/bzr already exists."
+	if [ -d /usr/local/share/libbash-ccorp ]; then
+		echo "Error cannot setup bzr repository: /usr/local/share/libbash-ccorp already exists."
 	else
-		#Choose if you want working trees
-		REPLY='none'
-		while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-			read -p "Do you want working trees by default (Y/n)? " -n 1
-			if [[ $REPLY == "" ]]; then
-				REPLY="y"
-			fi
-			echo ""
-		done
-		cd /var/lib
-		if [[ $REPLY =~ ^[Yy]$ ]]; then
-			bzr init-repo bzr
-		else
-			bzr init-repo --no-trees
-		fi
-		
-		#Make symbolic link to /var/lib/bzr
-		ln -s /var/lib/bzr /bzr
-		
 		#Make libbash-ccorp dir
-		mkdir /var/lib/bzr/libbash-ccorp
-		cd /var/lib/bzr/libbash-ccorp
+		mkdir /usr/local/share/libbash-ccorp
+		cd /usr/local/share/libbash-ccorp
 		
 		#Chose the branch to install
 		REPLY='none'
@@ -79,9 +61,9 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 			echo ""
 		done
 		if [[ $REPLY =~ ^[Ss]$ ]]; then
-			bzr branch http://server01.rs.clearcorp.co.cr/bzr/libbash-ccorp/stable
+			bzr checkout --lightweight http://server01.rs.clearcorp.co.cr/bzr/libbash-ccorp/stable /usr/local/share/libbash-ccorp
 		else
-			bzr branch http://server01.rs.clearcorp.co.cr/bzr/libbash-ccorp/trunk
+			bzr checkout --lightweight http://server01.rs.clearcorp.co.cr/bzr/libbash-ccorp/trunk /usr/local/share/libbash-ccorp
 		fi
 	fi
 fi
