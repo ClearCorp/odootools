@@ -28,7 +28,7 @@ cd install-scripts/bzr-install
 ./bzr-setup.sh
 EOF
 
-chmod +x bzr-install/instal.sh
+chmod +x bzr-install/install.sh
 
 tar cvzf bzr-install.tar.gz bzr-install
 rm -r bzr-install
