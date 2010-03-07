@@ -45,7 +45,10 @@ done
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
 	if [ -d /usr/local/share/libbash-ccorp ]; then
-		echo "Error cannot setup bzr repository: /usr/local/share/libbash-ccorp already exists."
+		echo "bzr repository: /usr/local/share/libbash-ccorp already exists."
+		echo "Updating..."
+		cd /usr/local/share/libbash-ccorp
+		bzr update
 	else
 		#Make libbash-ccorp dir
 		mkdir /usr/local/share/libbash-ccorp
