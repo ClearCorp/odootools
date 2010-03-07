@@ -9,6 +9,7 @@ libbash_ccorp_path="/usr/local/share/libbash-ccorp"
 
 bzr update $libbash_ccorp_path
 
+cd /var/www
 rm bzr-install.tar.gz
 
 mkdir -p bzr-install/main-lib
