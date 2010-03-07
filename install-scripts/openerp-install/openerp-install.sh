@@ -222,30 +222,30 @@ cd /usr/local/src
 
 # Download openerp-server latest stable/trunk release.
 echo "Downloading openerp-server latest stable/trunk release."
-bzr branch -r last:1 lp:openobject-server/$branch openerp-server
+bzr checkout --lightweight lp:openobject-server/$branch openerp-server
 echo ""
 
 # Download openerp-client-web latest stable release.
 echo "Downloading openerp-client-web latest stable release."
-bzr branch -r last:1 lp:openobject-client-web/$branch openerp-web
+bzr checkout --lightweight lp:openobject-client-web/$branch openerp-web
 echo ""
 
 # Download openerp addons latest stable/trunk branch.
 echo "Downloading openerp addons latest stable/trunk branch."
-bzr branch -r last:1 lp:openobject-addons/$branch addons
+bzr checkout --lightweight lp:openobject-addons/$branch addons
 echo ""
 
 # Download extra addons
 if [[ $install_extra_addons =~ ^[Yy]$ ]]; then
 	echo "Downloading extra addons"
-	bzr branch -r last:1 lp:openobject-addons/extra-$branch extra-addons
+	bzr checkout --lightweight lp:openobject-addons/extra-$branch extra-addons
 	echo ""
 fi
 
 # Download magentoerpconnect
 if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then
 	echo "Downloading magentoerpconnect."
-	bzr branch -r last:1 lp:magentoerpconnect magentoerpconnect
+	bzr checkout --lightweight lp:magentoerpconnect magentoerpconnect
 	echo ""
 fi
 
