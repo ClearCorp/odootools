@@ -1,7 +1,10 @@
 #!/bin/bash
 
-# Libraries import
-. addKey.sh
+#~ Adds key to apt
+function addKey {
+	gpg --recv-keys $1
+	gpg --armor --export $1 | apt-key add -
+}
 
 function setSources_ubuntu {
 # Ubuntu repository
