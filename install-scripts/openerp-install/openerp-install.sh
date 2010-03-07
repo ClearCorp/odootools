@@ -170,6 +170,7 @@ echo ""
 # Install bazaar.
 echo "Installing bazaar."
 apt-get -y install bzr
+bzr whoami "ClearCorp S.A. <info@clearcorp.co.cr>"
 echo ""
 
 # Install postgresql
