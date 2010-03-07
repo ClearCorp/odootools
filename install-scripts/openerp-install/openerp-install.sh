@@ -875,17 +875,8 @@ else
 echo "Restarting Apache";
 sudo /etc/init.d/apache2 restart
 
+#~ TODO: Add shorewall support in ubuntu-server-install, and add rules here
 
-echo "Enabling Firewall settings";
-# FIREWALL:
-sudo ufw enable
-sudo ufw allow ssh
-sudo ufw allow http
-sudo ufw allow https
-# OpenERP port (GTK client):
-sudo ufw allow 8069/tcp 
-# OpenERP port (GTK client):
-sudo ufw allow 8070/tcp 
 echo "Starting openerp-server and openerp-web services";
 sudo /etc/init.d/openerp-server start
 sudo /etc/init.d/openerp-web start
