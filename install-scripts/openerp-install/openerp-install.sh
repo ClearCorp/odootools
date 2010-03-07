@@ -1,8 +1,11 @@
 #!/bin/bash
 
+#~ Go to libbash-ccorp directory
+cd /usr/local/share/libbash-ccorp
+
 # Libraries import
-. ../../main-lib/checkRoot.sh
-. ../../main-lib/getDist.sh
+. main-lib/checkRoot.sh
+. main-lib/getDist.sh
 
 # Check user is root
 checkRoot
@@ -46,7 +49,7 @@ while [[ ! $run_preparation_script =~ ^[YyNn]$ ]]; do
 done
 if [[ $run_preparation_script =~ ^[Yy]$ ]]; then
         echo ""
-	../ubuntu-server-install/prepare-rs-machine.sh
+	ubuntu-server-install/ubuntu-server-install.sh
 fi
 
 

@@ -1,10 +1,13 @@
 #!/bin/bash
 
+#~ Go to libbash-ccorp directory
+cd /usr/local/share/libbash-ccorp
+
 #import functions
-. ../../main-lib/checkRoot.sh
-. ../../main-lib/setSources.sh
-. ../../main-lib/regenSSHKeys.sh
-. ../../main-lib/getDist.sh
+. main-lib/checkRoot.sh
+. main-lib/setSources.sh
+. main-lib/regenSSHKeys.sh
+. main-lib/getDist.sh
 
 # Check user is root
 checkRoot
