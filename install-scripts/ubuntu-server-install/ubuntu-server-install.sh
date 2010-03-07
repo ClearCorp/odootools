@@ -47,6 +47,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 	done
 	sed -i "s/`cat /etc/hostname`/$new_hostname/g" /etc/hosts
 	sed -i "s/`cat /etc/hostname`/$new_hostname/g" /etc/hostname
+	chmod 555 /etc/hosts
+	chmod 555 /etc/hostname
 	echo "Hostname set to: $new_hostname"
 fi
 echo ""
