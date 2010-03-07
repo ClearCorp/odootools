@@ -106,7 +106,7 @@ EOF
 }
 
 function setSources {
-	setSources_ubuntu
-	setSources_webmin
-	setSources_bazaar
+	setSources_ubuntu $1
+	setSources_webmin $1
+	setSources_bazaar $1
 }
