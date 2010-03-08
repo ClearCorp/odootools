@@ -225,10 +225,10 @@ if [[ $create_pguser =~ ^[Yy]$ ]]; then
 	sudo -u postgres psql template1 -U postgres -c "alter user openerp with password '$openerp_admin_passwd'"
 fi
 
-# Change postgre user password
-echo "Changing postgre user password on request."
+# Change postgres user password
+echo "Changing postgres user password on request."
 if [[ $set_postgres_admin_passwd =~ ^[Yy]$ ]]; then
-	chpasswd postgres:$postgres_admin_passwd
+	echo "postgres:$postgres_admin_passwd" | chpasswd
 	sudo -u postgres psql template1 -U postgres -c "alter user postgres with password '$postgres_admin_passwd'"
 fi
 
