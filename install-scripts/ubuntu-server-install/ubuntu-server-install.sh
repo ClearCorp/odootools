@@ -1,13 +1,15 @@
 #!/bin/bash
 
+LIBBASH_CCORP_DIR="/usr/local/share/libbash-ccorp"
+
 #~ Go to libbash-ccorp directory
-cd /usr/local/share/libbash-ccorp
+cd $LIBBASH_CCORP_DIR
 
 #import functions
-. main-lib/checkRoot.sh
-. main-lib/setSources.sh
-. main-lib/regenSSHKeys.sh
-. main-lib/getDist.sh
+. $LIBBASH_CCORP_DIRmain-lib/checkRoot.sh
+. $LIBBASH_CCORP_DIRmain-lib/setSources.sh
+. $LIBBASH_CCORP_DIRmain-lib/regenSSHKeys.sh
+. $LIBBASH_CCORP_DIRmain-lib/getDist.sh
 
 # Check user is root
 checkRoot
@@ -24,32 +26,6 @@ done
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
 	passwd
-fi
-echo ""
-
-# Sets the hostname.
-REPLY='none'
-while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to set the hostname (Y/n)? " -n 1
-	if [[ $REPLY == "" ]]; then
-		REPLY="y"
-	fi
-	echo ""
-done
-
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-	while [[ $new_hostname == "" ]]; do
-		read -p "Enter the FQDN of this machine (`cat /etc/hostname`): " new_hostname
-		if [[ $new_hostname == "" ]]; then
-			new_hostname=`cat /etc/hostname`
-		fi
-		echo ""
-	done
-	sed -i "s/`cat /etc/hostname`/$new_hostname/g" /etc/hosts
-	sed -i "s/`cat /etc/hostname`/$new_hostname/g" /etc/hostname
-	chmod 555 /etc/hosts
-	chmod 555 /etc/hostname
-	echo "Hostname set to: $new_hostname"
 fi
 echo ""
 
@@ -93,6 +69,32 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 	else
 		sed -i "s/LC_ALL=.*/LC_ALL=$def_locale/g" /etc/environment
 	fi
+fi
+echo ""
+
+# Sets the hostname.
+REPLY='none'
+while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
+	read -p "Do you want to set the hostname (Y/n)? " -n 1
+	if [[ $REPLY == "" ]]; then
+		REPLY="y"
+	fi
+	echo ""
+done
+
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+	while [[ $new_hostname == "" ]]; do
+		read -p "Enter the FQDN of this machine (`cat /etc/hostname`): " new_hostname
+		if [[ $new_hostname == "" ]]; then
+			new_hostname=`cat /etc/hostname`
+		fi
+		echo ""
+	done
+	sed -i "s/`cat /etc/hostname`/$new_hostname/g" /etc/hosts
+	sed -i "s/`cat /etc/hostname`/$new_hostname/g" /etc/hostname
+	chmod 555 /etc/hosts
+	chmod 555 /etc/hostname
+	echo "Hostname set to: $new_hostname"
 fi
 echo ""
 
@@ -213,9 +215,9 @@ while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
 done
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-	read -p "List the packages to install (dnsutils ifstat traceroute)? " packages
+	read -p "List the packages to install (dnsutils ifstat traceroute locate)? " packages
 	if [[ $packages == "" ]]; then
-		packages="dnsutils ifstat traceroute"
+		packages="dnsutils ifstat traceroute locate"
 	fi
 	echo ""
 	apt-get -y install $packages
