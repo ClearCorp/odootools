@@ -1,9 +1,29 @@
+#       openerp-install.sh
+#       
+#       Copyright 2010 ClearCorp S.A. <info@clearcorp.co.cr>
+#       
+#       This program is free software; you can redistribute it and/or modify
+#       it under the terms of the GNU General Public License as published by
+#       the Free Software Foundation; either version 2 of the License, or
+#       (at your option) any later version.
+#       
+#       This program is distributed in the hope that it will be useful,
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#       GNU General Public License for more details.
+#       
+#       You should have received a copy of the GNU General Public License
+#       along with this program; if not, write to the Free Software
+#       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#       MA 02110-1301, USA.
 #!/bin/bash
+
+
 
 #~ Go to libbash-ccorp directory
 cd /usr/local/share/libbash-ccorp
 
-# Libraries import
+#~ Libraries import
 . main-lib/checkRoot.sh
 . main-lib/getDist.sh
 
@@ -118,27 +138,27 @@ while [[ $openerp_admin_passwd == "" ]]; do
 	echo ""
 done
 
-#Set the postgre admin password
-while [[ ! $set_postgre_admin_passwd =~ ^[YyNn]$ ]]; do
-        read -p "Would you like to change the postgre user password (Y/n)? " -n 1 set_postgre_admin_passwd
-        if [[ $set_postgre_admin_passwd == "" ]]; then
-                set_postgre_admin_passwd="y"
+#Set the postgres admin password
+while [[ ! $set_postgres_admin_passwd =~ ^[YyNn]$ ]]; do
+        read -p "Would you like to change the postgres user password (Y/n)? " -n 1 set_postgres_admin_passwd
+        if [[ $set_postgres_admin_passwd == "" ]]; then
+                set_postgres_admin_passwd="y"
         fi
         echo ""
 done
-if [[ $set_postgre_admin_passwd =~ ^[Yy]$ ]]; then
+if [[ $set_postgres_admin_passwd =~ ^[Yy]$ ]]; then
 	postgre_admin_passwd=""
-	while [[ $postgre_admin_passwd == "" ]]; do
-		read -p "Enter the postgre user password: " postgre_admin_passwd
-		if [[ $postgre_admin_passwd == "" ]]; then
+	while [[ $postgres_admin_passwd == "" ]]; do
+		read -p "Enter the postgre user password: " postgres_admin_passwd
+		if [[ $postgres_admin_passwd == "" ]]; then
 			echo "The password cannot be empty."
 		else
-			read -p "Enter the postgre user password again: " postgre_admin_passwd2
+			read -p "Enter the postgres user password again: " postgres_admin_passwd2
 			echo ""
-			if [[ $openerp_admin_passwd == $openerp_admin_passwd2 ]]; then
-				echo "postgre user password set."
+			if [[ $postgres_admin_passwd == $postgres_admin_passwd2 ]]; then
+				echo "postgres user password set."
 			else
-				postgre_admin_passwd=""
+				postgres_admin_passwd=""
 				echo "Passwords don't match."
 			fi
 		fi
@@ -192,7 +212,7 @@ if [[ $update_pg_hba =~ ^[Yy]$ ]]; then
 	/etc/init.d/postgresql-$posgresql_rel restart
 fi
 
-# Add openerp postgre user
+# Add openerp postgres user
 while [[ ! $create_pguser =~ ^[YyNn]$ ]]; do
         read -p "Would you like to add a postgresql openerp user (Y/n)? " -n 1 create_pguser
         if [[ $create_pguser == "" ]]; then
@@ -207,9 +227,9 @@ fi
 
 # Change postgre user password
 echo "Changing postgre user password on request."
-if [[ $set_postgre_admin_passwd =~ ^[Yy]$ ]]; then
-	chpasswd postgre:$postgre_admin_passwd
-	sudo -u postgres psql template1 -U postgres -c "alter user postgres with password '$postgre_admin_passwd'"
+if [[ $set_postgres_admin_passwd =~ ^[Yy]$ ]]; then
+	chpasswd postgres:$postgres_admin_passwd
+	sudo -u postgres psql template1 -U postgres -c "alter user postgres with password '$postgres_admin_passwd'"
 fi
 
 
