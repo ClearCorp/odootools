@@ -280,13 +280,13 @@ mkdir -p $addons_path
 cp -r addons/* $addons_path
 
 # Install OpenERP extra addons
-if [[ "$install_extra_addons" == "y" ]]; then
+if [[ "$install_extra_addons" =~ ^[Yy]$ ]]; then
 	echo "Installing OpenERP extra addons."
 	cp -r extra-addons/* $addons_path
 fi
 
 # Install OpenERP magentoerpconnect
-if [[ "$install_magentoerpconnect" == "y" ]]; then
+if [[ "$install_magentoerpconnect" =~ ^[Yy]$ ]]; then
 	echo "Installing OpenERP magentoerpconnect."
 	cp -r magentoerpconnect $addons_path
 fi
@@ -338,172 +338,60 @@ sed -i "s#/usr/bin/openerp-web#$install_path/bin/openerp-web#g" /etc/init.d/open
 chmod +x /etc/init.d/openerp-web
 update-rc.d openerp-web start 81 2 3 4 5 . stop 19 0 1 6 .
 
-#~ ## Apache installation
-#~ 
-#~ #while [[ ! $install_apache =~ ^[YyNn]$ ]]; do
-#~ #        read -p "Would you like to install apache (Y/n)? " -n 1 install_apache
-#~ #        if [[ $install_apache == "" ]]; then
-#~ #                install_apache="y"
-#~ #        fi
-#~ #        echo ""
-#~ #done
-#~ echo "Installing Apache"
-#~ 
-#~ apt-get -y install apache2
-#~ 
-#~ if [[ $dist == "hardy" ]]; then
-	#~ 
-	#~ cat > /tmp/default <<"EOF3"
-#~ NameVirtualHost *:80
-#~ <VirtualHost *:80>
-        #~ ServerAdmin webmaster@localhost
-        #~ ServerName openerpweb.com
-        #~ #Redirect / https://openerpweb.com/
-#~ 
-        #~ DocumentRoot /var/www/
-        #~ <Directory />
-                #~ Options FollowSymLinks
-                #~ AllowOverride None
-        #~ </Directory>
-        #~ <Directory /var/www/>
-                #~ Options Indexes FollowSymLinks MultiViews
-                #~ AllowOverride None
-                #~ Order allow,deny
-                #~ allow from all
-        #~ </Directory>
-#~ 
-        #~ ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
-        #~ <Directory "/usr/lib/cgi-bin">
-                #~ AllowOverride None
-                #~ Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
-                #~ Order allow,deny
-                #~ Allow from all
-        #~ </Directory>
-#~ 
-        #~ ErrorLog /var/log/apache2/error.log
-#~ 
-        #~ # Possible values include: debug, info, notice, warn, error, crit,
-        #~ # alert, emerg.
-        #~ LogLevel warn
-#~ 
-        #~ CustomLog /var/log/apache2/access.log combined
-        #~ ServerSignature On
-#~ 
-    #~ Alias /doc/ "/usr/share/doc/"
-    #~ <Directory "/usr/share/doc/">
-        #~ Options Indexes MultiViews FollowSymLinks
-        #~ AllowOverride None
-        #~ Order deny,allow
-        #~ Deny from all
-        #~ Allow from 127.0.0.0/255.0.0.0 ::1/128
-    #~ </Directory>
-#~ 
-#~ </VirtualHost>
-#~ EOF3
-	#~ 
-	#~ sudo cp /tmp/default /etc/apache2/sites-available/default
-	#~ sudo chown root.root /etc/apache2/sites-available/default
-	#~ sudo chmod 644 /etc/apache2/sites-available/default
-	#~ 
-	#~ cat > /tmp/default-ssl <<"EOF4"
-#~ NameVirtualHost *:443
-#~ <VirtualHost *:443>
-	#~ ServerName openerpweb.com
-        #~ ServerAdmin webmaster@localhost
-	#~ SSLEngine on
-	#~ SSLOptions +FakeBasicAuth +ExportCertData +StrictRequire	
-	#~ SSLCertificateFile /etc/ssl/certs/ssl-cert-snakeoil.pem
-	#~ SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
-                #~ 
-	#~ <Proxy *>
-	  #~ Order deny,allow
-	  #~ Allow from all
-	#~ </Proxy>
-	#~ ProxyRequests Off
-	#~ ProxyPass        /   http://127.0.0.1:8080/
-	#~ ProxyPassReverse /   http://127.0.0.1:8080/
-#~ 
-        #~ RequestHeader set "X-Forwarded-Proto" "https"
-#~ 
-        #~ # Fix IE problem (http error 408/409)
-        #~ SetEnv proxy-nokeepalive 1
-#~ 
-        #~ ErrorLog /var/log/apache2/error-ssl.log
-        #~ # Possible values include: debug, info, notice, warn, error, crit,
-        #~ # alert, emerg.
-        #~ LogLevel warn
-        #~ CustomLog /var/log/apache2/access-ssl.log combined
-        #~ ServerSignature On
-#~ </VirtualHost>
-#~ EOF4
-	#~ 
-	#~ sudo cp /tmp/default-ssl /etc/apache2/sites-available/default-ssl
-	#~ sudo chown root.root /etc/apache2/sites-available/default-ssl
-	#~ sudo chmod 644 /etc/apache2/sites-available/default-ssl
-	#~ 
-	#~ echo "Making SSL certificate for Apache";
-	#~ sudo /usr/sbin/make-ssl-cert generate-default-snakeoil --force-overwrite
-	#~ # Snakeoil certificate files:
-	#~ # /usr/share/ssl-cert/ssleay.cnf
-	#~ # /etc/ssl/certs/ssl-cert-snakeoil.pem
-	#~ # /etc/ssl/private/ssl-cert-snakeoil.key
-	#~ 
-	#~ echo "Enabling Apache Modules";
-	#~ 
-	#~ # Apache Modules:
-	#~ sudo a2enmod ssl
-	#~ # We enable default-ssl site after creating "/etc/apache2/sites-available/default-ssl" file (not available in Ubuntu8.04)
-	#~ sudo a2ensite default-ssl
-	#~ sudo a2enmod rewrite
-	#~ sudo a2enmod suexec
-	#~ sudo a2enmod include
-	#~ sudo a2enmod proxy
-	#~ sudo a2enmod proxy_http
-	#~ sudo a2enmod proxy_connect
-	#~ sudo a2enmod proxy_ftp
-	#~ sudo a2enmod headers
-	#~ 
-	#~ #Add your server’s IP address and URL in /etc/hosts:
-	#~ #    $ sudo vi /etc/hosts
-	#~ #Replace
-	#~ #    127.0.0.1 localhost
-	#~ #    127.0.0.1 yourhostname yourhostnamealias
-	#~ #With
-	#~ #
-	#~ #    127.0.0.1 localhost
-	#~ #    192.168.x.x openerpweb.com yourhostname yourhostnamealias
-	#~ sudo sed -i "s/\(^127\.0\.1\.1[[:space:]]*\)\([[:alnum:]].*\)/#\0\n$ipaddrvar $url \2/g" /etc/hosts
-	#~ sudo sed -i "s/openerpweb\.com/$url/g" /etc/apache2/sites-available/default
-	#~ sudo sed -i "s/openerpweb\.com/$url/g" /etc/apache2/sites-available/default-ssl
-#~ elif [[ $dist == "karmic" ]]; then
-	#~ a2enmod ssl
-	#~ a2ensite default-ssl
-	#~ a2enmod rewrite
-	#~ a2enmod suexec
-	#~ a2enmod include
-	#~ a2enmod proxy
-	#~ a2enmod proxy_http
-	#~ a2enmod proxy_connect
-	#~ a2enmod proxy_ftp
-	#~ 
-	#~ sudo sed -i "s/\(^ServerRoot.*\)/\1\nServerName localhost/g" /etc/apache2/apache2.conf
-	#~ #Forcing Apache to redirect HTTP traffic to HTTPS
-	#~ #sudo sed -i "s/\(ServerAdmin.*\)/\1\nServerName $url\nRedirect \/ https:\/\/$url\//g" /etc/apache2/sites-available/default
-	#~ sudo sed -i "s/\(ServerAdmin.*\)/\1\nServerName $url\n\<Proxy \*\>\nOrder deny,allow\nAllow from all\n\<\/Proxy\>\nProxyRequests Off\nProxyPass        \/   http:\/\/127.0.0.1:8080\/\nProxyPassReverse \/   http:\/\/127.0.0.1:8080\/\nSetEnv proxy-nokeepalive 1/g" /etc/apache2/sites-available/default-ssl
-	#~ sudo sed -i "s/\(^127\.0\.1\.1[[:space:]]*\)\([[:alnum:]].*\)/#\0\n$ipaddrvar $url \2/g" /etc/hosts
-#~ fi
-#~ 
-#~ 
-#~ echo "Restarting Apache";
-#~ /etc/init.d/apache2 restart
-#~ 
+## Apache installation
+while [[ ! $install_apache =~ ^[YyNn]$ ]]; do
+	read -p "Would you like to install apache (Y/n)? " -n 1 install_apache
+	if [[ $install_apache == "" ]]; then
+		install_apache="y"
+	fi
+	echo ""
+done
+echo "Installing Apache"
+
+if [[ "$install_apache" =~ ^[Yy]$ ]]; then
+	echo "Installing Apache."
+	cp -r extra-addons/* $addons_path
+	apt-get -y install apache2
+
+	echo "Making SSL certificate for Apache";
+	make-ssl-cert generate-default-snakeoil --force-overwrite
+	# Snakeoil certificate files:
+	# /usr/share/ssl-cert/ssleay.cnf
+	# /etc/ssl/certs/ssl-cert-snakeoil.pem
+	# /etc/ssl/private/ssl-cert-snakeoil.key
+	
+	echo "Configuring site config files."
+	ServerAdmin webmaster@localhost
+	cp /usr/local/share/libbash-ccorp/install-scripts/openerp-install/apache-erp /etc/apache2/sites-available/erp
+	cp /usr/local/share/libbash-ccorp/install-scripts/openerp-install/apache-erp-ssl /etc/apache2/sites-available/erp-ssl
+	sed -i "s/ServerAdmin webmaster@localhost/ServerAdmin support@clearnet.co.cr\n\nInclude \/etc\/apache2\/sites-available\/erp/g" /etc/apache2/sites-available/default
+	sed -i "s/ServerAdmin webmaster@localhost/ServerAdmin support@clearnet.co.cr\n\nInclude \/etc\/apache2\/sites-available\/erp-ssl/g" /etc/apache2/sites-available/default-ssl
+
+	echo "Enabling Apache Modules"
+	# Apache Modules:
+	sudo a2enmod ssl
+	sudo a2enmod rewrite
+	sudo a2enmod suexec
+	sudo a2enmod include
+	sudo a2enmod proxy
+	sudo a2enmod proxy_http
+	sudo a2enmod proxy_connect
+	sudo a2enmod proxy_ftp
+	sudo a2enmod headers
+	sudo a2ensite default
+	sudo a2ensite default-ssl
+	
+	echo "Restarting Apache"
+	/etc/init.d/apache2 restart
+fi
+
 #~ TODO: Add shorewall support in ubuntu-server-install, and add rules here
-#~ 
-#~ echo "Starting openerp-server and openerp-web services"
-#~ /etc/init.d/openerp-server start
-#~ /etc/init.d/openerp-web start
-#~ 
-#~ 
+
+echo "Starting openerp-server and openerp-web services"
+/etc/init.d/openerp-server start
+/etc/init.d/openerp-web start
+
+#~ TODO: Add phppgadmin
 #~ echo "Installing Postgre Web Administrator (phppgadmin)"
 #~ apt-get install phppgadmin
 #~ exit 0
