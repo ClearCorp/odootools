@@ -306,136 +306,67 @@ chown -R openerp.root /var/log/openerp-web/
 # OpenERP Server init and config
 echo "Trusting install script to create both init and conf files"
 
-#~ cat > /etc/init.d/openerp-server <<"EOF"
-#~ #!/bin/sh
-#~ 
-#~ ### BEGIN INIT INFO
-#~ # Provides:		openerp-server
-#~ # Required-Start:	$syslog
-#~ # Required-Stop:	$syslog
-#~ # Should-Start:		$network
-#~ # Should-Stop:		$network
-#~ # Default-Start:	2 3 4 5
-#~ # Default-Stop:		0 1 6
-#~ # Short-Description:	Enterprise Resource Management software
-#~ # Description:		OpenERP is a complete ERP and CRM software.
-#~ ### END INIT INFO
-#~ 
-#~ PATH=/sbin:/bin:/usr/sbin:/usr/bin
-#~ DAEMON=/usr/bin/openerp-server
-#~ NAME=openerp-server
-#~ DESC=openerp-server
-#~ USER=openerp
-#~ 
-#~ test -x ${DAEMON} || exit 0
-#~ 
-#~ set -e
-#~ 
-#~ case "${1}" in
-	#~ start)
-		#~ echo -n "Starting ${DESC}: "
-#~ 
-		#~ start-stop-daemon --start --quiet --pidfile /var/run/${NAME}.pid \
-			#~ --chuid ${USER} --background --make-pidfile \
-			#~ --exec ${DAEMON} -- --config=/etc/openerp-server.conf
-#~ 
-		#~ echo "${NAME}."
-		#~ ;;
-#~ 
-	#~ stop)
-		#~ echo -n "Stopping ${DESC}: "
-#~ 
-		#~ start-stop-daemon --stop --quiet --pidfile /var/run/${NAME}.pid \
-			#~ --oknodo
-#~ 
-		#~ echo "${NAME}."
-		#~ ;;
-#~ 
-	#~ restart|force-reload)
-		#~ echo -n "Restarting ${DESC}: "
-#~ 
-		#~ start-stop-daemon --stop --quiet --pidfile /var/run/${NAME}.pid \
-			#~ --oknodo
-#~ 
-		#~ sleep 1
-#~ 
-		#~ start-stop-daemon --start --quiet --pidfile /var/run/${NAME}.pid \
-			#~ --chuid ${USER} --background --make-pidfile \
-			#~ --exec ${DAEMON} -- --config=/etc/openerp-server.conf
-#~ 
-		#~ echo "${NAME}."
-		#~ ;;
-#~ 
-	#~ *)
-		#~ N=/etc/init.d/${NAME}
-		#~ echo "Usage: ${NAME} {start|stop|restart|force-reload}" >&2
-		#~ exit 1
-		#~ ;;
-#~ esac
-#~ 
-#~ exit 0
-#~ 
-#~ EOF
-#~ chmod +x /etc/init.d/openerp-server
-#~ sed -i "s#/usr/bin/openerp-server#$install_path/bin/openerp-server#g" /etc/init.d/openerp-server
-#~ 
-#~ # Make OpenERP init file
-#~ echo "Making OpenERP config file"
-#~ 
-#~ cat > /etc/openerp-server.conf <<"EOF2"
-#~ # /etc/openerp-server.conf(5) - configuration file for openerp-server(1)
-#~ 
-#~ [options]
-#~ # Enable the debugging mode (default False).
-#~ #verbose = True 
-#~ 
-#~ # The file where the server pid will be stored (default False).
-#~ #pidfile = /var/run/openerp.pid
-#~ 
-#~ # The file where the server log will be stored (default False).
-#~ logfile = /var/log/openerp/openerp.log
-#~ 
-#~ # The IP address on which the server will bind.
-#~ # If empty, it will bind on all interfaces (default empty).
-#~ #interface = localhost
-#~ interface = 
-#~ # The TCP port on which the server will listen (default 8069).
-#~ port = 8069
-#~ 
-#~ # Enable debug mode (default False).
-#~ #debug_mode = True 
-#~ 
-#~ # Launch server over https instead of http (default False).
-#~ secure = False
-#~ 
-#~ # Specify the SMTP server for sending email (default localhost).
-#~ smtp_server = mail.clearcorp.co.cr
-#~ 
-#~ # Specify the SMTP user for sending email (default False).
-#~ smtp_user = relay@clearcorp.co.cr
-#~ 
-#~ # Specify the SMTP password for sending email (default False).
-#~ smtp_password = passwd
-#~ 
-#~ # Specify the database name.
-#~ db_name =
-#~ 
-#~ # Specify the database user name (default None).
-#~ db_user = openerp
-#~ 
-#~ # Specify the database password for db_user (default None).
-#~ db_password = 
-#~ 
-#~ # Specify the database host (default localhost). THIS LINE MUST REMAIN COMMENTED FOR THE OPENERP TO WORK CORRECTLY
-#~ #db_host = localhost 
-#~ 
-#~ # Specify the database port (default None).
-#~ db_port = 5432
-#~ 
-#~ EOF2
-#~ chown root.root /etc/openerp-server.conf
-#~ chmod 644 /etc/openerp-server.conf
-#~ sed -i "s/db_password =/db_password = $admin_passwd/g" /etc/openerp-server.conf
+cat > /etc/init.d/openerp-server 
+chmod +x /etc/init.d/openerp-server
+sed -i "s#/usr/bin/openerp-server#$install_path/bin/openerp-server#g" /etc/init.d/openerp-server
+
+# Make OpenERP init file
+echo "Making OpenERP config file"
+
+cat > /etc/openerp-server.conf <<"EOF2"
+# /etc/openerp-server.conf(5) - configuration file for openerp-server(1)
+
+[options]
+# Enable the debugging mode (default False).
+#verbose = True 
+
+# The file where the server pid will be stored (default False).
+#pidfile = /var/run/openerp.pid
+
+# The file where the server log will be stored (default False).
+logfile = /var/log/openerp/openerp.log
+
+# The IP address on which the server will bind.
+# If empty, it will bind on all interfaces (default empty).
+#interface = localhost
+interface = 
+# The TCP port on which the server will listen (default 8069).
+port = 8069
+
+# Enable debug mode (default False).
+#debug_mode = True 
+
+# Launch server over https instead of http (default False).
+secure = False
+
+# Specify the SMTP server for sending email (default localhost).
+smtp_server = mail.clearcorp.co.cr
+
+# Specify the SMTP user for sending email (default False).
+smtp_user = relay@clearcorp.co.cr
+
+# Specify the SMTP password for sending email (default False).
+smtp_password = passwd
+
+# Specify the database name.
+db_name =
+
+# Specify the database user name (default None).
+db_user = openerp
+
+# Specify the database password for db_user (default None).
+db_password = 
+
+# Specify the database host (default localhost). THIS LINE MUST REMAIN COMMENTED FOR THE OPENERP TO WORK CORRECTLY
+#db_host = localhost 
+
+# Specify the database port (default None).
+db_port = 5432
+
+EOF2
+chown root.root /etc/openerp-server.conf
+chmod 644 /etc/openerp-server.conf
+sed -i "s/db_password =/db_password = $admin_passwd/g" /etc/openerp-server.conf
 
 #~ update-rc.d openerp-server start 21 2 3 4 5 . stop 21 0 1 6 .
 
