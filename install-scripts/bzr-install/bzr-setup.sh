@@ -6,13 +6,25 @@
 #			In order to do this, run /var/www/bzr-make.sh
 #			If you make structure changes update bzr-make.sh
 
+LIBBASH_CCORP_DIR="/usr/local/share/libbash-ccorp"
+
 # Libraries import
-. ../../main-lib/checkRoot.sh
-. ../../main-lib/getDist.sh
-. ../../main-lib/setSources.sh
+. $LIBBASH_CCORP_DIR/main-lib/checkRoot.sh
+. $LIBBASH_CCORP_DIR/main-lib/getDist.sh
+. $LIBBASH_CCORP_DIR/main-lib/setSources.sh
 
 # Check user is root
 checkRoot
+
+function setSymlinks {
+	rm /usr/local/sbin/openerp-install
+	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-install.sh /usr/local/sbin/openerp-install
+	rm /usr/local/sbin/ubuntu-server-install
+	ln -s $LIBBASH_CCORP_DIR/install-scripts/ubuntu-server-install/ubuntu-server-install.sh /usr/local/sbin/ubuntu-server-install
+}
+
+echo "Bzr and libbash-ccorp installation script"
+echo ""
 
 # Instals bzr
 REPLY='none'
@@ -25,6 +37,8 @@ while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
 done
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
+	echo "Installing bzr..."
+	echo ""
 	dist=""
 	getDist dist
 	setSources_bazaar $dist
@@ -44,6 +58,8 @@ while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
 done
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
+	echo "Installing libbash-ccorp..."
+	echo ""
 	if [ -d /usr/local/share/libbash-ccorp ]; then
 		echo "bzr repository: /usr/local/share/libbash-ccorp already exists."
 		echo "Updating..."
@@ -69,5 +85,6 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 			bzr checkout --lightweight http://server01.rs.clearcorp.co.cr/bzr/libbash-ccorp/trunk /usr/local/share/libbash-ccorp
 		fi
 	fi
+	setSymlinks
 fi
 echo ""
