@@ -164,7 +164,7 @@ echo ""
 
 # Install the required python libraries for openerp-server.
 echo "Installing the required python libraries for openerp-server."
-apt-get -y install python python-psycopg2 python-reportlab python-egenix-mxdatetime python-tz python-pychart python-pydot python-lxml python-libxslt1 python-vobject python-imaging python-dev build-essential python-setuptools
+apt-get -y install python python-psycopg2 python-reportlab python-egenix-mxdatetime python-tz python-pychart python-pydot python-lxml python-libxslt1 python-vobject python-imaging python-dev build-essential python-setuptools python-profiler
 echo ""
 
 # Install bazaar.
@@ -262,6 +262,9 @@ cd /usr/local/src
 # Install OpenERP server
 echo "Installing OpenERP Server."
 cd openerp-server
+#~ Workaround for installation bug
+python setup.py build
+rsync -a bin/ build/lib.*/openerp-server/
 python setup.py install
 cd ..
 
@@ -527,7 +530,7 @@ update-rc.d openerp-server start 80 2 3 4 5 . stop 20 0 1 6 .
 # OpenERP Web Client init and config
 echo "Making OpenERP init file"
 
-cp "$install_path/lib/$python_rel/dist-packages/openerp_web*.egg/scripts/openerp-web" /etc/init.d/openerp-web
+eval cp "$install_path/lib/$python_rel/dist-packages/openerp_web*.egg/scripts/openerp-web" /etc/init.d/openerp-web
 sed -i "s#/usr/bin/openerp-web#$install_path/bin/openerp-web#g" /etc/init.d/openerp-web
 chmod +x /etc/init.d/openerp-web
 
@@ -594,7 +597,7 @@ update-rc.d openerp-web start 81 2 3 4 5 . stop 19 0 1 6 .
 #~ EOF8
 
 openerp_web_cfg_path="$install_path/lib/$python_rel/dist-packages/openerp_web*.egg/config/openerp-web.cfg"
-cp $openerp_web_cfg_path /etc/openerp-web.cfg
+eval cp $openerp_web_cfg_path /etc/openerp-web.cfg
 #~ Activate log files
 sed -i "s/#\?\(log.access_file.*\)/\1/g" /etc/openerp-web.cfg
 sed -i "s/#\?\(log.error_file.*\)/\1/g" /etc/openerp-web.cfg
