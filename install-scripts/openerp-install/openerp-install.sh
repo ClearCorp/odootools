@@ -18,14 +18,14 @@
 #       MA 02110-1301, USA.
 #!/bin/bash
 
-
+LIBBASH_CCORP_DIR="/usr/local/share/libbash-ccorp"
 
 #~ Go to libbash-ccorp directory
-cd /usr/local/share/libbash-ccorp
+cd $LIBBASH_CCORP_DIR
 
 #~ Libraries import
-. main-lib/checkRoot.sh
-. main-lib/getDist.sh
+. $LIBBASH_CCORP_DIR/main-lib/checkRoot.sh
+. $LIBBASH_CCORP_DIR/main-lib/getDist.sh
 
 # Check user is root
 checkRoot
@@ -328,13 +328,13 @@ chown -R openerp.root /var/log/openerp-web/
 
 # OpenERP Server init and config
 echo "Making OpenERP Server init script"
-cp /usr/local/share/libbash-ccorp/install-scripts/openerp-install/openerp-server_init.sh /etc/init.d/openerp-server
+cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-server_init.sh /etc/init.d/openerp-server
 chmod +x /etc/init.d/openerp-server
 sed -i "s#/usr/bin/openerp-server#$install_path/bin/openerp-server#g" /etc/init.d/openerp-server
 echo ""
 
 echo "Making OpenERP Server config script"
-cp /usr/local/share/libbash-ccorp/install-scripts/openerp-install/openerp-server.conf /etc/openerp-server.conf
+cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-server.conf /etc/openerp-server.conf
 chmod 644 /etc/openerp-server.conf
 sed -i "s/db_password =/db_password = $admin_passwd/g" /etc/openerp-server.conf
 echo ""
@@ -343,12 +343,43 @@ update-rc.d openerp-server start 80 2 3 4 5 . stop 20 0 1 6 .
 # OpenERP Web Client init and config
 echo "Making OpenERP Web Client config file"
 eval cp "$install_path/lib/$python_rel/dist-packages/openerp_web*.egg/config/openerp-web.cfg" /etc/openerp-web.cfg
+
 #~ Activate log files
 sed -i "s/#\?\(log.access_file.*\)/\1/g" /etc/openerp-web.cfg
 sed -i "s/#\?\(log.error_file.*\)/\1/g" /etc/openerp-web.cfg
+sed -i "s/#\?\(log.error_file.*\)/\1/g" /etc/openerp-web.cfg
+
+#~ Choose between development and production server
+while [[ ! $server_type =~ ^[DdPp]$ ]]; do
+	read -p "Is this a development or production server (D/p)? " -n 1 server_type
+	if [[ $server_type == "" ]]; then
+		server_type="d"
+	fi
+	echo ""
+done
+if [[ "$server_type" =~ ^[Dd]$ ]]; then
+	echo "Configuring as development server."
+	sed -i "s/#\?\(server\.environment.*\)/server.environment = 'development'/g" /etc/openerp-web.cfg
+elif
+	echo "Configuring as production server."
+	sed -i "s/#\?\(server\.environment.*\)/server.environment = 'production'/g" /etc/openerp-web.cfg
+fi
+
+#~ Activate proxy tools
+sed -i "s/#\?\(tools\.proxy\.on.*\)/tools.proxy.on = True/g" /etc/openerp-web.cfg
+
+#~ Sets dblist.filter to EXACT
+sed -i "s/#\?\(dblist\.filter.*\)/dblist.filter = 'EXACT'/g" /etc/openerp-web.cfg
+
+#~ Sets dbbutton.visible to False
+sed -i "s/#\?\(dbbutton\.visible.*\)/dbbutton.visible = False/g" /etc/openerp-web.cfg
+
 #~ Adds ClearCorp logo
 sed -i "s/#\?\(company.url.*\)/company.url = \'http:\/\/www.clearcorp.co.cr\'/g" /etc/openerp-web.cfg
-eval cp /usr/local/share/libbash-ccorp/install-scripts/openerp-install/company_logo.png "$install_path/lib/$python_rel/dist-packages/openerp_web*.egg/openerp/static/images/company_logo.png"
+cd $install_path/lib/$python_rel/dist-packages/openerp_web*.egg/openerp/static/images/
+cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/company_logo.png .
+cd -
+
 chown root.root /etc/openerp-web.cfg
 chmod 644 /etc/openerp-web.cfg
 
@@ -366,7 +397,6 @@ while [[ ! $install_apache =~ ^[YyNn]$ ]]; do
 	fi
 	echo ""
 done
-echo "Installing Apache"
 
 if [[ "$install_apache" =~ ^[Yy]$ ]]; then
 	echo "Installing Apache."
@@ -381,9 +411,8 @@ if [[ "$install_apache" =~ ^[Yy]$ ]]; then
 	# /etc/ssl/private/ssl-cert-snakeoil.key
 	
 	echo "Configuring site config files."
-	ServerAdmin webmaster@localhost
-	cp /usr/local/share/libbash-ccorp/install-scripts/openerp-install/apache-erp /etc/apache2/sites-available/erp
-	cp /usr/local/share/libbash-ccorp/install-scripts/openerp-install/apache-erp-ssl /etc/apache2/sites-available/erp-ssl
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-erp /etc/apache2/sites-available/erp
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-erp-ssl /etc/apache2/sites-available/erp-ssl
 	sed -i "s/ServerAdmin webmaster@localhost/ServerAdmin support@clearnet.co.cr\n\nInclude \/etc\/apache2\/sites-available\/erp/g" /etc/apache2/sites-available/default
 	sed -i "s/ServerAdmin webmaster@localhost/ServerAdmin support@clearnet.co.cr\n\nInclude \/etc\/apache2\/sites-available\/erp-ssl/g" /etc/apache2/sites-available/default-ssl
 
