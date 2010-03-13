@@ -85,8 +85,10 @@ while [[ ! $branch =~ ^[SsTt]$ ]]; do
 	echo ""
 done
 if [[ $branch =~ ^[Ss]$ ]]; then
+	echo "This installation will use stable branch."
 	branch="5.0"
 else
+	echo "This installation will use trunk branch."
 	branch="trunk"
 fi
 echo ""
@@ -126,7 +128,7 @@ while [[ $openerp_admin_passwd == "" ]]; do
 	if [[ $openerp_admin_passwd == "" ]]; then
 		echo "The password cannot be empty."
 	else
-		read -p "Enter the OpenERP administrator password: " openerp_admin_passwd2
+		read -p "Enter the OpenERP administrator password again: " openerp_admin_passwd2
 		echo ""
 		if [[ $openerp_admin_passwd == $openerp_admin_passwd2 ]]; then
 			echo "OpenERP administrator password set."
@@ -149,7 +151,7 @@ done
 if [[ $set_postgres_admin_passwd =~ ^[Yy]$ ]]; then
 	postgre_admin_passwd=""
 	while [[ $postgres_admin_passwd == "" ]]; do
-		read -p "Enter the postgre user password: " postgres_admin_passwd
+		read -p "Enter the postgres user password: " postgres_admin_passwd
 		if [[ $postgres_admin_passwd == "" ]]; then
 			echo "The password cannot be empty."
 		else
@@ -345,9 +347,9 @@ echo "Making OpenERP Web Client config file"
 eval cp "$install_path/lib/$python_rel/dist-packages/openerp_web*.egg/config/openerp-web.cfg" /etc/openerp-web.cfg
 
 #~ Activate log files
-sed -i "s/#\?\(log.access_file.*\)/\1/g" /etc/openerp-web.cfg
-sed -i "s/#\?\(log.error_file.*\)/\1/g" /etc/openerp-web.cfg
-sed -i "s/#\?\(log.error_file.*\)/\1/g" /etc/openerp-web.cfg
+sed -i "s/#\?[[:space:]]*\(log.access_file.*\)/\1/g" /etc/openerp-web.cfg
+sed -i "s/#\?[[:space:]]*\(log.error_file.*\)/\1/g" /etc/openerp-web.cfg
+sed -i "s/#\?[[:space:]]*\(log.error_file.*\)/\1/g" /etc/openerp-web.cfg
 
 #~ Choose between development and production server
 while [[ ! $server_type =~ ^[DdPp]$ ]]; do
@@ -359,23 +361,23 @@ while [[ ! $server_type =~ ^[DdPp]$ ]]; do
 done
 if [[ "$server_type" =~ ^[Dd]$ ]]; then
 	echo "Configuring as development server."
-	sed -i "s/#\?\(server\.environment.*\)/server.environment = 'development'/g" /etc/openerp-web.cfg
+	sed -i "s/#\?[[:space:]]*\(server\.environment.*\)/server.environment = 'development'/g" /etc/openerp-web.cfg
 elif
 	echo "Configuring as production server."
-	sed -i "s/#\?\(server\.environment.*\)/server.environment = 'production'/g" /etc/openerp-web.cfg
+	sed -i "s/#\?[[:space:]]*\(server\.environment.*\)/server.environment = 'production'/g" /etc/openerp-web.cfg
 fi
 
 #~ Activate proxy tools
-sed -i "s/#\?\(tools\.proxy\.on.*\)/tools.proxy.on = True/g" /etc/openerp-web.cfg
+sed -i "s/#\?[[:space:]]*\(tools\.proxy\.on.*\)/tools.proxy.on = True/g" /etc/openerp-web.cfg
 
 #~ Sets dblist.filter to EXACT
-sed -i "s/#\?\(dblist\.filter.*\)/dblist.filter = 'EXACT'/g" /etc/openerp-web.cfg
+sed -i "s/#\?[[:space:]]*\(dblist\.filter.*\)/dblist.filter = 'EXACT'/g" /etc/openerp-web.cfg
 
 #~ Sets dbbutton.visible to False
-sed -i "s/#\?\(dbbutton\.visible.*\)/dbbutton.visible = False/g" /etc/openerp-web.cfg
+sed -i "s/#\?[[:space:]]*\(dbbutton\.visible.*\)/dbbutton.visible = False/g" /etc/openerp-web.cfg
 
 #~ Adds ClearCorp logo
-sed -i "s/#\?\(company.url.*\)/company.url = \'http:\/\/www.clearcorp.co.cr\'/g" /etc/openerp-web.cfg
+sed -i "s/#\?[[:space:]]*\(company.url.*\)/company.url = \'http:\/\/www.clearcorp.co.cr\'/g" /etc/openerp-web.cfg
 cd $install_path/lib/$python_rel/dist-packages/openerp_web*.egg/openerp/static/images/
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/company_logo.png .
 cd -
@@ -440,7 +442,13 @@ echo "Starting openerp-server and openerp-web services"
 /etc/init.d/openerp-server start
 /etc/init.d/openerp-web start
 
-#~ TODO: Add phppgadmin
-#~ echo "Installing Postgre Web Administrator (phppgadmin)"
-#~ apt-get install phppgadmin
-#~ exit 0
+#~ Install phppgadmin
+echo "Installing PostgreSQL Web administration interface (phppgadmin)"
+apt-get -y install phppgadmin
+sed -i "s/#\?[[:space:]]*\(deny from all.*\)/# deny from all/g" /etc/phppgadmin/apache.conf
+sed -i "s/[[:space:]]*allow from \(.*\)/# allow from \1/g" /etc/phppgadmin/apache.conf
+sed -i "s/#\?[[:space:]]*\(allow from all.*\)/allow from all/g" /etc/phppgadmin/apache.conf
+sed -i "s/#\?[[:space:]]*\(allow from all.*\)/allow from all/g" /etc/phppgadmin/apache.conf
+/etc/init.d/apache2 restart
+
+exit 0
