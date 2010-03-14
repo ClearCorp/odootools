@@ -13,9 +13,10 @@
 ### END INIT INFO
 
 SERVERNAME=[NAME]
+BASE_PATH=[PATH]
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin
-DAEMON=/usr/local/bin/openerp-server-${SERVERNAME}
+DAEMON=${BASE_PATH}/bin/openerp-server-${SERVERNAME}
 NAME=openerp-server-${SERVERNAME}
 DESC=openerp-server-${SERVERNAME}
 USER=openerp

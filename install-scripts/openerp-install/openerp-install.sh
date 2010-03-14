@@ -18,10 +18,10 @@
 #       MA 02110-1301, USA.
 #!/bin/bash
 
-LIBBASH_CCORP_DIR="/usr/local/share/libbash-ccorp"
-
-#~ Go to libbash-ccorp directory
-cd $LIBBASH_CCORP_DIR
+if [[ ! -d $LIBBASH_CCORP_DIR ]]; then
+	echo "libbash-ccorp not installed."
+	exit 1
+fi
 
 #~ Libraries import
 . $LIBBASH_CCORP_DIR/main-lib/checkRoot.sh
@@ -31,50 +31,64 @@ cd $LIBBASH_CCORP_DIR
 checkRoot
 
 # Print title
-echo "OpenERP installation script."
+echo "OpenERP installation script"
+echo "---------------------------"
 echo ""
 
 # Set distribution
 dist=""
 getDist dist
+echo "Distribution: $dist"
+echo ""
 
 # Sets vars corresponding to the distro
-if [[ $dist == "hardy" ]]; then
-	# Ubuntu 8.04, python 2.5
-	posgresql_rel=8.3
-	python_rel=python2.5
-	ubuntu_rel=8.04
-	install_path=/usr
-	addons_path=$install_path/lib/$python_rel/site-packages/openerp-server/addons/
-elif [[ $dist == "karmic" ]]; then
+if [[ $dist == "karmic" ]]; then
 	# Ubuntu 9.10, python 2.6
 	posgresql_rel=8.4
 	python_rel=python2.6
 	ubuntu_rel=9.10
-	install_path=/usr/local
-	addons_path=$install_path/lib/$python_rel/dist-packages/openerp-server/addons/
+	base_path=/usr/local
+	install_path=$base_path/lib/$python_rel/dist-packages/openerp-server-skeleton
+	install_path_web=$base_path/lib/$python_rel/dist-packages
+	addons_path=$install_path/addons/
+	sources_path=$base_path/src
 else
-	# Check that the script is run on Ubuntu Hardy or Ubuntu Karmic
-	echo "This program must be executed on Ubuntu 8.04.3 LTS or Ubuntu 9.10 (Desktop or Server)"
+	# Only Karmic supported for now
+	echo "This program must be executed on Ubuntu Karmic 9.10 (Desktop or Server)"
 	exit 1
 fi
 
 # Run the Ubuntu preparation script.
 while [[ ! $run_preparation_script =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to run the Ubuntu preparation script (recommended if not done) (y/N)? " -n 1 run_preparation_script
+	read -p "Do you want to run ccorp-ubuntu-server-install script (recommended if not already done) (y/N)? " -n 1 run_preparation_script
 	if [[ $run_preparation_script == "" ]]; then
 		run_preparation_script="n"
 	fi
 	echo ""
 done
 if [[ $run_preparation_script =~ ^[Yy]$ ]]; then
-        echo ""
-	ubuntu-server-install/ubuntu-server-install.sh
+	echo ""
+	ccorp-ubuntu-server-install
 fi
 
 
 # Initial questions
 ####################
+
+#~ Choose between development and production server
+while [[ ! $server_type =~ ^[DdPp]$ ]]; do
+	read -p "Is this a development or production server (D/p)? " -n 1 server_type
+	if [[ $server_type == "" ]]; then
+		server_type="d"
+	fi
+	echo ""
+done
+if [[ $server_type =~ ^[Pp]$ ]]; then
+	echo "This is a production server"
+	branch="s"
+	install_extra_addons="n"
+	install_magentoerpconnect="n"
+fi
 
 #Choose the branch to install
 while [[ ! $branch =~ ^[SsTt]$ ]]; do
@@ -171,33 +185,34 @@ fi
 #Preparing installation
 #######################
 
-echo "Preparing installation."
+echo "Preparing installation"
+echo "----------------------"
 
 #Add openerp user
-echo "Adding openerp user."
+echo "Adding openerp user..."
 adduser --quiet --system openerp
 echo ""
 
 # Update the system.
-echo "Updating the system."
-apt-get update
-apt-get -y upgrade
+echo "Updating the system..."
+apt-get -q update
+apt-get -qy upgrade
 echo ""
 
 # Install the required python libraries for openerp-server.
-echo "Installing the required python libraries for openerp-server."
-apt-get -y install python python-psycopg2 python-reportlab python-egenix-mxdatetime python-tz python-pychart python-pydot python-lxml python-libxslt1 python-vobject python-imaging python-dev build-essential python-setuptools python-profiler
+echo "Installing the required python libraries for openerp-server..."
+apt-get -qy install python python-psycopg2 python-reportlab python-egenix-mxdatetime python-tz python-pychart python-pydot python-lxml python-libxslt1 python-vobject python-imaging python-dev build-essential python-setuptools python-profiler
 echo ""
 
 # Install bazaar.
-echo "Installing bazaar."
-apt-get -y install bzr
+echo "Installing bazaar..."
+apt-get -qy install bzr
 bzr whoami "ClearCorp S.A. <info@clearcorp.co.cr>"
 echo ""
 
 # Install postgresql
 echo "Installing postgresql."
-apt-get -y install postgresql
+apt-get -qy install postgresql
 echo ""
 
 echo ""
@@ -228,7 +243,7 @@ if [[ $create_pguser =~ ^[Yy]$ ]]; then
 fi
 
 # Change postgres user password
-echo "Changing postgres user password on request."
+echo "Changing postgres user password on request..."
 if [[ $set_postgres_admin_passwd =~ ^[Yy]$ ]]; then
 	echo "postgres:$postgres_admin_passwd" | chpasswd
 	sudo -u postgres psql template1 -U postgres -c "alter user postgres with password '$postgres_admin_passwd'"
@@ -238,36 +253,32 @@ fi
 # Downloading OpenERP
 #####################
 
-echo "Downloading OpenERP."
+echo "Downloading OpenERP"
+echo "-------------------"
 echo ""
 
-cd /usr/local/src
+cd $sources_path
 
 # Download openerp-server latest stable/trunk release.
-echo "Downloading openerp-server latest stable/trunk release."
+echo "Downloading openerp-server latest stable/trunk release..."
 bzr checkout --lightweight lp:openobject-server/$branch openerp-server
 echo ""
 
-# Download openerp-client-web latest stable release.
-echo "Downloading openerp-client-web latest stable release."
-bzr checkout --lightweight lp:openobject-client-web/$branch openerp-web
-echo ""
-
 # Download openerp addons latest stable/trunk branch.
-echo "Downloading openerp addons latest stable/trunk branch."
+echo "Downloading openerp addons latest stable/trunk branch..."
 bzr checkout --lightweight lp:openobject-addons/$branch addons
 echo ""
 
 # Download extra addons
 if [[ $install_extra_addons =~ ^[Yy]$ ]]; then
-	echo "Downloading extra addons"
+	echo "Downloading extra addons..."
 	bzr checkout --lightweight lp:openobject-addons/extra-$branch extra-addons
 	echo ""
 fi
 
 # Download magentoerpconnect
 if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then
-	echo "Downloading magentoerpconnect."
+	echo "Downloading magentoerpconnect..."
 	bzr checkout --lightweight lp:magentoerpconnect magentoerpconnect
 	echo ""
 fi
@@ -276,120 +287,83 @@ fi
 # Install OpenERP
 #################
 
-echo "Installing OpenERP."
+echo "Installing OpenERP"
+echo "------------------"
 echo ""
 
-cd /usr/local/src
+cd $sources_path
 
 # Install OpenERP server
-echo "Installing OpenERP Server."
+echo "Installing OpenERP Server..."
 cd openerp-server
-#~ Workaround for installation bug
-python setup.py build
-rsync -a bin/ build/lib.*/openerp-server/
-python setup.py install
-cd ..
 
-# Install OpenERP Web client
-echo "Installing OpenERP Web client."
-cd openerp-web
-easy_install -U openerp-web
-cd ..
+#~ Make skeleton installation
+mkdir -p $install_path
+cp -a bin/* $install_path/
+
+#~ Copy documentation
+mkdir -p $base_path/share/doc/openerp-server
+cp -a doc/* $base_path/share/doc/openerp-server/
+
+#~ Install man pages
+mkdir -p $base_path/share/man/man1
+mkdir -p $base_path/share/man/man5
+cp -a man/*.1 $base_path/share/man/man1/
+cp -a man/*.5 $base_path/share/man/man5/
+
+#~ Copy bin script skeleton to etc
+mkdir -p /etc/openerp/server/
+cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-bin-skeleton /etc/openerp/server/bin-skeleton
+
+# Change permissions
+chown -R openerp:root $install_path
+chmod 755 $addons_path
+
+# OpenERP Server init and config skeletons
+cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-init-skeleton /etc/openerp/server/init-skeleton
+sed -i "s/\[PATH\]/${base_path}/g" /etc/openerp/server/init-skeleton
+cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server.conf-skeleton /etc/openerp/server/
 
 # Install OpenERP addons
-echo "Installing OpenERP addons."
+echo "Installing OpenERP addons..."
 mkdir -p $addons_path
-cp -r addons/* $addons_path
+cp -a addons/* $addons_path
 
 # Install OpenERP extra addons
 if [[ "$install_extra_addons" =~ ^[Yy]$ ]]; then
-	echo "Installing OpenERP extra addons."
-	cp -r extra-addons/* $addons_path
+	echo "Installing OpenERP extra addons..."
+	cp -a extra-addons/* $addons_path
 fi
 
 # Install OpenERP magentoerpconnect
 if [[ "$install_magentoerpconnect" =~ ^[Yy]$ ]]; then
-	echo "Installing OpenERP magentoerpconnect."
-	cp -r magentoerpconnect $addons_path
+	echo "Installing OpenERP magentoerpconnect..."
+	cp -a magentoerpconnect $addons_path
 fi
 
-# Change permissions
-echo "Changing permissions."
-chown -R openerp.root $addons_path
-chmod 755 $addons_path
-# Permissions for Document Management Module: http://openobject.com/forum/topic13021.html?highlight=ftpchown openerp
-chown openerp $install_path/lib/$python_rel/site-packages/openerp-server
-# Log files
-mkdir -p /var/log/openerp
-touch /var/log/openerp/openerp.log
-chown -R openerp.root /var/log/openerp/
-mkdir -p /var/log/openerp-web
-touch /var/log/openerp-web/access.log
-touch /var/log/openerp-web/error.log
-chown -R openerp.root /var/log/openerp-web/
+cd $sources_path
 
-# OpenERP Server init and config
-echo "Making OpenERP Server init script"
-cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-server_init.sh /etc/init.d/openerp-server
-chmod +x /etc/init.d/openerp-server
-sed -i "s#/usr/bin/openerp-server#$install_path/bin/openerp-server#g" /etc/init.d/openerp-server
-echo ""
 
-echo "Making OpenERP Server config script"
-cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-server.conf /etc/openerp-server.conf
-chmod 644 /etc/openerp-server.conf
-sed -i "s/db_password =/db_password = $admin_passwd/g" /etc/openerp-server.conf
-echo ""
-update-rc.d openerp-server start 80 2 3 4 5 . stop 20 0 1 6 .
+# Install OpenERP Web client
+echo "Installing OpenERP Web client..."
+easy_install -U -d $install_path_web openerp-web
+ln -s $install_path_web/openerp_web* $install_path_web/openerp-web
 
-# OpenERP Web Client init and config
-echo "Making OpenERP Web Client config file"
-eval cp "$install_path/lib/$python_rel/dist-packages/openerp_web*.egg/config/openerp-web.cfg" /etc/openerp-web.cfg
+# OpenERP Web Client init and config skeletons
+cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client-init-skeleton /etc/openerp/web-client/init-skeleton
+sed -i "s/\[PATH\]/${base_path}/g" /etc/openerp/web-client/init-skeleton
+cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client.conf-skeleton /etc/openerp/web-client/
 
-#~ Activate log files
-sed -i "s/#\?[[:space:]]*\(log.access_file.*\)/\1/g" /etc/openerp-web.cfg
-sed -i "s/#\?[[:space:]]*\(log.error_file.*\)/\1/g" /etc/openerp-web.cfg
-sed -i "s/#\?[[:space:]]*\(log.error_file.*\)/\1/g" /etc/openerp-web.cfg
-
-#~ Choose between development and production server
-while [[ ! $server_type =~ ^[DdPp]$ ]]; do
-	read -p "Is this a development or production server (D/p)? " -n 1 server_type
-	if [[ $server_type == "" ]]; then
-		server_type="d"
-	fi
-	echo ""
-done
+#~ Sets server type
 if [[ "$server_type" =~ ^[Dd]$ ]]; then
-	echo "Configuring as development server."
-	sed -i "s/#\?[[:space:]]*\(server\.environment.*\)/server.environment = 'development'/g" /etc/openerp-web.cfg
+	sed -i "s/\[TYPE\]/development/g" /etc/openerp/web-client/init-skeleton
 elif
-	echo "Configuring as production server."
-	sed -i "s/#\?[[:space:]]*\(server\.environment.*\)/server.environment = 'production'/g" /etc/openerp-web.cfg
+	sed -i "s/\[TYPE\]/production/g" /etc/openerp/web-client/init-skeleton
 fi
-
-#~ Activate proxy tools
-sed -i "s/#\?[[:space:]]*\(tools\.proxy\.on.*\)/tools.proxy.on = True/g" /etc/openerp-web.cfg
-
-#~ Sets dblist.filter to EXACT
-sed -i "s/#\?[[:space:]]*\(dblist\.filter.*\)/dblist.filter = 'EXACT'/g" /etc/openerp-web.cfg
-
-#~ Sets dbbutton.visible to False
-sed -i "s/#\?[[:space:]]*\(dbbutton\.visible.*\)/dbbutton.visible = False/g" /etc/openerp-web.cfg
 
 #~ Adds ClearCorp logo
-sed -i "s/#\?[[:space:]]*\(company.url.*\)/company.url = \'http:\/\/www.clearcorp.co.cr\'/g" /etc/openerp-web.cfg
-cd $install_path/lib/$python_rel/dist-packages/openerp_web*.egg/openerp/static/images/
-cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/company_logo.png .
-cd -
+ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/company_logo.png $install_path_web/openerp-web-skeleton/openerp/static/images/company_logo.png
 
-chown root.root /etc/openerp-web.cfg
-chmod 644 /etc/openerp-web.cfg
-
-echo "Making OpenERP Web Client init file"
-eval cp "$install_path/lib/$python_rel/dist-packages/openerp_web*.egg/scripts/openerp-web" /etc/init.d/openerp-web
-sed -i "s#/usr/bin/openerp-web#$install_path/bin/openerp-web#g" /etc/init.d/openerp-web
-chmod +x /etc/init.d/openerp-web
-update-rc.d openerp-web start 81 2 3 4 5 . stop 19 0 1 6 .
 
 ## Apache installation
 while [[ ! $install_apache =~ ^[YyNn]$ ]]; do
@@ -401,24 +375,17 @@ while [[ ! $install_apache =~ ^[YyNn]$ ]]; do
 done
 
 if [[ "$install_apache" =~ ^[Yy]$ ]]; then
-	echo "Installing Apache."
-	cp -r extra-addons/* $addons_path
-	apt-get -y install apache2
+	echo "Installing Apache..."
+	apt-get -qy install apache2
 
-	echo "Making SSL certificate for Apache";
+	echo "Making SSL certificate for Apache...";
 	make-ssl-cert generate-default-snakeoil --force-overwrite
 	# Snakeoil certificate files:
 	# /usr/share/ssl-cert/ssleay.cnf
 	# /etc/ssl/certs/ssl-cert-snakeoil.pem
 	# /etc/ssl/private/ssl-cert-snakeoil.key
-	
-	echo "Configuring site config files."
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-erp /etc/apache2/sites-available/erp
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-erp-ssl /etc/apache2/sites-available/erp-ssl
-	sed -i "s/ServerAdmin webmaster@localhost/ServerAdmin support@clearnet.co.cr\n\nInclude \/etc\/apache2\/sites-available\/erp/g" /etc/apache2/sites-available/default
-	sed -i "s/ServerAdmin webmaster@localhost/ServerAdmin support@clearnet.co.cr\n\nInclude \/etc\/apache2\/sites-available\/erp-ssl/g" /etc/apache2/sites-available/default-ssl
 
-	echo "Enabling Apache Modules"
+	echo "Enabling Apache Modules..."
 	# Apache Modules:
 	sudo a2enmod ssl
 	sudo a2enmod rewrite
@@ -429,22 +396,26 @@ if [[ "$install_apache" =~ ^[Yy]$ ]]; then
 	sudo a2enmod proxy_connect
 	sudo a2enmod proxy_ftp
 	sudo a2enmod headers
-	sudo a2ensite default
-	sudo a2ensite default-ssl
+	sudo a2dissite default
+	sudo a2dissite default-ssl
 	
-	echo "Restarting Apache"
+	echo "Configuring site config files..."
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-erp /etc/apache2/sites-available/erp
+	mkdir -p /etc/openerp/apache2
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-ssl-skeleton /etc/openerp/apache2/ssl-skeleton
+	sed -i "s/ServerAdmin webmaster@localhost/ServerAdmin support@clearnet.co.cr\n\n\tInclude \/etc\/apache2\/sites-available\/erp/g" /etc/apache2/sites-available/default
+	sed -i "s/ServerAdmin webmaster@localhost/ServerAdmin support@clearnet.co.cr\n\n\tInclude \/etc\/openerp\/apache2\/rewrites/g" /etc/apache2/sites-available/default-ssl
+
+	
+	echo "Restarting Apache..."
 	/etc/init.d/apache2 restart
 fi
 
 #~ TODO: Add shorewall support in ubuntu-server-install, and add rules here
 
-echo "Starting openerp-server and openerp-web services"
-/etc/init.d/openerp-server start
-/etc/init.d/openerp-web start
-
 #~ Install phppgadmin
-echo "Installing PostgreSQL Web administration interface (phppgadmin)"
-apt-get -y install phppgadmin
+echo "Installing PostgreSQL Web administration interface (phppgadmin)..."
+apt-get -qy install phppgadmin
 sed -i "s/#\?[[:space:]]*\(deny from all.*\)/# deny from all/g" /etc/phppgadmin/apache.conf
 sed -i "s/[[:space:]]*allow from \(.*\)/# allow from \1/g" /etc/phppgadmin/apache.conf
 sed -i "s/#\?[[:space:]]*\(allow from all.*\)/allow from all/g" /etc/phppgadmin/apache.conf
