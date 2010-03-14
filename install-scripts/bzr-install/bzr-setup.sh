@@ -21,6 +21,8 @@ function setSymlinks {
 	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-install.sh /usr/local/sbin/ccorp-openerp-install
 	rm /usr/local/sbin/ccorp-ubuntu-server-install
 	ln -s $LIBBASH_CCORP_DIR/install-scripts/ubuntu-server-install/ubuntu-server-install.sh /usr/local/sbin/ccorp-ubuntu-server-install
+	rm /usr/local/sbin/ccorp-bzr-make
+	ln -s $LIBBASH_CCORP_DIR/install-scripts/bzr-install/bzr-make.sh /usr/local/sbin/ccorp-bzr-make
 }
 
 echo "Bzr and libbash-ccorp installation script"
