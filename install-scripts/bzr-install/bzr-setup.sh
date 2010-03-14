@@ -9,9 +9,9 @@
 LIBBASH_CCORP_DIR="/usr/local/share/libbash-ccorp"
 
 # Libraries import
-. $LIBBASH_CCORP_DIR/main-lib/checkRoot.sh
-. $LIBBASH_CCORP_DIR/main-lib/getDist.sh
-. $LIBBASH_CCORP_DIR/main-lib/setSources.sh
+. main-lib/checkRoot.sh
+. main-lib/getDist.sh
+. main-lib/setSources.sh
 
 # Check user is root
 checkRoot
