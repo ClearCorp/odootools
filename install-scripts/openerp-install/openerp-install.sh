@@ -195,24 +195,24 @@ echo ""
 
 # Update the system.
 echo "Updating the system..."
-apt-get -q update
-apt-get -qy upgrade
+apt-get -qq update
+apt-get -qqy upgrade
 echo ""
 
 # Install the required python libraries for openerp-server.
 echo "Installing the required python libraries for openerp-server..."
-apt-get -qy install python python-psycopg2 python-reportlab python-egenix-mxdatetime python-tz python-pychart python-pydot python-lxml python-libxslt1 python-vobject python-imaging python-dev build-essential python-setuptools python-profiler
+apt-get -qqy install python python-psycopg2 python-reportlab python-egenix-mxdatetime python-tz python-pychart python-pydot python-lxml python-libxslt1 python-vobject python-imaging python-dev build-essential python-setuptools python-profiler
 echo ""
 
 # Install bazaar.
 echo "Installing bazaar..."
-apt-get -qy install bzr
+apt-get -qqy install bzr
 bzr whoami "ClearCorp S.A. <info@clearcorp.co.cr>"
 echo ""
 
 # Install postgresql
 echo "Installing postgresql."
-apt-get -qy install postgresql
+apt-get -qqy install postgresql
 echo ""
 
 echo ""
@@ -321,12 +321,13 @@ chmod 755 $addons_path
 
 # OpenERP Server init and config skeletons
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-init-skeleton /etc/openerp/server/init-skeleton
-sed -i "s/\[PATH\]/${base_path}/g" /etc/openerp/server/init-skeleton
+sed -i "s/\[PATH\]/$base_path/g" /etc/openerp/server/init-skeleton
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server.conf-skeleton /etc/openerp/server/
 
 # Install OpenERP addons
 echo "Installing OpenERP addons..."
 mkdir -p $addons_path
+cd $sources_path
 cp -a addons/* $addons_path
 
 # Install OpenERP extra addons
@@ -350,6 +351,7 @@ easy_install -U -d $install_path_web openerp-web
 ln -s $install_path_web/openerp_web* $install_path_web/openerp-web
 
 # OpenERP Web Client init and config skeletons
+mkdir -p /etc/openerp/web-client
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client-init-skeleton /etc/openerp/web-client/init-skeleton
 sed -i "s/\[PATH\]/${base_path}/g" /etc/openerp/web-client/init-skeleton
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client.conf-skeleton /etc/openerp/web-client/
