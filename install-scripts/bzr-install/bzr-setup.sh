@@ -17,10 +17,10 @@ LIBBASH_CCORP_DIR="/usr/local/share/libbash-ccorp"
 checkRoot
 
 function setSymlinks {
-	rm /usr/local/sbin/openerp-install
-	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-install.sh /usr/local/sbin/openerp-install
-	rm /usr/local/sbin/ubuntu-server-install
-	ln -s $LIBBASH_CCORP_DIR/install-scripts/ubuntu-server-install/ubuntu-server-install.sh /usr/local/sbin/ubuntu-server-install
+	rm /usr/local/sbin/ccorp-openerp-install
+	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-install.sh /usr/local/sbin/ccorp-openerp-install
+	rm /usr/local/sbin/ccorp-ubuntu-server-install
+	ln -s $LIBBASH_CCORP_DIR/install-scripts/ubuntu-server-install/ubuntu-server-install.sh /usr/local/sbin/ccorp-ubuntu-server-install
 }
 
 echo "Bzr and libbash-ccorp installation script"
@@ -60,6 +60,11 @@ done
 if [[ $REPLY =~ ^[Yy]$ ]]; then
 	echo "Installing libbash-ccorp..."
 	echo ""
+	if [ $(cat /etc/environment | grep -c LIBBASH_CCORP_DIR) == 0 ]; then
+		echo 'LIBBASH_CCORP_DIR="/usr/local/share/libbash-ccorp"' >> /etc/environment
+	else
+		sed -i "s#LIBBASH_CCORP_DIR.*#LIBBASH_CCORP_DIR=\"/usr/local/share/libbash-ccorp\"#g" /etc/environment
+	fi
 	if [ -d /usr/local/share/libbash-ccorp ]; then
 		echo "bzr repository: /usr/local/share/libbash-ccorp already exists."
 		echo "Updating..."
