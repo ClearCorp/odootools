@@ -5,9 +5,7 @@
 #				Its function is to prepare a tar archive with the latest
 #				version of bzr-setup and all needed files in it.
 
-LIBBASH_CCORP_DIR="/usr/local/share/libbash-ccorp"
-
-bzr update $libbash_ccorp_path
+bzr update $LIBBASH_CCORP_DIR
 
 cd /var/www
 rm bzr-install.tar.gz
