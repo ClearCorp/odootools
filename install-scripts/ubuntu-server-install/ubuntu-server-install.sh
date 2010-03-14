@@ -1,15 +1,15 @@
 #!/bin/bash
 
-LIBBASH_CCORP_DIR="/usr/local/share/libbash-ccorp"
-
-#~ Go to libbash-ccorp directory
-cd $LIBBASH_CCORP_DIR
+if [[ ! -d $LIBBASH_CCORP_DIR ]]; then
+	echo "libbash-ccorp not installed."
+	exit 1
+fi
 
 #import functions
-. $LIBBASH_CCORP_DIRmain-lib/checkRoot.sh
-. $LIBBASH_CCORP_DIRmain-lib/setSources.sh
-. $LIBBASH_CCORP_DIRmain-lib/regenSSHKeys.sh
-. $LIBBASH_CCORP_DIRmain-lib/getDist.sh
+. $LIBBASH_CCORP_DIR/main-lib/checkRoot.sh
+. $LIBBASH_CCORP_DIR/main-lib/setSources.sh
+. $LIBBASH_CCORP_DIR/main-lib/regenSSHKeys.sh
+. $LIBBASH_CCORP_DIR/main-lib/getDist.sh
 
 # Check user is root
 checkRoot
