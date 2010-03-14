@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ### BEGIN INIT INFO
-# Provides:		openerp-server
+# Provides:		openerp-server-[NAME]
 # Required-Start:	$syslog
 # Required-Stop:	$syslog
 # Should-Start:		$network
@@ -12,11 +12,15 @@
 # Description:		OpenERP is a complete ERP and CRM software.
 ### END INIT INFO
 
+SERVERNAME=[NAME]
+
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin
-DAEMON=/usr/bin/openerp-server
-NAME=openerp-server
-DESC=openerp-server
+DAEMON=/usr/local/bin/openerp-server-${SERVERNAME}
+NAME=openerp-server-${SERVERNAME}
+DESC=openerp-server-${SERVERNAME}
 USER=openerp
+PIDFILE=/var/run/${NAME}.pid
+OPTIONS="--config=/etc/openerp/server/${SERVERNAME}.conf"
 
 test -x ${DAEMON} || exit 0
 
@@ -26,9 +30,8 @@ case "${1}" in
 	start)
 		echo -n "Starting ${DESC}: "
 
-		start-stop-daemon --start --quiet --pidfile /var/run/${NAME}.pid \
-			--chuid ${USER} --background --make-pidfile \
-			--exec ${DAEMON} -- --config=/etc/openerp-server.conf
+		start-stop-daemon --start --quiet --pidfile ${PIDFILE} \
+			--chuid ${USER} --background --exec ${DAEMON} -- ${OPTIONS}
 
 		echo "${NAME}."
 		;;
@@ -36,7 +39,7 @@ case "${1}" in
 	stop)
 		echo -n "Stopping ${DESC}: "
 
-		start-stop-daemon --stop --quiet --pidfile /var/run/${NAME}.pid \
+		start-stop-daemon --stop --quiet --pidfile ${PIDFILE} \
 			--oknodo
 
 		echo "${NAME}."
@@ -44,18 +47,9 @@ case "${1}" in
 
 	restart|force-reload)
 		echo -n "Restarting ${DESC}: "
-
-		start-stop-daemon --stop --quiet --pidfile /var/run/${NAME}.pid \
-			--oknodo
-
+		do stop
 		sleep 1
-
-		start-stop-daemon --start --quiet --pidfile /var/run/${NAME}.pid \
-			--chuid ${USER} --background --make-pidfile \
-			--exec ${DAEMON} -- --config=/etc/openerp-server.conf
-
-		echo "${NAME}."
-		;;
+		do start
 
 	*)
 		N=/etc/init.d/${NAME}
