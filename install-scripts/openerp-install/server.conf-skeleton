@@ -14,7 +14,7 @@
 #~ softpath = none
 
 #~ [logging]
-#~ output = /var/log/openerp/full.log
+#~ output = /var/log/openerp/[NAME]/full.log
 #~ logger =
 #~ verbose = True
 #~ level = debug
@@ -60,13 +60,13 @@
 
 [options]
 # Enable the debugging mode (default False).
-verbose = True 
+verbose = True
 
 # The file where the server pid will be stored (default False).
-#~ pidfile = /var/run/openerp.pid
+pidfile = /var/run/openerp-server-[NAME].pid
 
 # The file where the server log will be stored (default False).
-logfile = /var/log/openerp/openerp.log
+logfile = /var/log/openerp/[NAME]/openerp.log
 
 # The IP address on which the server will bind.
 # If empty, it will bind on all interfaces (default empty).
@@ -120,27 +120,27 @@ db_user = openerp
 #price_acuracy = 
 
 # This is the password that allows database operations:
-admin_passwd = nosecual
+admin_passwd = [ADMIN_PASSWD]
 
 
-without_demo = True
-netrpc = True
-xmlrpc = True
-root_path = None
-soap = False
-demo = {}
-addons_path = None
-reportgz = False
+#~ without_demo = True
+#~ netrpc = True
+#~ xmlrpc = True
+#~ root_path = None
+#~ soap = False
+#~ demo = {}
+#~ addons_path = None
+#~ reportgz = False
 
 #~ translate_in:	File used to translate Open ERP to your language
 #~ translate_out:	File used to export the language Open ERP use
 #~ language:	Use this language as the language of the server. This must be specified as an ISO country code, as specified by the W3C.
-language = es_ES
+#~ language = es_ES
 #~ init:	init a module (use “all” for all modules)
-#init = {}
+#~ init = {}
 #~ update:	update a module (use “all” for all modules)
-#update = {}
+#~ update = {}
 #~ upgrade:	Upgrade/install/uninstall modules
-#upgrade = {}
+#~ upgrade = {}
 #~ translate_modules: Specify modules to export. Use in combination with –i18n-export
 #~ translate_modules = ['all']
