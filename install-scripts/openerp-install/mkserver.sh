@@ -136,7 +136,7 @@ sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/web-client/$name.conf
 sed -i "s#\\[PORT\\]#22$port#g" /etc/openerp/web-client/$name.conf
 sed -i "s#\\[SERVER_PORT\\]#21$port#g" /etc/openerp/web-client/$name.conf
 if [[ $type != "develpment" ]]; then
-	sed -i "s/#\?[[:space:]]*\(dbbutton\.visible.*\)/dbbutton.visible = False/g" /etc/phppgadmin/apache.conf
+	sed -i "s/#\?[[:space:]]*\(dbbutton\.visible.*\)/dbbutton.visible = False/g" /etc/openerp/web-client/$name.conf
 fi
 sed -i "s#\\[TYPE\\]#$type#g" /etc/openerp/web-client/$name.conf
 
@@ -149,6 +149,7 @@ log_echo "Creating apache rewrite file..."
 cp -a /etc/openerp/apache2/ssl-skeleton /etc/openerp/apache2/rewrites/$name
 sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/apache2/rewrites/$name
 sed -i "s#\\[PORT\\]#22$port#g" /etc/openerp/apache2/rewrites/$name
+service apache2 reload
 
 log_echo "Creating pid dir..."
 mkdir -p /var/run/openerp/$name

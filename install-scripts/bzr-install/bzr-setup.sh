@@ -19,6 +19,8 @@ checkRoot
 function setSymlinks {
 	rm /usr/local/sbin/ccorp-openerp-install
 	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-install.sh /usr/local/sbin/ccorp-openerp-install
+	rm /usr/local/sbin/ccorp-openerp-mkserver
+	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/mkserver.sh /usr/local/sbin/ccorp-openerp-mkserver
 	rm /usr/local/sbin/ccorp-ubuntu-server-install
 	ln -s $LIBBASH_CCORP_DIR/install-scripts/ubuntu-server-install/ubuntu-server-install.sh /usr/local/sbin/ccorp-ubuntu-server-install
 	rm /usr/local/sbin/ccorp-bzr-make
