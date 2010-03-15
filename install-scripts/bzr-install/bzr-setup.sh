@@ -23,6 +23,11 @@ function setSymlinks {
 	ln -s $LIBBASH_CCORP_DIR/install-scripts/ubuntu-server-install/ubuntu-server-install.sh /usr/local/sbin/ccorp-ubuntu-server-install
 	rm /usr/local/sbin/ccorp-bzr-make
 	ln -s $LIBBASH_CCORP_DIR/install-scripts/bzr-install/bzr-make.sh /usr/local/sbin/ccorp-bzr-make
+	
+	cat << "EOF" > /usr/local/sbin/ccorp-update
+#!/bin/bash
+bzr update $LIBBASH_CCORP_DIR
+EOF
 }
 
 echo "Bzr and libbash-ccorp installation script"
