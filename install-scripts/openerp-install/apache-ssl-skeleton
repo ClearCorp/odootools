@@ -6,4 +6,4 @@
 RewriteEngine On
 
 RewriteCond %{HTTP_HOST} ^[NAME]\..*
-RewriteRule ^/(.*)$ http://127.0.0.1:[WEB_CLIENT_PORT]/$1 [P,L,NC]
+RewriteRule ^/(.*)$ http://127.0.0.1:[PORT]/$1 [P,L,NC]

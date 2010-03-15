@@ -395,6 +395,8 @@ fi
 #~ Adds ClearCorp logo
 ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/company_logo.png $install_path_web/openerp-web-skeleton/openerp/static/images/company_logo.png
 
+#~ Adds bin symlink
+ln -s $install_path_web/openerp-web $base_path/bin/openerp-web
 
 ## Apache installation
 while [[ ! $install_apache =~ ^[YyNn]$ ]]; do

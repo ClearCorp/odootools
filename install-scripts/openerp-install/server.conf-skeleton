@@ -73,7 +73,7 @@ logfile = /var/log/openerp/[NAME]/openerp.log
 #interface = localhost
 interface = 
 # The TCP port on which the server will listen (default 8069).
-port = [PORT]
+port = [XMLPORT]
 
 # Enable debug mode (default False).
 debug_mode = True 
@@ -125,6 +125,7 @@ admin_passwd = [ADMIN_PASSWD]
 
 #~ without_demo = True
 #~ netrpc = True
+netport = [NETPORT]
 #~ xmlrpc = True
 #~ root_path = None
 #~ soap = False
