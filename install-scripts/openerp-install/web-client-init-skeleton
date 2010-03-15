@@ -20,12 +20,18 @@ DAEMON=${BASE_PATH}/bin/openerp-web
 NAME=openerp-web-${SERVERNAME}
 DESC=openerp-web-${SERVERNAME}
 USER=openerp
-PIDFILE=/var/run/openerp/${SERVERNAME}/web-client.pid
+PIDDIR=/var/run/openerp
+PIDFILE=${PIDDIR}/${SERVERNAME}/server.pid
 CONFIGFILE=/etc/openerp/web-client/${SERVERNAME}.conf
 DAEMON_OPTS="-c $CONFIGFILE"
 
 [ -x $DAEMON ] || exit 0
 [ -f $CONFIGFILE ] || exit 0
+
+if [ ! -d $PIDDIR/$SERVERNAME ]; then
+	mkdir -p $PIDDIR/$SERVERNAME
+	chown $USER:root -R $PIDDIR
+fi
 
 checkpid() {
 	[ -f $PIDFILE ] || return 1
