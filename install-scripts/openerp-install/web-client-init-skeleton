@@ -15,12 +15,12 @@
 SERVERNAME=[NAME]
 BASE_PATH=[PATH]
 
-PATH=/sbin:/bin:/usr/sbin:/usr/bin
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin
 DAEMON=${BASE_PATH}/bin/openerp-web
 NAME=openerp-web-${SERVERNAME}
 DESC=openerp-web-${SERVERNAME}
 USER=openerp
-PIDFILE=/var/run/${NAME}.pid
+PIDFILE=/var/run/openerp/${SERVERNAME}/web-client.pid
 CONFIGFILE=/etc/openerp/web-client/${SERVERNAME}.conf
 DAEMON_OPTS="-c $CONFIGFILE"
 

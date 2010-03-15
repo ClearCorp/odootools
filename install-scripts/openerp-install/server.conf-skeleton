@@ -63,7 +63,7 @@
 verbose = True
 
 # The file where the server pid will be stored (default False).
-pidfile = /var/run/openerp-server-[NAME].pid
+pidfile = /var/run/openerp/[NAME]/server.pid
 
 # The file where the server log will be stored (default False).
 logfile = /var/log/openerp/[NAME]/openerp.log
@@ -73,7 +73,7 @@ logfile = /var/log/openerp/[NAME]/openerp.log
 #interface = localhost
 interface = 
 # The TCP port on which the server will listen (default 8069).
-port = 8069
+port = [PORT]
 
 # Enable debug mode (default False).
 debug_mode = True 

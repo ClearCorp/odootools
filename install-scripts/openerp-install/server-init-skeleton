@@ -1,15 +1,15 @@
 #!/bin/sh
 
 ### BEGIN INIT INFO
-# Provides:		openerp-server-[NAME]
-# Required-Start:	$syslog
-# Required-Stop:	$syslog
-# Should-Start:		$network
-# Should-Stop:		$network
-# Default-Start:	2 3 4 5
-# Default-Stop:		0 1 6
-# Short-Description:	Enterprise Resource Management software
-# Description:		OpenERP is a complete ERP and CRM software.
+# Provides:				openerp-server-[NAME]
+# Required-Start:		$syslog
+# Required-Stop:		$syslog
+# Should-Start:			$network
+# Should-Stop:			$network
+# Default-Start:		2 3 4 5
+# Default-Stop:			0 1 6
+# Short-Description:	OpenERP - Enterprise Resource Management software
+# Description:			OpenERP is a complete ERP and CRM software.
 ### END INIT INFO
 
 SERVERNAME=[NAME]
@@ -20,41 +20,128 @@ DAEMON=${BASE_PATH}/bin/openerp-server-${SERVERNAME}
 NAME=openerp-server-${SERVERNAME}
 DESC=openerp-server-${SERVERNAME}
 USER=openerp
-PIDFILE=/var/run/${NAME}.pid
-OPTIONS="--config=/etc/openerp/server/${SERVERNAME}.conf"
+PIDFILE=/var/run/openerp/${SERVERNAME}/server.pid
+CONFIGFILE=/etc/openerp/server/${SERVERNAME}.conf
+DAEMON_OPTS="--config=$CONFIGFILE"
 
-test -x ${DAEMON} || exit 0
+[ -x $DAEMON ] || exit 0
+[ -f $CONFIGFILE ] || exit 0
 
-set -e
+checkpid() {
+	[ -f $PIDFILE ] || return 1
+	pid=`cat $PIDFILE`
+	[ -d /proc/$pid ] && return 0
+	return 1
+}
 
-case "${1}" in
-	start)
-		echo -n "Starting ${DESC}: "
+do_start() {
+	start-stop-daemon --start --quiet --pidfile $PIDFILE \
+		--chuid $USER  --background --exec $DAEMON -- $DAEMON_OPTS
 
-		start-stop-daemon --start --quiet --pidfile ${PIDFILE} \
-			--chuid ${USER} --background --exec ${DAEMON} -- ${OPTIONS}
+	RETVAL=$?
+	sleep 5         # wait for few seconds
 
-		echo "${NAME}."
-		;;
+	return $RETVAL
+}
 
-	stop)
-		echo -n "Stopping ${DESC}: "
+do_stop() {
+	start-stop-daemon --stop --quiet --pidfile $PIDFILE --oknodo
 
-		start-stop-daemon --stop --quiet --pidfile ${PIDFILE} \
-			--oknodo
+	RETVAL=$?
+	sleep 2         # wait for few seconds
+	rm -f $PIDFILE  # remove pidfile
 
-		echo "${NAME}."
-		;;
+	return $RETVAL
+}
 
-	restart|force-reload)
-		echo -n "Restarting ${DESC}: "
-		do stop
-		sleep 1
-		do start
+do_restart() {
+	do_stop
 
+	do_start
+
+	return $RETVAL
+}
+
+start_daemon() {
+
+	if [ -f $PIDFILE ]; then
+		echo "pidfile already exists: $PIDFILE"
+		exit 1
+	fi
+
+	echo -n "Starting $DESC: "
+
+	do_start
+
+	checkpid
+
+	if [ $? -eq 1 ]; then                
+		rm -f $PIDFILE
+		echo "failed."
+		exit 1
+	fi
+
+	echo "done."
+}
+
+stop_daemon() {
+
+	checkpid
+
+	if [ $? -eq 1 ]; then
+		exit 0
+	fi
+
+	echo -n "Stopping $DESC: "
+
+	do_stop
+
+	if [ $? -eq 1 ]; then
+		echo "failed."
+		exit 1
+	fi
+
+	echo "done."
+}
+
+restart_daemon() {
+
+	echo -n "Reloading $DESC: "
+
+	do_restart
+
+	checkpid
+
+	if [ $? -eq 1 ]; then                
+		rm -f $PIDFILE
+		echo "failed."
+		exit 1
+	fi
+
+	echo "done."
+}
+
+status_daemon() {
+
+	echo -n "Checking $DESC: "
+
+	checkpid
+
+	if [ $? -eq 1 ]; then
+		echo "stopped."
+	else
+		echo "running."
+	fi
+}
+
+case "$1" in
+	start) start_daemon ;;
+	stop) stop_daemon ;;
+	restart|force-reload) restart_daemon ;;
+	status) status_daemon ;;
 	*)
-		N=/etc/init.d/${NAME}
-		echo "Usage: ${NAME} {start|stop|restart|force-reload}" >&2
+		N=/etc/init.d/$NAME
+		echo "Usage: $N {start|stop|restart|force-reload|status}" >&2
 		exit 1
 		;;
 esac

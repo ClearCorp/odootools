@@ -1,3 +1,3 @@
 #!/bin/sh
-cd /usr/local/lib/python2.6/dist-packages/openerp-server-[SERVERNAME]
+cd /usr/local/lib/python2.6/dist-packages/openerp-server-[NAME]
 exec /usr/bin/python ./openerp-server.py $@

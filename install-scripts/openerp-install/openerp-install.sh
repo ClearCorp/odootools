@@ -102,12 +102,17 @@ while [[ ! $server_type =~ ^[DdPp]$ ]]; do
 	fi
 	log_echo ""
 done
+mkdir -p /etc/openerp
 if [[ $server_type =~ ^[Pp]$ ]]; then
 	log_echo "This is a production server"
+	echo "production" > /etc/openerp/type
 	branch="s"
 	install_extra_addons="n"
 	install_magentoerpconnect="n"
+else
+	echo "development" > /etc/openerp/type
 fi
+
 
 #Choose the branch to install
 while [[ ! $branch =~ ^[SsTt]$ ]]; do
@@ -362,6 +367,10 @@ if [[ "$install_magentoerpconnect" =~ ^[Yy]$ ]]; then
 	cp -a magentoerpconnect $addons_path
 fi
 
+#~ Make pid dir
+mkdir -p /var/run/openerp
+chown openerp:root /var/run/openerp
+
 cd $sources_path
 
 
@@ -418,8 +427,8 @@ if [[ "$install_apache" =~ ^[Yy]$ ]]; then
 	a2enmod proxy_connect
 	a2enmod proxy_ftp
 	a2enmod headers
-	a2densite default
-	a2densite default-ssl
+	a2ensite default
+	a2ensite default-ssl
 
 	log_echo "Configuring site config files..."
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-erp /etc/apache2/sites-available/erp
