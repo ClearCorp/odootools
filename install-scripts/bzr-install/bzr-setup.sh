@@ -28,6 +28,7 @@ function setSymlinks {
 #!/bin/bash
 bzr update $LIBBASH_CCORP_DIR
 EOF
+	chmod 755 /usr/local/sbin/ccorp-update
 }
 
 echo "Bzr and libbash-ccorp installation script"
