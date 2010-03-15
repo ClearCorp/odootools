@@ -109,6 +109,7 @@ cp -a /usr/local/lib/python2.6/dist-packages/openerp-server-skeleton /usr/local/
 log_echo "Creating openerp-server init script..."
 cp -a /etc/openerp/server/init-skeleton /etc/init.d/openerp-server-$name
 sed -i "s#\\[NAME\\]#$name#g" /etc/init.d/openerp-server-$name
+update-rc.d openerp-server-$name defaults >> $INSTALL_LOG_FILE
 
 log_echo "Creating openerp-server bin script..."
 cp -a /etc/openerp/server/bin-skeleton /usr/local/bin/openerp-server-$name
@@ -129,6 +130,7 @@ touch /var/log/openerp/$name/server.log
 log_echo "Creating openerp-web init script..."
 cp -a /etc/openerp/web-client/init-skeleton /etc/init.d/openerp-web-$name
 sed -i "s#\\[NAME\\]#$name#g" /etc/init.d/openerp-web-$name
+update-rc.d openerp-web-$name defaults >> $INSTALL_LOG_FILE
 
 log_echo "Creating openerp-web configuration file..."
 cp -a /etc/openerp/web-client/web-client.conf-skeleton /etc/openerp/web-client/$name.conf
@@ -149,7 +151,7 @@ log_echo "Creating apache rewrite file..."
 cp -a /etc/openerp/apache2/ssl-skeleton /etc/openerp/apache2/rewrites/$name
 sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/apache2/rewrites/$name
 sed -i "s#\\[PORT\\]#22$port#g" /etc/openerp/apache2/rewrites/$name
-service apache2 reload
+service apache2 reload >> $INSTALL_LOG_FILE
 
 log_echo "Creating pid dir..."
 mkdir -p /var/run/openerp/$name

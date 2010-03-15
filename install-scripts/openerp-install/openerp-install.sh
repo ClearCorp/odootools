@@ -180,9 +180,9 @@ done
 
 #Set the postgres admin password
 while [[ ! $set_postgres_admin_passwd =~ ^[YyNn]$ ]]; do
-        read -p "Would you like to change the postgres user password (Y/n)? " -n 1 set_postgres_admin_passwd
+        read -p "Would you like to change the postgres user password (y/N)? " -n 1 set_postgres_admin_passwd
         if [[ $set_postgres_admin_passwd == "" ]]; then
-                set_postgres_admin_passwd="y"
+                set_postgres_admin_passwd="n"
         fi
         log_echo ""
 done
@@ -265,13 +265,15 @@ done
 if [[ $create_pguser =~ ^[Yy]$ ]]; then
 	sudo -u postgres createuser openerp --no-superuser --createdb --no-createrole >> $INSTALL_LOG_FILE
 	sudo -u postgres psql template1 -U postgres -c "alter user openerp with password '$openerp_admin_passwd'" >> $INSTALL_LOG_FILE
+	log_echo ""
 fi
 
 # Change postgres user password
-log_echo "Changing postgres user password on request..."
 if [[ $set_postgres_admin_passwd =~ ^[Yy]$ ]]; then
+	log_echo "Changing postgres user password on request..."
 	log_echo "postgres:$postgres_admin_passwd" | chpasswd
 	sudo -u postgres psql template1 -U postgres -c "alter user postgres with password '$postgres_admin_passwd'" >> $INSTALL_LOG_FILE
+	log_echo ""
 fi
 
 
@@ -420,17 +422,17 @@ if [[ "$install_apache" =~ ^[Yy]$ ]]; then
 
 	log_echo "Enabling Apache Modules..."
 	# Apache Modules:
-	a2enmod ssl
-	a2enmod rewrite
-	a2enmod suexec
-	a2enmod include
-	a2enmod proxy
-	a2enmod proxy_http
-	a2enmod proxy_connect
-	a2enmod proxy_ftp
-	a2enmod headers
-	a2ensite default
-	a2ensite default-ssl
+	a2enmod ssl >> $INSTALL_LOG_FILE
+	a2enmod rewrite >> $INSTALL_LOG_FILE
+	a2enmod suexec >> $INSTALL_LOG_FILE
+	a2enmod include >> $INSTALL_LOG_FILE
+	a2enmod proxy >> $INSTALL_LOG_FILE
+	a2enmod proxy_http >> $INSTALL_LOG_FILE
+	a2enmod proxy_connect >> $INSTALL_LOG_FILE
+	a2enmod proxy_ftp >> $INSTALL_LOG_FILE
+	a2enmod headers >> $INSTALL_LOG_FILE
+	a2ensite default >> $INSTALL_LOG_FILE
+	a2ensite default-ssl >> $INSTALL_LOG_FILE
 
 	log_echo "Configuring site config files..."
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-erp /etc/apache2/sites-available/erp
@@ -441,7 +443,7 @@ if [[ "$install_apache" =~ ^[Yy]$ ]]; then
 
 
 	log_echo "Restarting Apache..."
-	/etc/init.d/apache2 restart
+	/etc/init.d/apache2 restart >> $INSTALL_LOG_FILE
 fi
 
 #~ TODO: Add shorewall support in ubuntu-server-install, and add rules here
