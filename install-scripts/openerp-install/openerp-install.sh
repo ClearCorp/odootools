@@ -44,7 +44,7 @@ function log {
 }
 function log_echo {
 	echo $1
-	log $1
+	log "$1"
 }
 log ""
 
@@ -368,7 +368,7 @@ cd $sources_path
 # Install OpenERP Web client
 log_echo "Installing OpenERP Web client..."
 easy_install -U -d $install_path_web openerp-web >> $INSTALL_LOG_FILE
-ln -s $install_path_web/openerp_web* $install_path_web/openerp-web
+ln -s $install_path_web/openerp_web* $install_path_web/openerp-web-skeleton
 
 # OpenERP Web Client init and config skeletons
 mkdir -p /etc/openerp/web-client
@@ -393,55 +393,55 @@ while [[ ! $install_apache =~ ^[YyNn]$ ]]; do
 	if [[ $install_apache == "" ]]; then
 		install_apache="y"
 	fi
-	echo ""
+	log_echo ""
 done
 
 if [[ "$install_apache" =~ ^[Yy]$ ]]; then
-	echo "Installing Apache..."
-	apt-get -qy install apache2
+	log_echo "Installing Apache..."
+	apt-get -qqy install apache2 >> $INSTALL_LOG_FILE
 
-	echo "Making SSL certificate for Apache...";
-	make-ssl-cert generate-default-snakeoil --force-overwrite
+	log_echo "Making SSL certificate for Apache...";
+	make-ssl-cert generate-default-snakeoil --force-overwrite >> $INSTALL_LOG_FILE
 	# Snakeoil certificate files:
 	# /usr/share/ssl-cert/ssleay.cnf
 	# /etc/ssl/certs/ssl-cert-snakeoil.pem
 	# /etc/ssl/private/ssl-cert-snakeoil.key
 
-	echo "Enabling Apache Modules..."
+	log_echo "Enabling Apache Modules..."
 	# Apache Modules:
-	sudo a2enmod ssl
-	sudo a2enmod rewrite
-	sudo a2enmod suexec
-	sudo a2enmod include
-	sudo a2enmod proxy
-	sudo a2enmod proxy_http
-	sudo a2enmod proxy_connect
-	sudo a2enmod proxy_ftp
-	sudo a2enmod headers
-	sudo a2dissite default
-	sudo a2dissite default-ssl
-	
-	echo "Configuring site config files..."
+	a2enmod ssl
+	a2enmod rewrite
+	a2enmod suexec
+	a2enmod include
+	a2enmod proxy
+	a2enmod proxy_http
+	a2enmod proxy_connect
+	a2enmod proxy_ftp
+	a2enmod headers
+	a2densite default
+	a2densite default-ssl
+
+	log_echo "Configuring site config files..."
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-erp /etc/apache2/sites-available/erp
 	mkdir -p /etc/openerp/apache2
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-ssl-skeleton /etc/openerp/apache2/ssl-skeleton
 	sed -i "s/ServerAdmin webmaster@localhost/ServerAdmin support@clearnet.co.cr\n\n\tInclude \/etc\/apache2\/sites-available\/erp/g" /etc/apache2/sites-available/default
 	sed -i "s/ServerAdmin webmaster@localhost/ServerAdmin support@clearnet.co.cr\n\n\tInclude \/etc\/openerp\/apache2\/rewrites/g" /etc/apache2/sites-available/default-ssl
 
-	
-	echo "Restarting Apache..."
+
+	log_echo "Restarting Apache..."
 	/etc/init.d/apache2 restart
 fi
 
 #~ TODO: Add shorewall support in ubuntu-server-install, and add rules here
 
 #~ Install phppgadmin
-echo "Installing PostgreSQL Web administration interface (phppgadmin)..."
-apt-get -qy install phppgadmin
+log_echo "Installing PostgreSQL Web administration interface (phppgadmin)..."
+apt-get -qy install phppgadmin >> $INSTALL_LOG_FILE
 sed -i "s/#\?[[:space:]]*\(deny from all.*\)/# deny from all/g" /etc/phppgadmin/apache.conf
 sed -i "s/[[:space:]]*allow from \(.*\)/# allow from \1/g" /etc/phppgadmin/apache.conf
 sed -i "s/#\?[[:space:]]*\(allow from all.*\)/allow from all/g" /etc/phppgadmin/apache.conf
 sed -i "s/#\?[[:space:]]*\(allow from all.*\)/allow from all/g" /etc/phppgadmin/apache.conf
-/etc/init.d/apache2 restart
+/etc/init.d/apache2 restart >> $INSTALL_LOG_FILE
 
 exit 0
