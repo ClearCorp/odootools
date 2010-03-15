@@ -202,6 +202,7 @@ echo ""
 # Install the required python libraries for openerp-server.
 echo "Installing the required python libraries for openerp-server..."
 apt-get -qqy install python python-psycopg2 python-reportlab python-egenix-mxdatetime python-tz python-pychart python-pydot python-lxml python-libxslt1 python-vobject python-imaging python-dev build-essential python-setuptools python-profiler
+apt-get -qqy install python python-dev build-essential python-setuptools python-profiler python-simplejson
 echo ""
 
 # Install bazaar.
@@ -321,7 +322,7 @@ chmod 755 $addons_path
 
 # OpenERP Server init and config skeletons
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-init-skeleton /etc/openerp/server/init-skeleton
-sed -i "s/\[PATH\]/$base_path/g" /etc/openerp/server/init-skeleton
+sed -i "s/\\[PATH\\]/$base_path/g" /etc/openerp/server/init-skeleton
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server.conf-skeleton /etc/openerp/server/
 
 # Install OpenERP addons
