@@ -48,7 +48,7 @@ protocol = 'socket'
 
 #selected_dbs = []
 
-dblist.filter = '[BOTH]'
+dblist.filter = 'BOTH'
 
 # whether to show Databases button on Login screen or not
 #dbbutton.visible = False
