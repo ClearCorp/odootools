@@ -30,16 +30,34 @@ fi
 # Check user is root
 checkRoot
 
+# Init log file
+INSTALL_LOG_PATH=/var/log/openerp
+INSTALL_LOG_FILE=$INSTALL_LOG_PATH/install.log
+
+if [[ ! -f $INSTALL_LOG_FILE ]]; then
+	mkdir -p $INSTALL_LOG_PATH
+	touch $INSTALL_LOG_FILE
+fi
+
+function log {
+	echo "$(date): $1" >> $INSTALL_LOG_FILE
+}
+function log_echo {
+	echo $1
+	log $1
+}
+log ""
+
 # Print title
-echo "OpenERP installation script"
-echo "---------------------------"
-echo ""
+log_echo "OpenERP installation script"
+log_echo "---------------------------"
+log_echo ""
 
 # Set distribution
 dist=""
 getDist dist
-echo "Distribution: $dist"
-echo ""
+log_echo "Distribution: $dist"
+log_echo ""
 
 # Sets vars corresponding to the distro
 if [[ $dist == "karmic" ]]; then
@@ -54,7 +72,7 @@ if [[ $dist == "karmic" ]]; then
 	sources_path=$base_path/src
 else
 	# Only Karmic supported for now
-	echo "This program must be executed on Ubuntu Karmic 9.10 (Desktop or Server)"
+	log_echo "ERROR: This program must be executed on Ubuntu Karmic 9.10 (Desktop or Server)"
 	exit 1
 fi
 
@@ -64,10 +82,11 @@ while [[ ! $run_preparation_script =~ ^[YyNn]$ ]]; do
 	if [[ $run_preparation_script == "" ]]; then
 		run_preparation_script="n"
 	fi
-	echo ""
+	log_echo ""
 done
 if [[ $run_preparation_script =~ ^[Yy]$ ]]; then
-	echo ""
+	log_echo "Running ccorp-ubuntu-server-install..."
+	log_echo ""
 	ccorp-ubuntu-server-install
 fi
 
@@ -81,10 +100,10 @@ while [[ ! $server_type =~ ^[DdPp]$ ]]; do
 	if [[ $server_type == "" ]]; then
 		server_type="d"
 	fi
-	echo ""
+	log_echo ""
 done
 if [[ $server_type =~ ^[Pp]$ ]]; then
-	echo "This is a production server"
+	log_echo "This is a production server"
 	branch="s"
 	install_extra_addons="n"
 	install_magentoerpconnect="n"
@@ -96,13 +115,13 @@ while [[ ! $branch =~ ^[SsTt]$ ]]; do
 	if [[ $branch == "" ]]; then
 		branch="s"
 	fi
-	echo ""
+	log_echo ""
 done
 if [[ $branch =~ ^[Ss]$ ]]; then
-	echo "This installation will use stable branch."
+	log_echo "This installation will use stable branch."
 	branch="5.0"
 else
-	echo "This installation will use trunk branch."
+	log_echo "This installation will use trunk branch."
 	branch="trunk"
 fi
 echo ""
@@ -113,7 +132,7 @@ while [[ ! $install_extra_addons =~ ^[YyNn]$ ]]; do
         if [[ $install_extra_addons == "" ]]; then
                 install_extra_addons="y"
         fi
-        echo ""
+        log_echo ""
 done
 
 #Install magentoerpconnect
@@ -122,7 +141,7 @@ while [[ ! $install_magentoerpconnect =~ ^[YyNn]$ ]]; do
         if [[ $install_magentoerpconnect == "" ]]; then
                 install_magentoerpconnect="y"
         fi
-        echo ""
+        log_echo ""
 done
 
 #Select FQDN
@@ -132,7 +151,7 @@ while [[ $fqdn == "" ]]; do
         if [[ $fqdn == "" ]]; then
                 fqdn=`cat /etc/hostname`
         fi
-        echo ""
+        log_echo ""
 done
 
 #Set the openerp admin password
@@ -140,18 +159,18 @@ openerp_admin_passwd=""
 while [[ $openerp_admin_passwd == "" ]]; do
 	read -p "Enter the OpenERP administrator password: " openerp_admin_passwd
 	if [[ $openerp_admin_passwd == "" ]]; then
-		echo "The password cannot be empty."
+		log_echo "The password cannot be empty."
 	else
 		read -p "Enter the OpenERP administrator password again: " openerp_admin_passwd2
-		echo ""
+		log_echo ""
 		if [[ $openerp_admin_passwd == $openerp_admin_passwd2 ]]; then
-			echo "OpenERP administrator password set."
+			log_echo "OpenERP administrator password set."
 		else
 			openerp_admin_passwd=""
-			echo "Passwords don't match."
+			log_echo "Passwords don't match."
 		fi
 	fi
-	echo ""
+	log_echo ""
 done
 
 #Set the postgres admin password
@@ -160,142 +179,142 @@ while [[ ! $set_postgres_admin_passwd =~ ^[YyNn]$ ]]; do
         if [[ $set_postgres_admin_passwd == "" ]]; then
                 set_postgres_admin_passwd="y"
         fi
-        echo ""
+        log_echo ""
 done
 if [[ $set_postgres_admin_passwd =~ ^[Yy]$ ]]; then
 	postgre_admin_passwd=""
 	while [[ $postgres_admin_passwd == "" ]]; do
 		read -p "Enter the postgres user password: " postgres_admin_passwd
 		if [[ $postgres_admin_passwd == "" ]]; then
-			echo "The password cannot be empty."
+			log_echo "The password cannot be empty."
 		else
 			read -p "Enter the postgres user password again: " postgres_admin_passwd2
-			echo ""
+			log_echo ""
 			if [[ $postgres_admin_passwd == $postgres_admin_passwd2 ]]; then
-				echo "postgres user password set."
+				log_echo "postgres user password set."
 			else
 				postgres_admin_passwd=""
-				echo "Passwords don't match."
+				log_echo "Passwords don't match."
 			fi
 		fi
-		echo ""
+		log_echo ""
 	done
 fi
 
 #Preparing installation
 #######################
 
-echo "Preparing installation"
-echo "----------------------"
+log_echo "Preparing installation"
+log_echo "----------------------"
 
 #Add openerp user
-echo "Adding openerp user..."
-adduser --quiet --system openerp
-echo ""
+log_echo "Adding openerp user..."
+adduser --quiet --system openerp >> $INSTALL_LOG_FILE
+log_echo ""
 
 # Update the system.
-echo "Updating the system..."
-apt-get -qq update
-apt-get -qqy upgrade
-echo ""
+log_echo "Updating the system..."
+apt-get -qq update >> $INSTALL_LOG_FILE
+apt-get -qqy upgrade >> $INSTALL_LOG_FILE
+log_echo ""
 
 # Install the required python libraries for openerp-server.
 echo "Installing the required python libraries for openerp-server..."
-apt-get -qqy install python python-psycopg2 python-reportlab python-egenix-mxdatetime python-tz python-pychart python-pydot python-lxml python-libxslt1 python-vobject python-imaging python-dev build-essential python-setuptools python-profiler
-apt-get -qqy install python python-dev build-essential python-setuptools python-profiler python-simplejson
-echo ""
+apt-get -qqy install python python-psycopg2 python-reportlab python-egenix-mxdatetime python-tz python-pychart python-pydot python-lxml python-libxslt1 python-vobject python-imaging python-dev build-essential python-setuptools python-profiler >> $INSTALL_LOG_FILE
+apt-get -qqy install python python-dev build-essential python-setuptools python-profiler python-simplejson >> $INSTALL_LOG_FILE
+log_echo ""
 
 # Install bazaar.
-echo "Installing bazaar..."
-apt-get -qqy install bzr
-bzr whoami "ClearCorp S.A. <info@clearcorp.co.cr>"
-echo ""
+log_echo "Installing bazaar..."
+apt-get -qqy install bzr >> $INSTALL_LOG_FILE
+bzr whoami "ClearCorp S.A. <info@clearcorp.co.cr>" >> $INSTALL_LOG_FILE
+log_echo ""
 
 # Install postgresql
-echo "Installing postgresql."
-apt-get -qqy install postgresql
-echo ""
+log_echo "Installing postgresql..."
+apt-get -qqy install postgresql >> $INSTALL_LOG_FILE
+log_echo ""
 
-echo ""
+log_echo ""
 # Update pg_hba.conf
 while [[ ! $update_pg_hba =~ ^[YyNn]$ ]]; do
         read -p "Would you like to update pg_hba.conf (Y/n)? " -n 1 update_pg_hba
         if [[ $update_pg_hba == "" ]]; then
                 update_pg_hba="y"
         fi
-        echo ""
+        log_echo ""
 done
 if [[ $update_pg_hba =~ ^[Yy]$ ]]; then
 	sed -i 's/\(local[[:space:]]*all[[:space:]]*all[[:space:]]*\)\(ident[[:space:]]*sameuser\)/\1md5/g' /etc/postgresql/$posgresql_rel/main/pg_hba.conf
-	/etc/init.d/postgresql-$posgresql_rel restart
+	/etc/init.d/postgresql-$posgresql_rel restart >> $INSTALL_LOG_FILE
 fi
 
 # Add openerp postgres user
 while [[ ! $create_pguser =~ ^[YyNn]$ ]]; do
-        read -p "Would you like to add a postgresql openerp user (Y/n)? " -n 1 create_pguser
-        if [[ $create_pguser == "" ]]; then
-                create_pguser="y"
-        fi
-        echo ""
+	read -p "Would you like to add a postgresql openerp user (Y/n)? " -n 1 create_pguser
+	if [[ $create_pguser == "" ]]; then
+		create_pguser="y"
+	fi
+	log_echo ""
 done
 if [[ $create_pguser =~ ^[Yy]$ ]]; then
-	sudo -u postgres createuser openerp --no-superuser --createdb --no-createrole
-	sudo -u postgres psql template1 -U postgres -c "alter user openerp with password '$openerp_admin_passwd'"
+	sudo -u postgres createuser openerp --no-superuser --createdb --no-createrole >> $INSTALL_LOG_FILE
+	sudo -u postgres psql template1 -U postgres -c "alter user openerp with password '$openerp_admin_passwd'" >> $INSTALL_LOG_FILE
 fi
 
 # Change postgres user password
-echo "Changing postgres user password on request..."
+log_echo "Changing postgres user password on request..."
 if [[ $set_postgres_admin_passwd =~ ^[Yy]$ ]]; then
-	echo "postgres:$postgres_admin_passwd" | chpasswd
-	sudo -u postgres psql template1 -U postgres -c "alter user postgres with password '$postgres_admin_passwd'"
+	log_echo "postgres:$postgres_admin_passwd" | chpasswd
+	sudo -u postgres psql template1 -U postgres -c "alter user postgres with password '$postgres_admin_passwd'" >> $INSTALL_LOG_FILE
 fi
 
 
 # Downloading OpenERP
 #####################
 
-echo "Downloading OpenERP"
-echo "-------------------"
-echo ""
+log_echo "Downloading OpenERP"
+log_echo "-------------------"
+log_echo ""
 
 cd $sources_path
 
 # Download openerp-server latest stable/trunk release.
-echo "Downloading openerp-server latest stable/trunk release..."
-bzr checkout --lightweight lp:openobject-server/$branch openerp-server
-echo ""
+log_echo "Downloading openerp-server latest stable/trunk release..."
+bzr checkout --lightweight lp:openobject-server/$branch openerp-server >> $INSTALL_LOG_FILE
+log_echo ""
 
 # Download openerp addons latest stable/trunk branch.
-echo "Downloading openerp addons latest stable/trunk branch..."
+log_echo "Downloading openerp addons latest stable/trunk branch..."
 bzr checkout --lightweight lp:openobject-addons/$branch addons
-echo ""
+log_echo ""
 
 # Download extra addons
 if [[ $install_extra_addons =~ ^[Yy]$ ]]; then
-	echo "Downloading extra addons..."
-	bzr checkout --lightweight lp:openobject-addons/extra-$branch extra-addons
-	echo ""
+	log_echo "Downloading extra addons..."
+	bzr checkout --lightweight lp:openobject-addons/extra-$branch extra-addons >> $INSTALL_LOG_FILE
+	log_echo ""
 fi
 
 # Download magentoerpconnect
 if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then
-	echo "Downloading magentoerpconnect..."
-	bzr checkout --lightweight lp:magentoerpconnect magentoerpconnect
-	echo ""
+	log_echo "Downloading magentoerpconnect..."
+	bzr checkout --lightweight lp:magentoerpconnect magentoerpconnect >> $INSTALL_LOG_FILE
+	log_echo ""
 fi
 
 
 # Install OpenERP
 #################
 
-echo "Installing OpenERP"
-echo "------------------"
-echo ""
+log_echo "Installing OpenERP"
+log_echo "------------------"
+log_echo ""
 
 cd $sources_path
 
 # Install OpenERP server
-echo "Installing OpenERP Server..."
+log_echo "Installing OpenERP Server..."
 cd openerp-server
 
 #~ Make skeleton installation
@@ -322,24 +341,24 @@ chmod 755 $addons_path
 
 # OpenERP Server init and config skeletons
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-init-skeleton /etc/openerp/server/init-skeleton
-sed -i "s/\\[PATH\\]/$base_path/g" /etc/openerp/server/init-skeleton
+sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/server/init-skeleton
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server.conf-skeleton /etc/openerp/server/
 
 # Install OpenERP addons
-echo "Installing OpenERP addons..."
+log_echo "Installing OpenERP addons..."
 mkdir -p $addons_path
 cd $sources_path
 cp -a addons/* $addons_path
 
 # Install OpenERP extra addons
 if [[ "$install_extra_addons" =~ ^[Yy]$ ]]; then
-	echo "Installing OpenERP extra addons..."
+	log_echo "Installing OpenERP extra addons..."
 	cp -a extra-addons/* $addons_path
 fi
 
 # Install OpenERP magentoerpconnect
 if [[ "$install_magentoerpconnect" =~ ^[Yy]$ ]]; then
-	echo "Installing OpenERP magentoerpconnect..."
+	log_echo "Installing OpenERP magentoerpconnect..."
 	cp -a magentoerpconnect $addons_path
 fi
 
@@ -347,20 +366,20 @@ cd $sources_path
 
 
 # Install OpenERP Web client
-echo "Installing OpenERP Web client..."
-easy_install -U -d $install_path_web openerp-web
+log_echo "Installing OpenERP Web client..."
+easy_install -U -d $install_path_web openerp-web >> $INSTALL_LOG_FILE
 ln -s $install_path_web/openerp_web* $install_path_web/openerp-web
 
 # OpenERP Web Client init and config skeletons
 mkdir -p /etc/openerp/web-client
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client-init-skeleton /etc/openerp/web-client/init-skeleton
-sed -i "s/\[PATH\]/${base_path}/g" /etc/openerp/web-client/init-skeleton
+sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/web-client/init-skeleton
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client.conf-skeleton /etc/openerp/web-client/
 
 #~ Sets server type
 if [[ "$server_type" =~ ^[Dd]$ ]]; then
 	sed -i "s/\[TYPE\]/development/g" /etc/openerp/web-client/init-skeleton
-elif
+else
 	sed -i "s/\[TYPE\]/production/g" /etc/openerp/web-client/init-skeleton
 fi
 
