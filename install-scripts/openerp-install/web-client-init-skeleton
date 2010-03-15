@@ -21,7 +21,7 @@ NAME=openerp-web-${SERVERNAME}
 DESC=openerp-web-${SERVERNAME}
 USER=openerp
 PIDDIR=/var/run/openerp
-PIDFILE=${PIDDIR}/${SERVERNAME}/server.pid
+PIDFILE=${PIDDIR}/${SERVERNAME}/web-client.pid
 CONFIGFILE=/etc/openerp/web-client/${SERVERNAME}.conf
 DAEMON_OPTS="-c $CONFIGFILE"
 
