@@ -94,25 +94,38 @@ fi
 # Initial questions
 ####################
 
-#~ Choose between development and production server
-while [[ ! $server_type =~ ^[DdPp]$ ]]; do
-	read -p "Is this a development or production server (D/p)? " -n 1 server_type
+#~ Choose between server or working station
+while [[ ! $server_type =~ ^[SsWw]$ ]]; do
+	read -p "Is this a server or a working station (S/w)? " -n 1 server_type
 	if [[ $server_type == "" ]]; then
-		server_type="d"
+		server_type="s"
 	fi
 	log_echo ""
 done
 mkdir -p /etc/openerp
-if [[ $server_type =~ ^[Pp]$ ]]; then
-	log_echo "This is a production server"
-	echo "production" > /etc/openerp/type
-	branch="s"
-	install_extra_addons="n"
-	install_magentoerpconnect="n"
+if [[ $server_type =~ ^[Ww]$ ]]; then
+	log_echo "This is a working station"
+	echo "station" > /etc/openerp/type
 else
-	echo "development" > /etc/openerp/type
+	#~ Choose between development and production server
+	while [[ ! $server_type =~ ^[DdPp]$ ]]; do
+		read -p "Is this a development or production server (D/p)? " -n 1 server_type
+		if [[ $server_type == "" ]]; then
+			server_type="d"
+		fi
+		log_echo ""
+	done
+	mkdir -p /etc/openerp
+	if [[ $server_type =~ ^[Pp]$ ]]; then
+		log_echo "This is a production server"
+		echo "production" > /etc/openerp/type
+		branch="s"
+		install_extra_addons="n"
+		install_magentoerpconnect="n"
+	else
+		echo "development" > /etc/openerp/type
+	fi
 fi
-
 
 #Choose the branch to install
 while [[ ! $branch =~ ^[SsTt]$ ]]; do
@@ -388,7 +401,7 @@ sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/web-client/init-skeleton
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client.conf-skeleton /etc/openerp/web-client/
 
 #~ Sets server type
-if [[ "$server_type" =~ ^[Dd]$ ]]; then
+if [[ "$server_type" =~ ^[DdWw]$ ]]; then
 	sed -i "s/\[TYPE\]/development/g" /etc/openerp/web-client/init-skeleton
 else
 	sed -i "s/\[TYPE\]/production/g" /etc/openerp/web-client/init-skeleton
