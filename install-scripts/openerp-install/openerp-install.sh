@@ -106,6 +106,18 @@ mkdir -p /etc/openerp
 if [[ $server_type =~ ^[Ww]$ ]]; then
 	log_echo "This is a working station"
 	echo "station" > /etc/openerp/type
+	#~ Select user
+	openerp_user=""
+	while [[ $openerp_user == "" ]]; do
+		read -p "What is the developer username? " openerp_user
+		if [[ $openerp_user == "" ]]; then
+			echo "Please enter a valid username."
+		elif [[ `cat /etc/passwd | grep -c $openerp_user` == 0 ]]; then
+			echo "Please enter a valid username."
+			openerp_user=""
+		fi
+		log_echo ""
+	done
 else
 	#~ Choose between development and production server
 	while [[ ! $server_type =~ ^[DdPp]$ ]]; do
@@ -125,6 +137,7 @@ else
 	else
 		echo "development" > /etc/openerp/type
 	fi
+	openerp_user="openerp"
 fi
 
 #Choose the branch to install
@@ -276,8 +289,9 @@ while [[ ! $create_pguser =~ ^[YyNn]$ ]]; do
 	log_echo ""
 done
 if [[ $create_pguser =~ ^[Yy]$ ]]; then
-	sudo -u postgres createuser openerp --no-superuser --createdb --no-createrole >> $INSTALL_LOG_FILE
-	sudo -u postgres psql template1 -U postgres -c "alter user openerp with password '$openerp_admin_passwd'" >> $INSTALL_LOG_FILE
+	if [[ $server_type =~ ^[Ww]$ ]]; then
+		/usr/bin/sudo -u postgres createuser openerp --no-superuser --createdb --no-createrole >> $INSTALL_LOG_FILE
+		/usr/bin/sudo -u postgres psql template1 -U postgres -c "alter user openerp with password '$openerp_admin_passwd'" >> $INSTALL_LOG_FILE
 	log_echo ""
 fi
 
