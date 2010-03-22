@@ -239,9 +239,11 @@ log_echo "Preparing installation"
 log_echo "----------------------"
 
 #Add openerp user
-log_echo "Adding openerp user..."
-adduser --quiet --system openerp >> $INSTALL_LOG_FILE
-log_echo ""
+if [[ ! $server_type =~ ^[Ww]$ ]]; then
+	log_echo "Adding openerp user..."
+	adduser --quiet --system openerp >> $INSTALL_LOG_FILE
+	log_echo ""
+fi
 
 # Update the system.
 log_echo "Updating the system..."
@@ -289,9 +291,8 @@ while [[ ! $create_pguser =~ ^[YyNn]$ ]]; do
 	log_echo ""
 done
 if [[ $create_pguser =~ ^[Yy]$ ]]; then
-	if [[ $server_type =~ ^[Ww]$ ]]; then
-		/usr/bin/sudo -u postgres createuser openerp --no-superuser --createdb --no-createrole >> $INSTALL_LOG_FILE
-		/usr/bin/sudo -u postgres psql template1 -U postgres -c "alter user openerp with password '$openerp_admin_passwd'" >> $INSTALL_LOG_FILE
+	/usr/bin/sudo -u postgres createuser $openerp_user --no-superuser --createdb --no-createrole >> $INSTALL_LOG_FILE
+	/usr/bin/sudo -u postgres psql template1 -U postgres -c "alter user $openerp_user with password '$openerp_admin_passwd'" >> $INSTALL_LOG_FILE
 	log_echo ""
 fi
 
