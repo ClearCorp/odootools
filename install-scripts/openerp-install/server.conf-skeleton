@@ -102,7 +102,7 @@ smtp_password = passwd
 #database =
 
 # Specify the database user name (default None).
-db_user = openerp
+db_user = [USER]
 
 # Username used when connecting to the database
 #user =

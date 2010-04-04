@@ -371,13 +371,15 @@ mkdir -p /etc/openerp/server/
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-bin-skeleton /etc/openerp/server/bin-skeleton
 
 # Change permissions
-chown -R openerp:root $install_path
+chown -R $opnerp_user:root $install_path
 chmod 755 $addons_path
 
 # OpenERP Server init and config skeletons
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-init-skeleton /etc/openerp/server/init-skeleton
 sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/server/init-skeleton
+sed -i "s#\\[USER\\]#$openerp_user#g" /etc/openerp/server/init-skeleton
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server.conf-skeleton /etc/openerp/server/
+sed -i "s#\\[USER\\]#$openerp_user#g" /etc/openerp/server/server.conf-skeleton
 
 # Install OpenERP addons
 log_echo "Installing OpenERP addons..."
@@ -399,7 +401,7 @@ fi
 
 #~ Make pid dir
 mkdir -p /var/run/openerp
-chown openerp:root /var/run/openerp
+chown $openerp_user:root /var/run/openerp
 
 cd $sources_path
 
@@ -413,6 +415,7 @@ ln -s $install_path_web/openerp_web* $install_path_web/openerp-web-skeleton
 mkdir -p /etc/openerp/web-client
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client-init-skeleton /etc/openerp/web-client/init-skeleton
 sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/web-client/init-skeleton
+sed -i "s#\\[USER\\]#$openerp_user#g" /etc/openerp/web-client/init-skeleton
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client.conf-skeleton /etc/openerp/web-client/
 
 #~ Sets server type
