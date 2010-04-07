@@ -94,7 +94,7 @@ done
 
 #~ Start the server on boot
 while [[ ! $start_boot =~ ^[YyNn]$ ]]; do
-        read -p "Would you like to start the server now (Y/n)? " -n 1 start_boot
+        read -p "Would you like to start the server on boot (Y/n)? " -n 1 start_boot
         if [[ $start_boot == "" ]]; then
                 start_boot="y"
         fi
