@@ -134,11 +134,13 @@ else
 		branch="s"
 		install_extra_addons="n"
 		install_magentoerpconnect="n"
+		install_nantic="n"
 	else
 		echo "development" > /etc/openerp/type
 	fi
 	openerp_user="openerp"
 fi
+echo $openerp_user > /etc/openerp/user
 
 #Choose the branch to install
 while [[ ! $branch =~ ^[SsTt]$ ]]; do
@@ -171,6 +173,15 @@ while [[ ! $install_magentoerpconnect =~ ^[YyNn]$ ]]; do
         read -p "Would you like to install magentoerpconnect (Y/n)? " -n 1 install_magentoerpconnect
         if [[ $install_magentoerpconnect == "" ]]; then
                 install_magentoerpconnect="y"
+        fi
+        log_echo ""
+done
+
+#Install nan-tic modules
+while [[ ! $install_nantic =~ ^[YyNn]$ ]]; do
+        read -p "Would you like to install nan-tic modules (Y/n)? " -n 1 install_nantic
+        if [[ $install_nantic == "" ]]; then
+                install_nantic="y"
         fi
         log_echo ""
 done
@@ -232,6 +243,33 @@ if [[ $set_postgres_admin_passwd =~ ^[Yy]$ ]]; then
 	done
 fi
 
+# Update pg_hba.conf
+while [[ ! $update_pg_hba =~ ^[YyNn]$ ]]; do
+        read -p "Would you like to update pg_hba.conf (Y/n)? " -n 1 update_pg_hba
+        if [[ $update_pg_hba == "" ]]; then
+                update_pg_hba="y"
+        fi
+        log_echo ""
+done
+
+# Add openerp postgres user
+while [[ ! $create_pguser =~ ^[YyNn]$ ]]; do
+	read -p "Would you like to add a postgresql openerp user (Y/n)? " -n 1 create_pguser
+	if [[ $create_pguser == "" ]]; then
+		create_pguser="y"
+	fi
+	log_echo ""
+done
+
+# Apache installation
+while [[ ! $install_apache =~ ^[YyNn]$ ]]; do
+	read -p "Would you like to install apache (Y/n)? " -n 1 install_apache
+	if [[ $install_apache == "" ]]; then
+		install_apache="y"
+	fi
+	log_echo ""
+done
+
 #Preparing installation
 #######################
 
@@ -255,6 +293,8 @@ log_echo ""
 echo "Installing the required python libraries for openerp-server..."
 apt-get -qqy install python python-psycopg2 python-reportlab python-egenix-mxdatetime python-tz python-pychart python-pydot python-lxml python-libxslt1 python-vobject python-imaging python-yaml >> $INSTALL_LOG_FILE
 apt-get -qqy install python python-dev build-essential python-setuptools python-profiler python-simplejson >> $INSTALL_LOG_FILE
+apt-get -qqy install zip
+apt-get -qqy install pyro
 log_echo ""
 
 # Install bazaar.
@@ -270,26 +310,12 @@ log_echo ""
 
 log_echo ""
 # Update pg_hba.conf
-while [[ ! $update_pg_hba =~ ^[YyNn]$ ]]; do
-        read -p "Would you like to update pg_hba.conf (Y/n)? " -n 1 update_pg_hba
-        if [[ $update_pg_hba == "" ]]; then
-                update_pg_hba="y"
-        fi
-        log_echo ""
-done
 if [[ $update_pg_hba =~ ^[Yy]$ ]]; then
 	sed -i 's/\(local[[:space:]]*all[[:space:]]*all[[:space:]]*\)\(ident[[:space:]]*sameuser\)/\1md5/g' /etc/postgresql/$posgresql_rel/main/pg_hba.conf
 	/etc/init.d/postgresql-$posgresql_rel restart >> $INSTALL_LOG_FILE
 fi
 
 # Add openerp postgres user
-while [[ ! $create_pguser =~ ^[YyNn]$ ]]; do
-	read -p "Would you like to add a postgresql openerp user (Y/n)? " -n 1 create_pguser
-	if [[ $create_pguser == "" ]]; then
-		create_pguser="y"
-	fi
-	log_echo ""
-done
 if [[ $create_pguser =~ ^[Yy]$ ]]; then
 	/usr/bin/sudo -u postgres createuser $openerp_user --no-superuser --createdb --no-createrole >> $INSTALL_LOG_FILE
 	/usr/bin/sudo -u postgres psql template1 -U postgres -c "alter user $openerp_user with password '$openerp_admin_passwd'" >> $INSTALL_LOG_FILE
@@ -338,6 +364,13 @@ if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then
 	log_echo ""
 fi
 
+# Download nan-tic modules
+if [[ $install_nantic =~ ^[Yy]$ ]]; then
+	log_echo "Downloading nan-tic modules..."
+	bzr checkout --lightweight lp:~openobject-client-kde/openobject-client-kde/$branch openobject-client-kde >> $INSTALL_LOG_FILE
+	log_echo ""
+fi
+
 
 # Install OpenERP
 #################
@@ -380,6 +413,11 @@ sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/server/init-skeleton
 sed -i "s#\\[USER\\]#$openerp_user#g" /etc/openerp/server/init-skeleton
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server.conf-skeleton /etc/openerp/server/
 sed -i "s#\\[USER\\]#$openerp_user#g" /etc/openerp/server/server.conf-skeleton
+if [[ $server_type =~ ^[Pp]$ ]]; then {
+	sed -i "s#\\[LOGLEVEL\\]#info#g" /etc/openerp/server/server.conf-skeleton
+} else {
+	sed -i "s#\\[LOGLEVEL\\]#debug#g" /etc/openerp/server/server.conf-skeleton
+}
 
 # Install OpenERP addons
 log_echo "Installing OpenERP addons..."
@@ -399,12 +437,27 @@ if [[ "$install_magentoerpconnect" =~ ^[Yy]$ ]]; then
 	cp -a magentoerpconnect $addons_path
 fi
 
+# Install nan-tic modules
+if [[ "$install_nantic" =~ ^[Yy]$ ]]; then
+	log_echo "Installing nan-tic modules..."
+	rm openobject-client-kde/server-modules/*.sh
+	cp -a openobject-client-kde/server-modules/* $addons_path
+fi
+
 #~ Make pid dir
 mkdir -p /var/run/openerp
 chown $openerp_user:root /var/run/openerp
 
 cd $sources_path
 
+#~ Zip files inside addons
+cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/addons-zip.sh $addons_path
+if [[ ! "$server_type" =~ ^[Pp]$ ]]; then
+	cd $addons_path
+	log_echo "Compressing addons..."
+	./addons-zip.sh >> $INSTALL_LOG_FILE
+	cd $sources_path
+fi
 
 # Install OpenERP Web client
 log_echo "Installing OpenERP Web client..."
@@ -420,9 +473,9 @@ cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client.conf-skeleton /
 
 #~ Sets server type
 if [[ "$server_type" =~ ^[DdWw]$ ]]; then
-	sed -i "s/\[TYPE\]/development/g" /etc/openerp/web-client/init-skeleton
+	sed -i "s/\[TYPE\]/development/g" /etc/openerp/web-client/web-client.conf-skeleton
 else
-	sed -i "s/\[TYPE\]/production/g" /etc/openerp/web-client/init-skeleton
+	sed -i "s/\[TYPE\]/production/g" /etc/openerp/web-client/web-client.conf-skeleton
 fi
 
 #~ Adds ClearCorp logo
@@ -432,13 +485,6 @@ ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/company_logo.png $insta
 ln -s $install_path_web/openerp-web $base_path/bin/openerp-web
 
 ## Apache installation
-while [[ ! $install_apache =~ ^[YyNn]$ ]]; do
-	read -p "Would you like to install apache (Y/n)? " -n 1 install_apache
-	if [[ $install_apache == "" ]]; then
-		install_apache="y"
-	fi
-	log_echo ""
-done
 
 if [[ "$install_apache" =~ ^[Yy]$ ]]; then
 	log_echo "Installing Apache..."

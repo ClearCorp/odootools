@@ -67,6 +67,7 @@ pidfile = /var/run/openerp/[NAME]/server.pid
 
 # The file where the server log will be stored (default False).
 logfile = /var/log/openerp/[NAME]/server.log
+log_level = [LOGLEVEL]
 
 # The IP address on which the server will bind.
 # If empty, it will bind on all interfaces (default empty).
@@ -126,6 +127,7 @@ admin_passwd = [ADMIN_PASSWD]
 #~ without_demo = True
 #~ netrpc = True
 netport = [NETPORT]
+pyroport = [PYROPORT]
 #~ xmlrpc = True
 #~ root_path = None
 #~ soap = False

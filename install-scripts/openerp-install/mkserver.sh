@@ -53,6 +53,8 @@ log_echo "OpenERP make server script"
 log_echo "--------------------------"
 log_echo ""
 
+openerp_user=$(cat /etc/openerp/user)
+
 name=""
 while [[ $name == "" ]]; do
 	read -p "Enter the OpenERP server name: " name
@@ -120,6 +122,7 @@ cp -a /etc/openerp/server/server.conf-skeleton /etc/openerp/server/$name.conf
 sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/server/$name.conf
 sed -i "s#\\[XMLPORT\\]#20$port#g" /etc/openerp/server/$name.conf
 sed -i "s#\\[NETPORT\\]#21$port#g" /etc/openerp/server/$name.conf
+sed -i "s#\\[PYROPORT\\]#23$port#g" /etc/openerp/server/$name.conf
 sed -i "s#\\[ADMIN_PASSWD\\]#$admin_passwd#g" /etc/openerp/server/$name.conf
 
 log_echo "Creating openerp-server log files..."
@@ -142,12 +145,11 @@ if [[ $type == "develpment" ]]; then
 else
 	sed -i "s/#\?[[:space:]]*\(dbbutton\.visible.*\)/dbbutton.visible = False/g" /etc/openerp/web-client/$name.conf
 fi
-sed -i "s#\\[TYPE\\]#$type#g" /etc/openerp/web-client/$name.conf
 
 log_echo "Creating openerp-web log files..."
 touch /var/log/openerp/$name/web-client-access.log
 touch /var/log/openerp/$name/web-client-error.log
-chown -R openerp:root /var/log/openerp/$name
+chown -R $openerp_user:root /var/log/openerp/$name
 
 log_echo "Creating apache rewrite file..."
 cp -a /etc/openerp/apache2/ssl-skeleton /etc/openerp/apache2/rewrites/$name
@@ -157,4 +159,4 @@ service apache2 reload >> $INSTALL_LOG_FILE
 
 log_echo "Creating pid dir..."
 mkdir -p /var/run/openerp/$name
-chown openerp:root /var/run/openerp/$name
+chown $openerp_user:root /var/run/openerp/$name
