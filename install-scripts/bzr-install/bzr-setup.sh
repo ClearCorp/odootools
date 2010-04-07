@@ -84,7 +84,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 			bzr checkout --lightweight http://server01.rs.clearcorp.co.cr/bzr/libbash-ccorp/trunk /usr/local/share/libbash-ccorp
 		fi
 	fi
-	cd dir
+	cd $dir
 	export LIBBASH_CCORP_DIR
 	. bzr-update.sh
 fi
