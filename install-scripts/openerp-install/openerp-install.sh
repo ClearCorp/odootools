@@ -413,11 +413,11 @@ sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/server/init-skeleton
 sed -i "s#\\[USER\\]#$openerp_user#g" /etc/openerp/server/init-skeleton
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server.conf-skeleton /etc/openerp/server/
 sed -i "s#\\[USER\\]#$openerp_user#g" /etc/openerp/server/server.conf-skeleton
-if [[ $server_type =~ ^[Pp]$ ]]; then {
+if [[ $server_type =~ ^[Pp]$ ]]; then
 	sed -i "s#\\[LOGLEVEL\\]#info#g" /etc/openerp/server/server.conf-skeleton
-} else {
+else
 	sed -i "s#\\[LOGLEVEL\\]#debug#g" /etc/openerp/server/server.conf-skeleton
-}
+fi
 
 # Install OpenERP addons
 log_echo "Installing OpenERP addons..."
