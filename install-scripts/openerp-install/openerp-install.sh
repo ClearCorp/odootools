@@ -456,6 +456,9 @@ if [[ ! "$server_type" =~ ^[Pp]$ ]]; then
 	cd $addons_path
 	log_echo "Compressing addons..."
 	./addons-zip.sh >> $INSTALL_LOG_FILE
+	#~ Base cannot be zipped for translations to work
+	unzip base.zip
+	rm base.zip
 	cd $sources_path
 fi
 
