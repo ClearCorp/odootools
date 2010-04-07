@@ -85,7 +85,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 		fi
 	fi
 	cd $dir
-	export LIBBASH_CCORP_DIR
+	export $LIBBASH_CCORP_DIR
 	. bzr-update.sh
 fi
 echo ""
