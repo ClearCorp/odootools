@@ -83,6 +83,24 @@ done
 echo $port >> /etc/openerp/ports
 log_echo "Selected port is: $port"
 
+#~ Start the server now
+while [[ ! $start_now =~ ^[YyNn]$ ]]; do
+        read -p "Would you like to start the server now (Y/n)? " -n 1 start_now
+        if [[ $start_now == "" ]]; then
+                start_now="y"
+        fi
+        log_echo ""
+done
+
+#~ Start the server on boot
+while [[ ! $start_boot =~ ^[YyNn]$ ]]; do
+        read -p "Would you like to start the server now (Y/n)? " -n 1 start_boot
+        if [[ $start_boot == "" ]]; then
+                start_boot="y"
+        fi
+        log_echo ""
+done
+
 #~ Set the openerp admin password
 admin_passwd=""
 while [[ $admin_passwd == "" ]]; do
@@ -111,7 +129,12 @@ cp -a /usr/local/lib/python2.6/dist-packages/openerp-server-skeleton /usr/local/
 log_echo "Creating openerp-server init script..."
 cp -a /etc/openerp/server/init-skeleton /etc/init.d/openerp-server-$name
 sed -i "s#\\[NAME\\]#$name#g" /etc/init.d/openerp-server-$name
-update-rc.d openerp-server-$name defaults >> $INSTALL_LOG_FILE
+#~ Start server on boot
+if [[ ! $start_boot =~ ^[Yy]$ ]]; then
+	log_echo "Creating server rc rules..."
+	update-rc.d openerp-server-$name defaults >> $INSTALL_LOG_FILE
+	log_echo ""
+fi
 
 log_echo "Creating openerp-server bin script..."
 cp -a /etc/openerp/server/bin-skeleton /usr/local/bin/openerp-server-$name
@@ -133,7 +156,12 @@ touch /var/log/openerp/$name/server.log
 log_echo "Creating openerp-web init script..."
 cp -a /etc/openerp/web-client/init-skeleton /etc/init.d/openerp-web-$name
 sed -i "s#\\[NAME\\]#$name#g" /etc/init.d/openerp-web-$name
-update-rc.d openerp-web-$name defaults >> $INSTALL_LOG_FILE
+#~ Start server on boot
+if [[ ! $start_boot =~ ^[Yy]$ ]]; then
+	log_echo "Creating web-client rc rules..."
+	update-rc.d openerp-web-$name defaults >> $INSTALL_LOG_FILE
+	log_echo ""
+fi
 
 log_echo "Creating openerp-web configuration file..."
 cp -a /etc/openerp/web-client/web-client.conf-skeleton /etc/openerp/web-client/$name.conf
@@ -160,3 +188,11 @@ service apache2 reload >> $INSTALL_LOG_FILE
 log_echo "Creating pid dir..."
 mkdir -p /var/run/openerp/$name
 chown $openerp_user:root /var/run/openerp/$name
+
+#~ Start server now
+if [[ ! $start_now =~ ^[Yy]$ ]]; then
+	log_echo "Starting openerp server and web client..."
+	service openerp-server-$name start
+	service openerp-web-$name start
+	log_echo ""
+fi
