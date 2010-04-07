@@ -58,6 +58,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 	else
 		sed -i "s#LIBBASH_CCORP_DIR.*#LIBBASH_CCORP_DIR=\"/usr/local/share/libbash-ccorp\"#g" /etc/environment
 	fi
+	dir=pwd
 	if [ -d /usr/local/share/libbash-ccorp ]; then
 		echo "bzr repository: /usr/local/share/libbash-ccorp already exists."
 		echo "Updating..."
@@ -83,6 +84,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 			bzr checkout --lightweight http://server01.rs.clearcorp.co.cr/bzr/libbash-ccorp/trunk /usr/local/share/libbash-ccorp
 		fi
 	fi
+	cd dir
 	export LIBBASH_CCORP_DIR
 	. bzr-update.sh
 fi
