@@ -17,7 +17,7 @@ cp $LIBBASH_CCORP_DIR/main-lib/setSources.sh bzr-install/main-lib/setSources.sh
 
 mkdir -p bzr-install/install-scripts/bzr-install
 cp $LIBBASH_CCORP_DIR/install-scripts/bzr-install/bzr-setup.sh bzr-install/install-scripts/bzr-install/bzr-setup.sh
-cp $LIBBASH_CCORP_DIR/install-scripts/bzr-install/bzr-setup.sh bzr-install/install-scripts/bzr-install/bzr-update.sh
+cp $LIBBASH_CCORP_DIR/install-scripts/bzr-install/bzr-update.sh bzr-install/install-scripts/bzr-install/bzr-update.sh
 
 cat > bzr-install/install.sh << EOF
 #!/bin/bash
