@@ -101,5 +101,6 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 		fi
 	fi
 	setSymlinks
+	export LIBBASH_CCORP_DIR
 fi
 echo ""
