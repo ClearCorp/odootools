@@ -130,7 +130,7 @@ log_echo "Creating openerp-server init script..."
 cp -a /etc/openerp/server/init-skeleton /etc/init.d/openerp-server-$name
 sed -i "s#\\[NAME\\]#$name#g" /etc/init.d/openerp-server-$name
 #~ Start server on boot
-if [[ ! $start_boot =~ ^[Yy]$ ]]; then
+if [[ $start_boot =~ ^[Yy]$ ]]; then
 	log_echo "Creating server rc rules..."
 	update-rc.d openerp-server-$name defaults >> $INSTALL_LOG_FILE
 	log_echo ""
@@ -157,7 +157,7 @@ log_echo "Creating openerp-web init script..."
 cp -a /etc/openerp/web-client/init-skeleton /etc/init.d/openerp-web-$name
 sed -i "s#\\[NAME\\]#$name#g" /etc/init.d/openerp-web-$name
 #~ Start server on boot
-if [[ ! $start_boot =~ ^[Yy]$ ]]; then
+if [[ $start_boot =~ ^[Yy]$ ]]; then
 	log_echo "Creating web-client rc rules..."
 	update-rc.d openerp-web-$name defaults >> $INSTALL_LOG_FILE
 	log_echo ""
@@ -190,7 +190,7 @@ mkdir -p /var/run/openerp/$name
 chown $openerp_user:root /var/run/openerp/$name
 
 #~ Start server now
-if [[ ! $start_now =~ ^[Yy]$ ]]; then
+if [[ $start_now =~ ^[Yy]$ ]]; then
 	log_echo "Starting openerp server and web client..."
 	service openerp-server-$name start
 	service openerp-web-$name start
