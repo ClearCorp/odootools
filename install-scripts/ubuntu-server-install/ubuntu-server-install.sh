@@ -103,7 +103,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 		echo ""
 	done
 	echo $new_hostname > /etc/hostname
-	cat > /etc/hosts < EOF
+	cat > /etc/hosts <<EOF
 127.0.0.1	$new_hostname_full localhost localhost.localdomain
 $ip_addr	$new_hostname_full
 EOF
