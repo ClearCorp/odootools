@@ -84,17 +84,33 @@ done
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
 	while [[ $new_hostname == "" ]]; do
-		read -p "Enter the FQDN of this machine (`cat /etc/hostname`): " new_hostname
+		read -p "Enter the hostname of this machine (not the FQDN) (`cat /etc/hostname`): " new_hostname
 		if [[ $new_hostname == "" ]]; then
 			new_hostname=`cat /etc/hostname`
 		fi
 		echo ""
 	done
-	sed -i "s/`cat /etc/hostname`/$new_hostname/g" /etc/hosts
-	sed -i "s/`cat /etc/hostname`/$new_hostname/g" /etc/hostname
+	while [[ $new_hostname_full == "" ]]; do
+		read -p "Enter the FQDN of this machine (`hostname --fqdn`): " new_hostname_full
+		if [[ $new_hostname_full == "" ]]; then
+			new_hostname_full=`hostname --fqdn`
+		fi
+		echo ""
+	done
+	while [[ $ip_addr == "" ]]; do
+		echo "What is your IP address (list: `ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'`): "
+		read -p "WARNING: IP address not verified, WRITE IT CAREFULLY!!: " ip_addr
+		echo ""
+	done
+	echo $new_hostname > /etc/hostname
+	cat > /etc/hosts <EOF
+127.0.0.1	$new_hostname_full localhost localhost.localdomain
+$ip_addr	$new_hostname_full
+EOF
 	chmod 644 /etc/hosts
 	chmod 644 /etc/hostname
-	echo "Hostname set to: $new_hostname"
+	echo "Hostname set to: $(hostname)"
+	echo "Hostname set to: $(hostname --fqdn)"
 fi
 echo ""
 
