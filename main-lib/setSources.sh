@@ -2,8 +2,10 @@
 
 #~ Adds key to apt
 function addKey {
-	gpg --recv-keys $1
-	gpg --armor --export $1 | apt-key add -
+	if [[ `gpg --list-keys | grep -c $1` == 0 ]]; then
+		gpg --recv-keys $1
+		gpg --armor --export $1 | apt-key add -
+	fi
 }
 
 function setSources_ubuntu {
