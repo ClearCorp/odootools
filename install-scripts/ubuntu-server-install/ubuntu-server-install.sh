@@ -109,8 +109,8 @@ $ip_addr	$new_hostname_full
 EOF
 	chmod 644 /etc/hosts
 	chmod 644 /etc/hostname
-	echo "Hostname set to: $(hostname)"
-	echo "Hostname set to: $(hostname --fqdn)"
+	echo "Hostname set to: $new_hostname"
+	echo "Hostname set to: $new_hostname_full"
 fi
 echo ""
 
