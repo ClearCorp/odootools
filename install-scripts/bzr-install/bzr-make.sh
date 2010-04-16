@@ -8,7 +8,7 @@
 bzr update $LIBBASH_CCORP_DIR
 
 cd /var/www
-rm bzr-install.tar.gz
+rm bzr-install.tgz
 
 mkdir -p bzr-install/main-lib
 cp $LIBBASH_CCORP_DIR/main-lib/checkRoot.sh bzr-install/main-lib/checkRoot.sh
@@ -19,15 +19,18 @@ mkdir -p bzr-install/install-scripts/bzr-install
 cp $LIBBASH_CCORP_DIR/install-scripts/bzr-install/bzr-setup.sh bzr-install/install-scripts/bzr-install/bzr-setup.sh
 cp $LIBBASH_CCORP_DIR/install-scripts/bzr-install/bzr-update.sh bzr-install/install-scripts/bzr-install/bzr-update.sh
 
-cat > bzr-install/install.sh << EOF
+cat > bzr-install/setup.sh << EOF
 #!/bin/bash
-#install.sh
+#setup.sh
+
+#Go to script dir
+cd `dirname $0`
 
 cd install-scripts/bzr-install
 ./bzr-setup.sh
 EOF
 
-chmod +x bzr-install/install.sh
+chmod +x bzr-install/setup.sh
 
-tar cvzf bzr-install.tar.gz bzr-install
+tar cvzf bzr-install.tgz bzr-install
 rm -r bzr-install
