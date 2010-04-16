@@ -102,7 +102,7 @@ deb http://ppa.launchpad.net/bzr-explorer-dev/ppa/ubuntu $1 main
 EOF
 
 	#Add bzr ppa key
-	addKey "91A6BE3C68489A05"
+	addKey "68489A05"
 	#Add bzr-explorer ppa key
 	addKey "8C6C1EFD"
 }
