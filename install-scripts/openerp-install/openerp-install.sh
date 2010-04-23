@@ -450,17 +450,18 @@ chown $openerp_user:root /var/run/openerp
 
 cd $sources_path
 
+# NOTE: Creates translation problem on 5.0.9
 #~ Zip files inside addons
-cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/addons-zip.sh $addons_path
-if [[ ! "$server_type" =~ ^[Pp]$ ]]; then
-	cd $addons_path
-	log_echo "Compressing addons..."
-	./addons-zip.sh >> $INSTALL_LOG_FILE
+#cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/addons-zip.sh $addons_path
+#if [[ ! "$server_type" =~ ^[Pp]$ ]]; then
+#	cd $addons_path
+#	log_echo "Compressing addons..."
+#	./addons-zip.sh >> $INSTALL_LOG_FILE
 	#~ Base cannot be zipped for translations to work
-	unzip base.zip
-	rm base.zip
-	cd $sources_path
-fi
+#	unzip base.zip
+#	rm base.zip
+#	cd $sources_path
+#fi
 
 # Install OpenERP Web client
 log_echo "Installing OpenERP Web client..."
