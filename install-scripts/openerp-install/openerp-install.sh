@@ -293,8 +293,9 @@ log_echo ""
 echo "Installing the required python libraries for openerp-server..."
 apt-get -qqy install python python-psycopg2 python-reportlab python-egenix-mxdatetime python-tz python-pychart python-pydot python-lxml python-libxslt1 python-vobject python-imaging python-yaml >> $INSTALL_LOG_FILE
 apt-get -qqy install python python-dev build-essential python-setuptools python-profiler python-simplejson >> $INSTALL_LOG_FILE
-apt-get -qqy install zip
-apt-get -qqy install pyro
+apt-get -qqy install python-xlwt >> $INSTALL_LOG_FILE
+apt-get -qqy install zip >> $INSTALL_LOG_FILE
+apt-get -qqy install pyro >> $INSTALL_LOG_FILE
 log_echo ""
 
 # Install bazaar.
