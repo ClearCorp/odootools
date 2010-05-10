@@ -60,7 +60,17 @@ log_echo "Distribution: $dist"
 log_echo ""
 
 # Sets vars corresponding to the distro
-if [[ $dist == "karmic" ]]; then
+if [[ $dist == "lucid" ]]; then
+	# Ubuntu 10.04, python 2.6
+	posgresql_rel=8.4
+	python_rel=python2.6
+	ubuntu_rel=10.04
+	base_path=/usr/local
+	install_path=$base_path/lib/$python_rel/dist-packages/openerp-server-skeleton
+	install_path_web=$base_path/lib/$python_rel/dist-packages
+	addons_path=$install_path/addons/
+	sources_path=$base_path/src
+elif [[ $dist == "karmic" ]]; then
 	# Ubuntu 9.10, python 2.6
 	posgresql_rel=8.4
 	python_rel=python2.6
