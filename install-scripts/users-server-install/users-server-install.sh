@@ -18,6 +18,8 @@
 #       MA 02110-1301, USA.
 #!/bin/bash
 
+IREDMAIL_VER='0.5.1'
+
 if [[ ! -d $LIBBASH_CCORP_DIR ]]; then
 	echo "libbash-ccorp not installed."
 	exit 1
@@ -63,6 +65,7 @@ log_echo ""
 if [[ $dist == "lucid" ]]; then
 	# Ubuntu 10.04
 	ubuntu_rel=10.04
+	src_path='/usr/local/src'
 else
 	# Only Karmic supported for now
 	log_echo "ERROR: This program must be executed on Ubuntu Lucid Server 10.04 LTS"
@@ -99,6 +102,7 @@ while [[ $fqdn == "" ]]; do
 	read -p "What is your server FQDN (`hostname --fqdn`)?" fqdn
 	echo ""
 done
+host_name = `echo $fqdn | grep -oe "^[^.]*"`
 
 # Enter mail domain
 while [[ $main_domain == "" ]]; do
@@ -113,5 +117,25 @@ while [[ $ldap_suffix == "" ]]; do
 done
 
 
+# Set the hostname and the FQDN correctly
+if [[ `cat /etc/hosts | grep -c 127.0.0.1` == 0 ]]; then
+	echo "127.0.0.1 $fqdn $host_name localhost localhost.localdomain" > /etc/hosts.2
+	echo "$ip_addr $fqdn" >> /etc/hosts.2
+	cat /etc/hosts >> /etc/hosts.2
+	mv /etc/hosts.2 /etc/hosts
+else
+	sed -i "s/127\\.0\\.0\\.1.*/127.0.0.1 $fqdn $host_name localhost localhost.localdomain\n$ip_addr $fqdn/g" /etc/hosts
+fi
+echo $host_name > /etc/hostname
+
+# Fix for iRedMail
+export TERM='linux'
+
+# 
+cd $src_path
+wget http://iredmail.googlecode.com/files/iRedMail-${IREDMAIL_VER}.tar.bz2
+tar jxvf iRedMail-${IREDMAIL_VER}.tar.bz2
+cd iRedMail-${IREDMAIL_VER}/pkgs/
+bash get_all.sh
 
 exit 0
