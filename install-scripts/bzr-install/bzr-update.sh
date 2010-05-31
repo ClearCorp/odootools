@@ -39,5 +39,7 @@ rm /usr/local/sbin/ccorp-bzr-make
 ln -s $LIBBASH_CCORP_DIR/install-scripts/bzr-install/bzr-make.sh /usr/local/sbin/ccorp-bzr-make
 rm /usr/local/sbin/ccorp-bzr-update
 ln -s $LIBBASH_CCORP_DIR/install-scripts/bzr-install/bzr-update.sh /usr/local/sbin/ccorp-bzr-update
+rm /usr/local/sbin/ccorp-users-server-install
+ln -s $LIBBASH_CCORP_DIR/install-scripts/users-server-install/users-server-install.sh /usr/local/sbin/users-server-install
 
 bzr update $LIBBASH_CCORP_DIR
