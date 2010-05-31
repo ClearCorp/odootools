@@ -100,6 +100,9 @@ done
 # Enter domain
 while [[ $fqdn == "" ]]; do
 	read -p "What is your server FQDN (`hostname --fqdn`)? " fqdn
+	if [[ $fqdn == "" ]]; then
+		fqdn=$(hostname --fqdn)
+	fi
 	echo ""
 done
 host_name=`echo $fqdn | grep -oe "^[^.]*"`
@@ -107,6 +110,9 @@ host_name=`echo $fqdn | grep -oe "^[^.]*"`
 # Enter mail domain
 while [[ $main_domain == "" ]]; do
 	read -p "What is your mail server public domain name ($fqdn)? " main_domain
+	if [[ $main_domain == "" ]]; then
+		main_domain=$fqdn
+	fi
 	echo ""
 done
 
@@ -127,6 +133,11 @@ else
 	sed -i "s/127\\.0\\.0\\.1.*/127.0.0.1 $fqdn $host_name localhost localhost.localdomain\n$ip_addr $fqdn/g" /etc/hosts
 fi
 echo $host_name > /etc/hostname
+if [[ `hostname --fqdn` == $fqdn ]]; then
+	log_echo "Hostname: $fqdn"
+else
+	log_echo "Please reboot and run this script again."
+fi
 
 # Fix for iRedMail
 export TERM='linux'
@@ -137,5 +148,39 @@ wget http://iredmail.googlecode.com/files/iRedMail-${IREDMAIL_VER}.tar.bz2
 tar jxvf iRedMail-${IREDMAIL_VER}.tar.bz2
 cd iRedMail-${IREDMAIL_VER}/pkgs/
 bash get_all.sh
+
+# Lucid fixes
+cd ..
+sed -i "s/mysql-server-5\\.0 mysql-client-5\\.0/mysql-server-5.1 mysql-client-5.1/g" functions/packages.sh
+sed -i "s/mailx/mailutils/g" functions/packages.sh
+log_echo "Se va a instalar postfix-policyd, durante la instalación se solicitará una contraseña. Es necesario escribir alguna, después se volverá a poner en blanco automáticamente."
+mysql_temp_passwd=""
+while [[ $mysql_temp_passwd == "" ]]; do
+	read -p "Enter the temporary MySQL password: " mysql_temp_passwd
+	if [[ $mysql_temp_passwd == "" ]]; then
+		log_echo "The password cannot be empty."
+	else
+		read -p "Enter the temporary MySQL password again: " mysql_temp_passwd2
+		log_echo ""
+		if [[ $mysql_temp_passwd == $mysql_temp_passwd2 ]]; then
+			log_echo "Temporary MySQL password set. Write the SAME when asked."
+		else
+			mysql_temp_passwd=""
+			log_echo "Passwords don't match."
+		fi
+	fi
+	log_echo ""
+done
+apt-get -qqy install postfix-policyd
+echo 'grant all privileges on *.* to root@localhost identified by ""; flush privileges;' | mysql --user=root --pass=$mysql_temp_passwd
+
+cp $LIBBASH_CCORP_DIR/install-scripts/users-server-install/managesieve.sh functions/
+chown 501:80 functions/managesieve.sh
+
+# Install iRedMail
+bash iRedMail.sh
+
+# phpLDAPadmin fix
+sed -i "s/protected function draw_dn(\$dn,\$level=0,\$first_child=true,\$last_child=true)/protected function draw_dn(\$dn,\$level,\$first_child=true,\$last_child=true)/g" /usr/share/apache2/phpldapadmin/lib/AJAXTree.php
 
 exit 0
