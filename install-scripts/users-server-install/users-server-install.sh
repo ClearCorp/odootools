@@ -99,20 +99,20 @@ done
 
 # Enter domain
 while [[ $fqdn == "" ]]; do
-	read -p "What is your server FQDN (`hostname --fqdn`)?" fqdn
+	read -p "What is your server FQDN (`hostname --fqdn`)? " fqdn
 	echo ""
 done
-host_name = `echo $fqdn | grep -oe "^[^.]*"`
+host_name=`echo $fqdn | grep -oe "^[^.]*"`
 
 # Enter mail domain
 while [[ $main_domain == "" ]]; do
-	read -p "What is your mail server public domain name ($fqdn)?" main_domain
+	read -p "What is your mail server public domain name ($fqdn)? " main_domain
 	echo ""
 done
 
 # Enter LDAP suffix
 while [[ $ldap_suffix == "" ]]; do
-	read -p "What is your LDAP root suffix (dc=example,dc=com)?" ldap_suffix
+	read -p "What is your LDAP root suffix (dc=example,dc=com)? " ldap_suffix
 	echo ""
 done
 
