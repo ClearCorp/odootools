@@ -104,13 +104,13 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 	done
 	echo $new_hostname > /etc/hostname
 	cat > /etc/hosts <<EOF
-127.0.0.1	$new_hostname_full localhost localhost.localdomain
+127.0.0.1	$new_hostname_full $new_hostname localhost localhost.localdomain
 $ip_addr	$new_hostname_full
 EOF
 	chmod 644 /etc/hosts
 	chmod 644 /etc/hostname
-	echo "Hostname set to: $new_hostname"
-	echo "Hostname set to: $new_hostname_full"
+	echo "Hostname set to: $(hostname)"
+	echo "Hostname set to: $(hostname --fqdn)"
 fi
 echo ""
 
