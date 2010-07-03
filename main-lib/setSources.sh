@@ -92,22 +92,14 @@ EOF
 }
 
 function setSources_bazaar {
-	# Bazaar repository
-	cat > /etc/apt/sources.list.d/bzr.list << EOF
-# Bazaar repository
-deb http://ppa.launchpad.net/bzr/ppa/ubuntu $1 main
-#deb-src http://ppa.launchpad.net/bzr/ppa/ubuntu $1 main
-deb http://ppa.launchpad.net/bzr-explorer-dev/ppa/ubuntu $1 main
-#deb-src http://ppa.launchpad.net/bzr-explorer-dev/ppa/ubuntu $1 main
-EOF
-
-	#Add bzr ppa key
-	addKey "68489A05"
-	#Add bzr-explorer ppa key
-	addKey "8C6C1EFD"
+	add-apt-repository ppa:bzr/ppa
+	add-apt-repository ppa:bzr-explorer-dev/ppa
 }
 
 function setSources {
+	#Adds add-apt-repository
+	apt-get -yqq install python-software-properties
+
 	setSources_ubuntu $1
 	setSources_webmin $1
 	setSources_bazaar $1
