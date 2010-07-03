@@ -32,10 +32,12 @@ done
 if [[ $REPLY =~ ^[Yy]$ ]]; then
 	echo "Installing bzr..."
 	echo ""
-	dist=""
-	getDist dist
-	setSources_bazaar $dist
+	#dist=""
+	#getDist dist
+	#setSources_bazaar $dist
 	apt-get -y update
+	apt-get -y install python-software-properties
+	add-apt-repository ppa:bzr/ppa
 	apt-get -y install bzr
 fi
 echo ""
