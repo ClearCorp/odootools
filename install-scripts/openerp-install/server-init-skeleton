@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ### BEGIN INIT INFO
 # Provides:				openerp-server-[NAME]
@@ -45,7 +45,20 @@ do_start() {
 		--chuid $USER  --background --exec $DAEMON -- $DAEMON_OPTS
 
 	RETVAL=$?
-	sleep 5         # wait for few seconds
+	i=10
+	max=1
+	count=0
+	while [ $i -gt 0 ]; do
+		sleep 1
+		i=$((i-=1))
+		if [ ! -e $PIDFILE ]; then
+			i=0
+		elif [[ $count == $max ]]; then
+			i=0
+		else
+			count=$((count+=1))
+		fi
+	done
 
 	return $RETVAL
 }
@@ -54,7 +67,14 @@ do_stop() {
 	start-stop-daemon --stop --quiet --pidfile $PIDFILE --oknodo
 
 	RETVAL=$?
-	sleep 2         # wait for few seconds
+	i=10
+	while [ $i -gt 0 ]; do
+		sleep 1
+		i=$((i-=1))
+		if [ ! -e $PIDFILE ]; then
+			i=0
+		fi
+	done
 	rm -f $PIDFILE  # remove pidfile
 
 	return $RETVAL
