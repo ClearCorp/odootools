@@ -74,6 +74,19 @@ else
 	exit 1
 fi
 
+#~ Select user
+openerp_user=""
+while [[ $openerp_user == "" ]]; do
+	read -p "What is the developer username? " openerp_user
+	if [[ $openerp_user == "" ]]; then
+		echo "Please enter a valid username."
+	elif [[ `cat /etc/passwd | grep -c $openerp_user` == 0 ]]; then
+		echo "Please enter a valid username."
+		openerp_user=""
+	fi
+	log_echo ""
+done
+
 #Download
 #########
 
@@ -88,7 +101,7 @@ log_echo ""
 
 # Install the required python libraries for openerp-server.
 echo "Installing the required python libraries for koo..."
-apt-get -qqy install python-qt4 python-dbus pyro >> $INSTALL_LOG_FILE
+apt-get -qqy install python-qt4 python-dbus python-qt4-dbus pyro >> $INSTALL_LOG_FILE
 log_echo ""
 
 log_echo "Downloading Koo"
@@ -120,7 +133,7 @@ cd openobject-client-kde
 make install >> $INSTALL_LOG_FILE
 sed -i "s#/usr/lib/python2\\.6/dist-packages/Koo#/usr/local/lib/python2.6/dist-packages/Koo#g" /usr/local/bin/koo
 cp -a Koo/* $install_path/Koo/
-cat > /usr/share/applications/koo.desktop << EOF
+cat > /home/$openerp_user/.local/share/applications/koo.desktop << EOF
 [Desktop Entry]
 Version=1.0
 Terminal=false
@@ -134,6 +147,8 @@ Name=Koo
 GenericName=OpenERP KDE client
 Comment=OpenERP KDE client
 EOF
+
+chown $openerp_user:$openerp_user /home/$openerp_user/.local/share/applications/koo.desktop
 
 
 exit 0
