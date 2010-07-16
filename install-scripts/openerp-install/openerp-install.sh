@@ -328,7 +328,7 @@ fi
 
 # Add openerp postgres user
 if [[ $create_pguser =~ ^[Yy]$ ]]; then
-	/usr/bin/sudo -u postgres createuser $openerp_user --no-superuser --createdb --no-createrole >> $INSTALL_LOG_FILE
+	/usr/bin/sudo -u postgres createuser $openerp_user --superuser --createdb --no-createrole >> $INSTALL_LOG_FILE
 	/usr/bin/sudo -u postgres psql template1 -U postgres -c "alter user $openerp_user with password '$openerp_admin_passwd'" >> $INSTALL_LOG_FILE
 	log_echo ""
 fi
