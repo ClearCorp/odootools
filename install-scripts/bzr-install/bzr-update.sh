@@ -41,5 +41,7 @@ rm /usr/local/sbin/ccorp-bzr-update
 ln -s $LIBBASH_CCORP_DIR/install-scripts/bzr-install/bzr-update.sh /usr/local/sbin/ccorp-bzr-update
 rm /usr/local/sbin/ccorp-users-server-install
 ln -s $LIBBASH_CCORP_DIR/install-scripts/users-server-install/users-server-install.sh /usr/local/sbin/ccorp-users-server-install
+rm /usr/local/sbin/ccorp-koo-install
+ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-dev-station/koo-install.sh /usr/local/sbin/ccorp-koo-install
 
 bzr update $LIBBASH_CCORP_DIR
