@@ -26,6 +26,7 @@ fi
 #~ Libraries import
 . $LIBBASH_CCORP_DIR/main-lib/checkRoot.sh
 . $LIBBASH_CCORP_DIR/main-lib/getDist.sh
+. $LIBBASH_CCORP_DIR/main-lib/installFonts.sh
 
 # Check user is root
 checkRoot
@@ -399,6 +400,11 @@ cd openerp-server
 #~ Make skeleton installation
 mkdir -p $install_path
 cp -a bin/* $install_path/
+
+# Making system fonts available to ReportLab
+installFonts
+cp -a $LIBBASH_CCORP_DIR/install-scripts/openerp-install/ccorp-fonts.py $install_path/report/render/rml2pdf/
+echo "import ccorp-fonts" >> $install_path/report/render/rml2pdf/__init__.py
 
 #~ Copy documentation
 mkdir -p $base_path/share/doc/openerp-server
