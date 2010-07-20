@@ -210,8 +210,8 @@ log_echo "Downloading OpenERP"
 log_echo "-------------------"
 log_echo ""
 
-mkdir -p $sources_path
-cd $sources_path
+mkdir -p $sources_path >> $INSTALL_LOG_FILE
+cd $sources_path >> $INSTALL_LOG_FILE
 
 # Download openerp-server latest stable/trunk release.
 log_echo "Downloading openerp-server latest stable/trunk release..."
@@ -227,7 +227,7 @@ log_echo "Downloading openerp addons latest stable/trunk branch..."
 if [ -e addons ]; then
 	bzr update addons >> $INSTALL_LOG_FILE
 else
-	bzr checkout --lightweight lp:openobject-addons/$branch addons
+	bzr checkout --lightweight lp:openobject-addons/$branch addons >> $INSTALL_LOG_FILE
 fi
 log_echo ""
 
@@ -272,76 +272,76 @@ log_echo "Updating OpenERP"
 log_echo "----------------"
 log_echo ""
 
-cd $sources_path
+cd $sources_path >> $INSTALL_LOG_FILE
 
 # Updating OpenERP server
 log_echo "Updating OpenERP Server..."
-cd openerp-server
+cd openerp-server >> $INSTALL_LOG_FILE
 
 #~ Make skeleton installation
 if [ -e $install_path ]; then
-	tar cvfz $sources_path/openerp-server-skeleton-backup-`date +%Y-%m-%d_%H-%M-%S`.tgz $install_path
-	rm -r $install_path
+	tar cvfz $sources_path/openerp-server-skeleton-backup-`date +%Y-%m-%d_%H-%M-%S`.tgz $install_path >> $INSTALL_LOG_FILE
+	rm -r $install_path >> $INSTALL_LOG_FILE
 fi
-mkdir -p $install_path
-cp -a bin/* $install_path/
+mkdir -p $install_path >> $INSTALL_LOG_FILE
+cp -a bin/* $install_path/ >> $INSTALL_LOG_FILE
 
 # Making ClearCorp fonts available to ReportLab
 installFonts
-cp -a $LIBBASH_CCORP_DIR/install-scripts/openerp-install/ccorp-fonts.py $install_path/report/render/rml2pdf/
+cp -a $LIBBASH_CCORP_DIR/install-scripts/openerp-install/ccorp-fonts.py $install_path/report/render/rml2pdf/ >> $INSTALL_LOG_FILE
 echo "import ccorp-fonts" >> $install_path/report/render/rml2pdf/__init__.py
 
 #~ Copy documentation
-mkdir -p $base_path/share/doc/openerp-server
-cp -a doc/* $base_path/share/doc/openerp-server/
+mkdir -p $base_path/share/doc/openerp-server >> $INSTALL_LOG_FILE
+cp -a doc/* $base_path/share/doc/openerp-server/ >> $INSTALL_LOG_FILE
 
 #~ Install man pages
-mkdir -p $base_path/share/man/man1
-mkdir -p $base_path/share/man/man5
-cp -a man/*.1 $base_path/share/man/man1/
-cp -a man/*.5 $base_path/share/man/man5/
+mkdir -p $base_path/share/man/man1 >> $INSTALL_LOG_FILE
+mkdir -p $base_path/share/man/man5 >> $INSTALL_LOG_FILE
+cp -a man/*.1 $base_path/share/man/man1/ >> $INSTALL_LOG_FILE
+cp -a man/*.5 $base_path/share/man/man5/ >> $INSTALL_LOG_FILE
 
 # Change permissions
-chown -R $opnerp_user:root $install_path
-chmod 755 $addons_path
+chown -R $opnerp_user:root $install_path >> $INSTALL_LOG_FILE
+chmod 755 $addons_path >> $INSTALL_LOG_FILE
 
 # Updating OpenERP addons
 log_echo "Updating OpenERP addons..."
-mkdir -p $addons_path
-cd $sources_path
-cp -a addons/* $addons_path
+mkdir -p $addons_path >> $INSTALL_LOG_FILE
+cd $sources_path >> $INSTALL_LOG_FILE
+cp -a addons/* $addons_path >> $INSTALL_LOG_FILE
 
 # Updating OpenERP extra addons
 if [[ "$install_extra_addons" =~ ^[Yy]$ ]]; then
 	log_echo "Updating OpenERP extra addons..."
-	cp -a extra-addons/* $addons_path
+	cp -a extra-addons/* $addons_path >> $INSTALL_LOG_FILE
 fi
 
 # Updating OpenERP magentoerpconnect
 if [[ "$install_magentoerpconnect" =~ ^[Yy]$ ]]; then
 	log_echo "Updating OpenERP magentoerpconnect..."
-	cp -a magentoerpconnect $addons_path
+	cp -a magentoerpconnect $addons_path >> $INSTALL_LOG_FILE
 fi
 
 # Updating nan-tic modules
 if [[ "$install_nantic" =~ ^[Yy]$ ]]; then
 	log_echo "Updating nan-tic modules..."
-	rm openobject-client-kde/server-modules/*.sh
-	cp -a openobject-client-kde/server-modules/* $addons_path
+	rm openobject-client-kde/server-modules/*.sh >> $INSTALL_LOG_FILE
+	cp -a openobject-client-kde/server-modules/* $addons_path >> $INSTALL_LOG_FILE
 fi
 
-cd $sources_path
+cd $sources_path >> $INSTALL_LOG_FILE
 
 # Updating OpenERP Web client
 log_echo "Updating OpenERP Web client..."
-easy_install -U openerp-web >> $INSTALL_LOG_FILE
+easy_install -U openerp-web >> $INSTALL_LOG_FILE >> $INSTALL_LOG_FILE
 
 #~ Adds ClearCorp logo
 for i in `ls -d $install_path_web/openerp_web*`; do
-	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/company_logo.png $i/openerp/static/images/company_logo.png
+	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/company_logo.png $i/openerp/static/images/company_logo.png >> $INSTALL_LOG_FILE
 done
 
 #~ Adds bin symlink
-ln -s $install_path_web/openerp-web $base_path/bin/openerp-web
+ln -s $install_path_web/openerp-web $base_path/bin/openerp-web >> $INSTALL_LOG_FILE
 
 exit 0

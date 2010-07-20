@@ -320,7 +320,7 @@ log_echo ""
 log_echo ""
 # Update pg_hba.conf
 if [[ $update_pg_hba =~ ^[Yy]$ ]]; then
-	sed -i 's/\(local[[:space:]]*all[[:space:]]*all[[:space:]]*\)\(ident[[:space:]]*sameuser\)/\1md5/g' /etc/postgresql/$posgresql_rel/main/pg_hba.conf
+	sed -i 's/\(local[[:space:]]*all[[:space:]]*all[[:space:]]*\)\(ident[[:space:]]*sameuser\)/\1md5/g' /etc/postgresql/$posgresql_rel/main/pg_hba.conf >> $INSTALL_LOG_FILE
 	/etc/init.d/postgresql-$posgresql_rel restart >> $INSTALL_LOG_FILE
 fi
 
@@ -347,8 +347,8 @@ log_echo "Downloading OpenERP"
 log_echo "-------------------"
 log_echo ""
 
-mkdir -p $sources_path
-cd $sources_path
+mkdir -p $sources_path >> $INSTALL_LOG_FILE
+cd $sources_path >> $INSTALL_LOG_FILE
 
 # Download openerp-server latest stable/trunk release.
 log_echo "Downloading openerp-server latest stable/trunk release..."
@@ -364,7 +364,7 @@ log_echo "Downloading openerp addons latest stable/trunk branch..."
 if [ -e addons ]; then
 	bzr update addons >> $INSTALL_LOG_FILE
 else
-	bzr checkout --lightweight lp:openobject-addons/$branch addons
+	bzr checkout --lightweight lp:openobject-addons/$branch addons >> $INSTALL_LOG_FILE
 fi
 log_echo ""
 
@@ -413,104 +413,104 @@ cd $sources_path
 
 # Install OpenERP server
 log_echo "Installing OpenERP Server..."
-cd openerp-server
+cd openerp-server >> $INSTALL_LOG_FILE
 
 #~ Make skeleton installation
-mkdir -p $install_path
-cp -a bin/* $install_path/
+mkdir -p $install_path >> $INSTALL_LOG_FILE
+cp -a bin/* $install_path/ >> $INSTALL_LOG_FILE
 
 # Making ClearCorp fonts available to ReportLab
-installFonts
-cp -a $LIBBASH_CCORP_DIR/install-scripts/openerp-install/ccorp-fonts.py $install_path/report/render/rml2pdf/
+installFonts >> $INSTALL_LOG_FILE
+cp -a $LIBBASH_CCORP_DIR/install-scripts/openerp-install/ccorp-fonts.py $install_path/report/render/rml2pdf/ >> $INSTALL_LOG_FILE
 echo "import ccorp-fonts" >> $install_path/report/render/rml2pdf/__init__.py
 
 #~ Copy documentation
-mkdir -p $base_path/share/doc/openerp-server
-cp -a doc/* $base_path/share/doc/openerp-server/
+mkdir -p $base_path/share/doc/openerp-server >> $INSTALL_LOG_FILE
+cp -a doc/* $base_path/share/doc/openerp-server/ >> $INSTALL_LOG_FILE
 
 #~ Install man pages
-mkdir -p $base_path/share/man/man1
-mkdir -p $base_path/share/man/man5
-cp -a man/*.1 $base_path/share/man/man1/
-cp -a man/*.5 $base_path/share/man/man5/
+mkdir -p $base_path/share/man/man1 >> $INSTALL_LOG_FILE
+mkdir -p $base_path/share/man/man5 >> $INSTALL_LOG_FILE
+cp -a man/*.1 $base_path/share/man/man1/ >> $INSTALL_LOG_FILE
+cp -a man/*.5 $base_path/share/man/man5/ >> $INSTALL_LOG_FILE
 
 #~ Copy bin script skeleton to etc
-mkdir -p /etc/openerp/server/
-cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-bin-skeleton /etc/openerp/server/bin-skeleton
+mkdir -p /etc/openerp/server/ >> $INSTALL_LOG_FILE
+cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-bin-skeleton /etc/openerp/server/bin-skeleton >> $INSTALL_LOG_FILE
 
 # Change permissions
-chown -R $opnerp_user:root $install_path
-chmod 755 $addons_path
+chown -R $opnerp_user:root $install_path >> $INSTALL_LOG_FILE
+chmod 755 $addons_path >> $INSTALL_LOG_FILE
 
 # OpenERP Server init and config skeletons
-cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-init-skeleton /etc/openerp/server/init-skeleton
-sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/server/init-skeleton
-sed -i "s#\\[USER\\]#$openerp_user#g" /etc/openerp/server/init-skeleton
-cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server.conf-skeleton /etc/openerp/server/
-sed -i "s#\\[USER\\]#$openerp_user#g" /etc/openerp/server/server.conf-skeleton
+cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-init-skeleton /etc/openerp/server/init-skeleton >> $INSTALL_LOG_FILE
+sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/server/init-skeleton >> $INSTALL_LOG_FILE
+sed -i "s#\\[USER\\]#$openerp_user#g" /etc/openerp/server/init-skeleton >> $INSTALL_LOG_FILE
+cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server.conf-skeleton /etc/openerp/server/ >> $INSTALL_LOG_FILE
+sed -i "s#\\[USER\\]#$openerp_user#g" /etc/openerp/server/server.conf-skeleton >> $INSTALL_LOG_FILE
 if [[ $server_type =~ ^[Pp]$ ]]; then
-	sed -i "s#\\[LOGLEVEL\\]#info#g" /etc/openerp/server/server.conf-skeleton
+	sed -i "s#\\[LOGLEVEL\\]#info#g" /etc/openerp/server/server.conf-skeleton >> $INSTALL_LOG_FILE
 else
-	sed -i "s#\\[LOGLEVEL\\]#debug#g" /etc/openerp/server/server.conf-skeleton
+	sed -i "s#\\[LOGLEVEL\\]#debug#g" /etc/openerp/server/server.conf-skeleton >> $INSTALL_LOG_FILE
 fi
 
 # Install OpenERP addons
 log_echo "Installing OpenERP addons..."
-mkdir -p $addons_path
-cd $sources_path
-cp -a addons/* $addons_path
+mkdir -p $addons_path >> $INSTALL_LOG_FILE
+cd $sources_path >> $INSTALL_LOG_FILE
+cp -a addons/* $addons_path >> $INSTALL_LOG_FILE
 
 # Install OpenERP extra addons
 if [[ "$install_extra_addons" =~ ^[Yy]$ ]]; then
 	log_echo "Installing OpenERP extra addons..."
-	cp -a extra-addons/* $addons_path
+	cp -a extra-addons/* $addons_path >> $INSTALL_LOG_FILE
 fi
 
 # Install OpenERP magentoerpconnect
 if [[ "$install_magentoerpconnect" =~ ^[Yy]$ ]]; then
 	log_echo "Installing OpenERP magentoerpconnect..."
-	cp -a magentoerpconnect $addons_path
+	cp -a magentoerpconnect $addons_path >> $INSTALL_LOG_FILE
 fi
 
 # Install nan-tic modules
 if [[ "$install_nantic" =~ ^[Yy]$ ]]; then
 	log_echo "Installing nan-tic modules..."
-	rm openobject-client-kde/server-modules/*.sh
-	cp -a openobject-client-kde/server-modules/* $addons_path
+	rm openobject-client-kde/server-modules/*.sh >> $INSTALL_LOG_FILE
+	cp -a openobject-client-kde/server-modules/* $addons_path >> $INSTALL_LOG_FILE
 fi
 
 #~ Make pid dir
-mkdir -p /var/run/openerp
-chown $openerp_user:root /var/run/openerp
-sed -i "s#exit 0#mkdir -p /var/run/openerp\\\\nchown $openerp_user:root /var/run/openerp\\\\n#g" /etc/rc.local
+mkdir -p /var/run/openerp >> $INSTALL_LOG_FILE
+chown $openerp_user:root /var/run/openerp >> $INSTALL_LOG_FILE
+sed -i "s#exit 0#mkdir -p /var/run/openerp\\\\nchown $openerp_user:root /var/run/openerp\\\\n#g" /etc/rc.local >> $INSTALL_LOG_FILE
 
-cd $sources_path
+cd $sources_path >> $INSTALL_LOG_FILE
 
 # Install OpenERP Web client
 log_echo "Installing OpenERP Web client..."
 easy_install -U openerp-web >> $INSTALL_LOG_FILE
 
 # OpenERP Web Client init and config skeletons
-mkdir -p /etc/openerp/web-client
-cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client-init-skeleton /etc/openerp/web-client/init-skeleton
-sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/web-client/init-skeleton
-sed -i "s#\\[USER\\]#$openerp_user#g" /etc/openerp/web-client/init-skeleton
-cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client.conf-skeleton /etc/openerp/web-client/
+mkdir -p /etc/openerp/web-client >> $INSTALL_LOG_FILE
+cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client-init-skeleton /etc/openerp/web-client/init-skeleton >> $INSTALL_LOG_FILE
+sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/web-client/init-skeleton >> $INSTALL_LOG_FILE
+sed -i "s#\\[USER\\]#$openerp_user#g" /etc/openerp/web-client/init-skeleton >> $INSTALL_LOG_FILE
+cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client.conf-skeleton /etc/openerp/web-client/ >> $INSTALL_LOG_FILE
 
 #~ Sets server type
 if [[ "$server_type" =~ ^[DdWw]$ ]]; then
-	sed -i "s/\[TYPE\]/development/g" /etc/openerp/web-client/web-client.conf-skeleton
+	sed -i "s/\[TYPE\]/development/g" /etc/openerp/web-client/web-client.conf-skeleton >> $INSTALL_LOG_FILE
 else
-	sed -i "s/\[TYPE\]/production/g" /etc/openerp/web-client/web-client.conf-skeleton
+	sed -i "s/\[TYPE\]/production/g" /etc/openerp/web-client/web-client.conf-skeleton >> $INSTALL_LOG_FILE
 fi
 
 #~ Adds ClearCorp logo
 for i in `ls -d $install_path_web/openerp_web*`; do
-	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/company_logo.png $i/openerp/static/images/company_logo.png
+	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/company_logo.png $i/openerp/static/images/company_logo.png >> $INSTALL_LOG_FILE
 done
 
 #~ Adds bin symlink
-ln -s $install_path_web/openerp-web $base_path/bin/openerp-web
+ln -s $install_path_web/openerp-web $base_path/bin/openerp-web >> $INSTALL_LOG_FILE
 
 ## Apache installation
 
@@ -540,11 +540,11 @@ if [[ "$install_apache" =~ ^[Yy]$ ]]; then
 	a2ensite default-ssl >> $INSTALL_LOG_FILE
 
 	log_echo "Configuring site config files..."
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-erp /etc/apache2/sites-available/erp
-	mkdir -p /etc/openerp/apache2/rewrites
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-ssl-skeleton /etc/openerp/apache2/ssl-skeleton
-	sed -i "s/ServerAdmin webmaster@localhost/ServerAdmin support@clearnet.co.cr\n\n\tInclude \/etc\/apache2\/sites-available\/erp/g" /etc/apache2/sites-available/default
-	sed -i "s/ServerAdmin webmaster@localhost/ServerAdmin support@clearnet.co.cr\n\n\tInclude \/etc\/openerp\/apache2\/rewrites/g" /etc/apache2/sites-available/default-ssl
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-erp /etc/apache2/sites-available/erp >> $INSTALL_LOG_FILE
+	mkdir -p /etc/openerp/apache2/rewrites >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-ssl-skeleton /etc/openerp/apache2/ssl-skeleton >> $INSTALL_LOG_FILE
+	sed -i "s/ServerAdmin webmaster@localhost/ServerAdmin support@clearnet.co.cr\n\n\tInclude \/etc\/apache2\/sites-available\/erp/g" /etc/apache2/sites-available/default >> $INSTALL_LOG_FILE
+	sed -i "s/ServerAdmin webmaster@localhost/ServerAdmin support@clearnet.co.cr\n\n\tInclude \/etc\/openerp\/apache2\/rewrites/g" /etc/apache2/sites-available/default-ssl >> $INSTALL_LOG_FILE
 
 
 	log_echo "Restarting Apache..."
@@ -556,10 +556,10 @@ fi
 #~ Install phppgadmin
 log_echo "Installing PostgreSQL Web administration interface (phppgadmin)..."
 apt-get -qy install phppgadmin >> $INSTALL_LOG_FILE
-sed -i "s/#\?[[:space:]]*\(deny from all.*\)/# deny from all/g" /etc/phppgadmin/apache.conf
-sed -i "s/[[:space:]]*allow from \(.*\)/# allow from \1/g" /etc/phppgadmin/apache.conf
-sed -i "s/#\?[[:space:]]*\(allow from all.*\)/allow from all/g" /etc/phppgadmin/apache.conf
-sed -i "s/#\?[[:space:]]*\(allow from all.*\)/allow from all/g" /etc/phppgadmin/apache.conf
+sed -i "s/#\?[[:space:]]*\(deny from all.*\)/# deny from all/g" /etc/phppgadmin/apache.conf >> $INSTALL_LOG_FILE
+sed -i "s/[[:space:]]*allow from \(.*\)/# allow from \1/g" /etc/phppgadmin/apache.conf >> $INSTALL_LOG_FILE
+sed -i "s/#\?[[:space:]]*\(allow from all.*\)/allow from all/g" /etc/phppgadmin/apache.conf >> $INSTALL_LOG_FILE
+sed -i "s/#\?[[:space:]]*\(allow from all.*\)/allow from all/g" /etc/phppgadmin/apache.conf >> $INSTALL_LOG_FILE
 /etc/init.d/apache2 restart >> $INSTALL_LOG_FILE
 
 exit 0
