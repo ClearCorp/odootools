@@ -228,6 +228,7 @@ if [ -e addons ]; then
 	bzr update addons >> $INSTALL_LOG_FILE
 else
 	bzr checkout --lightweight lp:openobject-addons/$branch addons
+fi
 log_echo ""
 
 # Download extra addons
@@ -237,6 +238,7 @@ if [[ $install_extra_addons =~ ^[Yy]$ ]]; then
 		bzr update extra-addons >> $INSTALL_LOG_FILE
 	else
 		bzr checkout --lightweight lp:openobject-addons/extra-$branch extra-addons >> $INSTALL_LOG_FILE
+	fi
 	log_echo ""
 fi
 
@@ -247,6 +249,7 @@ if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then
 		bzr update magentoerpconnect >> $INSTALL_LOG_FILE
 	else
 		bzr checkout --lightweight lp:magentoerpconnect magentoerpconnect >> $INSTALL_LOG_FILE
+	fi
 	log_echo ""
 fi
 
@@ -257,6 +260,7 @@ if [[ $install_nantic =~ ^[Yy]$ ]]; then
 		bzr update openobject-client-kde >> $INSTALL_LOG_FILE
 	else
 		bzr checkout --lightweight lp:~openobject-client-kde/openobject-client-kde/$branch openobject-client-kde >> $INSTALL_LOG_FILE
+	fi
 	log_echo ""
 fi
 
@@ -333,7 +337,9 @@ log_echo "Updating OpenERP Web client..."
 easy_install -U openerp-web >> $INSTALL_LOG_FILE
 
 #~ Adds ClearCorp logo
-ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/company_logo.png $install_path_web/openerp-web-skeleton/openerp/static/images/company_logo.png
+for i in `ls -d $install_path_web/openerp_web*`; do
+	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/company_logo.png $i/openerp/static/images/company_logo.png
+done
 
 #~ Adds bin symlink
 ln -s $install_path_web/openerp-web $base_path/bin/openerp-web
