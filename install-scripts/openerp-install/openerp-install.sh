@@ -70,20 +70,10 @@ if [[ $dist == "lucid" ]]; then
 	install_path=$base_path/lib/$python_rel/dist-packages/openerp-server-skeleton
 	install_path_web=$base_path/lib/$python_rel/dist-packages
 	addons_path=$install_path/addons/
-	sources_path=$base_path/src
-elif [[ $dist == "karmic" ]]; then
-	# Ubuntu 9.10, python 2.6
-	posgresql_rel=8.4
-	python_rel=python2.6
-	ubuntu_rel=9.10
-	base_path=/usr/local
-	install_path=$base_path/lib/$python_rel/dist-packages/openerp-server-skeleton
-	install_path_web=$base_path/lib/$python_rel/dist-packages
-	addons_path=$install_path/addons/
-	sources_path=$base_path/src
+	sources_path=$base_path/src/openerp
 else
-	# Only Karmic supported for now
-	log_echo "ERROR: This program must be executed on Ubuntu Karmic 9.10 (Desktop or Server)"
+	# Only Lucid supported for now
+	log_echo "ERROR: This program must be executed on Ubuntu Lucid 10.04 (Desktop or Server)"
 	exit 1
 fi
 
@@ -99,6 +89,10 @@ if [[ $run_preparation_script =~ ^[Yy]$ ]]; then
 	log_echo "Running ccorp-ubuntu-server-install..."
 	log_echo ""
 	ccorp-ubuntu-server-install
+	log_echo ""
+	log_echo "Finished ccorp-ubuntu-server-install"
+	log_echo "Continuing ccorp-openerp-install..."
+	log_echo ""
 fi
 
 
@@ -107,7 +101,7 @@ fi
 
 #~ Choose between server or working station
 while [[ ! $server_type =~ ^[SsWw]$ ]]; do
-	read -p "Is this a server or a working station (S/w)? " -n 1 server_type
+	read -p "Is this a Server or a Working station (S/w)? " -n 1 server_type
 	if [[ $server_type == "" ]]; then
 		server_type="s"
 	fi
@@ -132,7 +126,7 @@ if [[ $server_type =~ ^[Ww]$ ]]; then
 else
 	#~ Choose between development and production server
 	while [[ ! $server_type =~ ^[DdPp]$ ]]; do
-		read -p "Is this a development or production server (D/p)? " -n 1 server_type
+		read -p "Is this a Development or Production server (D/p)? " -n 1 server_type
 		if [[ $server_type == "" ]]; then
 			server_type="d"
 		fi
@@ -168,6 +162,7 @@ else
 	log_echo "This installation will use trunk branch."
 	branch="trunk"
 fi
+echo $branch > /etc/openerp/branch
 echo ""
 
 #Install extra-addons
@@ -178,6 +173,7 @@ while [[ ! $install_extra_addons =~ ^[YyNn]$ ]]; do
         fi
         log_echo ""
 done
+echo $install_extra_addons > /etc/openerp/extra_addons
 
 #Install magentoerpconnect
 while [[ ! $install_magentoerpconnect =~ ^[YyNn]$ ]]; do
@@ -187,6 +183,7 @@ while [[ ! $install_magentoerpconnect =~ ^[YyNn]$ ]]; do
         fi
         log_echo ""
 done
+echo $install_magentoerpconnect > /etc/openerp/magentoerpconnect
 
 #Install nan-tic modules
 while [[ ! $install_nantic =~ ^[YyNn]$ ]]; do
@@ -196,13 +193,14 @@ while [[ ! $install_nantic =~ ^[YyNn]$ ]]; do
         fi
         log_echo ""
 done
+echo $install_nantic > /etc/openerp/nantic
 
 #Select FQDN
 fqdn=""
 while [[ $fqdn == "" ]]; do
-        read -p "Enter the FQDN for this server (`cat /etc/hostname`)? " fqdn
+        read -p "Enter the FQDN for this server (`hostname --fqdn`)? " fqdn
         if [[ $fqdn == "" ]]; then
-                fqdn=`cat /etc/hostname`
+                fqdn=`hostname --fqdn`
         fi
         log_echo ""
 done
@@ -305,7 +303,6 @@ echo "Installing the required python libraries for openerp-server..."
 apt-get -qqy install python python-psycopg2 python-reportlab python-egenix-mxdatetime python-tz python-pychart python-pydot python-lxml python-libxslt1 python-vobject python-imaging python-yaml >> $INSTALL_LOG_FILE
 apt-get -qqy install python python-dev build-essential python-setuptools python-profiler python-simplejson >> $INSTALL_LOG_FILE
 apt-get -qqy install python-xlwt >> $INSTALL_LOG_FILE
-apt-get -qqy install zip >> $INSTALL_LOG_FILE
 apt-get -qqy install pyro >> $INSTALL_LOG_FILE
 log_echo ""
 
@@ -350,36 +347,53 @@ log_echo "Downloading OpenERP"
 log_echo "-------------------"
 log_echo ""
 
+mkdir -p $sources_path
 cd $sources_path
 
 # Download openerp-server latest stable/trunk release.
 log_echo "Downloading openerp-server latest stable/trunk release..."
-bzr checkout --lightweight lp:openobject-server/$branch openerp-server >> $INSTALL_LOG_FILE
+if [ -e openerp-server ]; then
+	bzr update openerp-server >> $INSTALL_LOG_FILE
+else
+	bzr checkout --lightweight lp:openobject-server/$branch openerp-server >> $INSTALL_LOG_FILE
+fi
 log_echo ""
 
 # Download openerp addons latest stable/trunk branch.
 log_echo "Downloading openerp addons latest stable/trunk branch..."
-bzr checkout --lightweight lp:openobject-addons/$branch addons
+if [ -e addons ]; then
+	bzr update addons >> $INSTALL_LOG_FILE
+else
+	bzr checkout --lightweight lp:openobject-addons/$branch addons
 log_echo ""
 
 # Download extra addons
 if [[ $install_extra_addons =~ ^[Yy]$ ]]; then
 	log_echo "Downloading extra addons..."
-	bzr checkout --lightweight lp:openobject-addons/extra-$branch extra-addons >> $INSTALL_LOG_FILE
+	if [ -e extra-addons ]; then
+		bzr update extra-addons >> $INSTALL_LOG_FILE
+	else
+		bzr checkout --lightweight lp:openobject-addons/extra-$branch extra-addons >> $INSTALL_LOG_FILE
 	log_echo ""
 fi
 
 # Download magentoerpconnect
 if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then
 	log_echo "Downloading magentoerpconnect..."
-	bzr checkout --lightweight lp:magentoerpconnect magentoerpconnect >> $INSTALL_LOG_FILE
+	if [ -e magentoerpconnect ]; then
+		bzr update magentoerpconnect >> $INSTALL_LOG_FILE
+	else
+		bzr checkout --lightweight lp:magentoerpconnect magentoerpconnect >> $INSTALL_LOG_FILE
 	log_echo ""
 fi
 
 # Download nan-tic modules
 if [[ $install_nantic =~ ^[Yy]$ ]]; then
 	log_echo "Downloading nan-tic modules..."
-	bzr checkout --lightweight lp:~openobject-client-kde/openobject-client-kde/$branch openobject-client-kde >> $INSTALL_LOG_FILE
+	if [ -e openobject-client-kde ]; then
+		bzr update openobject-client-kde >> $INSTALL_LOG_FILE
+	else
+		bzr checkout --lightweight lp:~openobject-client-kde/openobject-client-kde/$branch openobject-client-kde >> $INSTALL_LOG_FILE
 	log_echo ""
 fi
 
@@ -401,7 +415,7 @@ cd openerp-server
 mkdir -p $install_path
 cp -a bin/* $install_path/
 
-# Making system fonts available to ReportLab
+# Making ClearCorp fonts available to ReportLab
 installFonts
 cp -a $LIBBASH_CCORP_DIR/install-scripts/openerp-install/ccorp-fonts.py $install_path/report/render/rml2pdf/
 echo "import ccorp-fonts" >> $install_path/report/render/rml2pdf/__init__.py
@@ -464,26 +478,13 @@ fi
 #~ Make pid dir
 mkdir -p /var/run/openerp
 chown $openerp_user:root /var/run/openerp
+sed -i "s#exit 0#mkdir -p /var/run/openerp\\\\nchown $openerp_user:root /var/run/openerp\\\\n#g" /etc/rc.local
 
 cd $sources_path
 
-# NOTE: Creates translation problem on 5.0.9
-#~ Zip files inside addons
-#cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/addons-zip.sh $addons_path
-#if [[ ! "$server_type" =~ ^[Pp]$ ]]; then
-#	cd $addons_path
-#	log_echo "Compressing addons..."
-#	./addons-zip.sh >> $INSTALL_LOG_FILE
-	#~ Base cannot be zipped for translations to work
-#	unzip base.zip
-#	rm base.zip
-#	cd $sources_path
-#fi
-
 # Install OpenERP Web client
 log_echo "Installing OpenERP Web client..."
-easy_install -U -d $install_path_web openerp-web >> $INSTALL_LOG_FILE
-ln -s $install_path_web/openerp_web* $install_path_web/openerp-web-skeleton
+easy_install -U openerp-web >> $INSTALL_LOG_FILE
 
 # OpenERP Web Client init and config skeletons
 mkdir -p /etc/openerp/web-client
