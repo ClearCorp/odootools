@@ -365,6 +365,7 @@ if [ -e addons ]; then
 	bzr update addons >> $INSTALL_LOG_FILE
 else
 	bzr checkout --lightweight lp:openobject-addons/$branch addons
+fi
 log_echo ""
 
 # Download extra addons
@@ -374,6 +375,7 @@ if [[ $install_extra_addons =~ ^[Yy]$ ]]; then
 		bzr update extra-addons >> $INSTALL_LOG_FILE
 	else
 		bzr checkout --lightweight lp:openobject-addons/extra-$branch extra-addons >> $INSTALL_LOG_FILE
+	fi
 	log_echo ""
 fi
 
@@ -384,6 +386,7 @@ if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then
 		bzr update magentoerpconnect >> $INSTALL_LOG_FILE
 	else
 		bzr checkout --lightweight lp:magentoerpconnect magentoerpconnect >> $INSTALL_LOG_FILE
+	fi
 	log_echo ""
 fi
 
@@ -394,6 +397,7 @@ if [[ $install_nantic =~ ^[Yy]$ ]]; then
 		bzr update openobject-client-kde >> $INSTALL_LOG_FILE
 	else
 		bzr checkout --lightweight lp:~openobject-client-kde/openobject-client-kde/$branch openobject-client-kde >> $INSTALL_LOG_FILE
+	fi
 	log_echo ""
 fi
 
