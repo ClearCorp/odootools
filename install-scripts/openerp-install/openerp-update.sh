@@ -141,7 +141,7 @@ if [ ! -e /etc/openerp/extra_addons ]; then
 	exit 1
 else
 	install_extra_addons=`cat /etc/openerp/extra_addons`
-	if [[ ! $extra_addons =~ ^[YyNn]$ ]]; then
+	if [[ ! $install_extra_addons =~ ^[YyNn]$ ]]; then
 		log_echo "Extra-addons installation state invalid (/etc/openerp/extra_addons): $install_extra_addons"
 		exit 1
 	fi
@@ -153,7 +153,7 @@ if [ ! -e /etc/openerp/magentoerpconnect ]; then
 	exit 1
 else
 	install_magentoerpconnect=`cat /etc/openerp/magentoerpconnect`
-	if [[ ! $magentoerpconnect =~ ^[YyNn]$ ]]; then
+	if [[ ! $install_magentoerpconnect =~ ^[YyNn]$ ]]; then
 		log_echo "magentoerpconnect installation state invalid (/etc/openerp/magentoerpconnect): $install_magentoerpconnect"
 		exit 1
 	fi
@@ -165,7 +165,7 @@ if [ ! -e /etc/openerp/nantic ]; then
 	exit 1
 else
 	install_nantic=`cat /etc/openerp/nantic`
-	if [[ ! $nantic =~ ^[YyNn]$ ]]; then
+	if [[ ! $install_nantic =~ ^[YyNn]$ ]]; then
 		log_echo "nantic installation state invalid (/etc/openerp/nantic): $install_nantic"
 		exit 1
 	fi
