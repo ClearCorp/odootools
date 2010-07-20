@@ -129,7 +129,7 @@ if [ ! -e /etc/openerp/branch ]; then
 	exit 1
 else
 	branch=`cat /etc/openerp/branch`
-	if [[ ! $branch =~ ^5\\.0|trunk$ ]]; then
+	if [[ ! $branch =~ ^5[.]0|trunk$ ]]; then
 		log_echo "Server branch invalid (/etc/openerp/branch): $branch"
 		exit 1
 	fi
