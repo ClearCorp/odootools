@@ -442,6 +442,10 @@ cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-bin-skeleton /etc/o
 chown -R $opnerp_user:root $install_path >> $INSTALL_LOG_FILE
 chmod 755 $addons_path >> $INSTALL_LOG_FILE
 
+# Add filestore dir and change permissions
+mkdir -p $install_path/filestore >> $INSTALL_LOG_FILE
+chown -R $opnerp_user:root $install_path/filestore >> $INSTALL_LOG_FILE
+
 # OpenERP Server init and config skeletons
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-init-skeleton /etc/openerp/server/init-skeleton >> $INSTALL_LOG_FILE
 sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/server/init-skeleton >> $INSTALL_LOG_FILE

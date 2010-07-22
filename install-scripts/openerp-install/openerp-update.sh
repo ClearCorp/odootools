@@ -305,6 +305,10 @@ cp -a man/*.5 $base_path/share/man/man5/ >> $INSTALL_LOG_FILE
 chown -R $opnerp_user:root $install_path >> $INSTALL_LOG_FILE
 chmod 755 $addons_path >> $INSTALL_LOG_FILE
 
+# Add filestore dir and change permissions
+mkdir -p $install_path/filestore >> $INSTALL_LOG_FILE
+chown -R $opnerp_user:root $install_path/filestore >> $INSTALL_LOG_FILE
+
 # Updating OpenERP addons
 log_echo "Updating OpenERP addons..."
 mkdir -p $addons_path >> $INSTALL_LOG_FILE
