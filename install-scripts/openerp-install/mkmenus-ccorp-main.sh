@@ -1,4 +1,4 @@
-#       mkmenus.sh
+#       mkmenus-ccorp-main.sh
 #       
 #       Copyright 2010 ClearCorp S.A. <info@clearcorp.co.cr>
 #       
@@ -55,24 +55,24 @@ cat << EOF >> /home/$openerp_user/.config/menus/applications.menu
 	<Menu>
 		<Name>Development</Name>
 		<Menu>
-			<Name>openerp-$1</Name>
-			<Directory>openerp-$1.directory</Directory>
+			<Name>openerp-main-controls</Name>
+			<Directory>openerp-main-controls.directory</Directory>
 			<Include>
 EOF
 
-cat << EOF >> /home/$openerp_user/.local/share/desktop-directories/openerp-$1.directory
+cat << EOF >> /home/$openerp_user/.local/share/desktop-directories/openerp-main-controls.directory
 #!/usr/bin/env xdg-open
 
 [Desktop Entry]
 Version=1.0
 Type=Directory
-Icon=$LIBBASH_CCORP_DIR/install-scripts/openerp-install/icons/ccorp-logo.png
-Name=openerp-$1
+Icon=$LIBBASH_CCORP_DIR/install-scripts/openerp-install/ccorp-logo.png
+Name=openerp-main-controls
 EOF
 
-for i in "server" "web" "all"; do
-	for j in "stop" "restart"; do
-		echo "				<Filename>openerp-$1-$i-$j.desktop</Filename>" >>  /home/$openerp_user/.config/menus/applications.menu
+for i in "apache" "postgresql"; do
+	for j in "start" "stop" "restart"; do
+		echo "				<Filename>openerp-$i-$j.desktop</Filename>" >>  /home/$openerp_user/.config/menus/applications.menu
 		cat << EOF >> /home/$openerp_user/.local/share/applications/openerp-$1-$i-$j.desktop
 #!/usr/bin/env xdg-open
 
@@ -80,9 +80,9 @@ for i in "server" "web" "all"; do
 Version=1.0
 Type=Application
 Terminal=true
-Icon=$LIBBASH_CCORP_DIR/install-scripts/openerp-install/icons/$i-$j.png
-Name=$j $i openerp-$1
-Exec=$LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-dev-control.sh $1 $i $j
+Icon=$LIBBASH_CCORP_DIR/install-scripts/openerp-install/$i-$j.png
+Name=$j $i
+Exec=$LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-dev-control.sh $i $j
 EOF
 	done
 done
