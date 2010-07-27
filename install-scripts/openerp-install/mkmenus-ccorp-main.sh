@@ -18,11 +18,6 @@
 #       MA 02110-1301, USA.
 #!/bin/bash
 
-if [[ $1 == "" ]]; then
-	echo "Usage ccorp-openerp-mkmenus <server-name>"
-	exit 1
-fi
-
 openerp_user=$(cat /etc/openerp/user)
 if [[ `id -u` != `id -u $openerp_user` ]]; then
 	echo "ccorp-openerp-mkmenus must be run as $openerp_user"
@@ -73,7 +68,7 @@ EOF
 for i in "apache" "postgresql"; do
 	for j in "start" "stop" "restart"; do
 		echo "				<Filename>openerp-$i-$j.desktop</Filename>" >>  /home/$openerp_user/.config/menus/applications.menu
-		cat << EOF >> /home/$openerp_user/.local/share/applications/openerp-$1-$i-$j.desktop
+		cat << EOF >> /home/$openerp_user/.local/share/applications/openerp-$i-$j.desktop
 #!/usr/bin/env xdg-open
 
 [Desktop Entry]
