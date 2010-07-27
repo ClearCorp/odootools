@@ -103,7 +103,6 @@ cat << EOF >> /home/$openerp_user/.config/menus/application.menu
 	</Menu>
 </Menu>
 EOF
-fi
 
 return 0
 }
