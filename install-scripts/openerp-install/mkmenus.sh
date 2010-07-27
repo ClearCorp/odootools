@@ -82,7 +82,7 @@ cat << EOF >> /home/$openerp_user/.config/menus/applications.menu
 			<Include>
 EOF
 
-cat << EOF >> /home/$openerp_user/.local/share/desktop-directories/openerp-$1.desktop
+cat << EOF >> /home/$openerp_user/.local/share/desktop-directories/openerp-$1.directory
 #!/usr/bin/env xdg-open
 
 [Desktop Entry]
