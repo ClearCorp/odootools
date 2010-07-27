@@ -35,11 +35,7 @@ if [[ ! -d $LIBBASH_CCORP_DIR ]]; then
 fi
 
 #~ Libraries import
-. $LIBBASH_CCORP_DIR/main-lib/checkRoot.sh
 . $LIBBASH_CCORP_DIR/main-lib/getDist.sh
-
-# Check user is root
-checkRoot
 
 # Init log file
 INSTALL_LOG_PATH=/var/log/openerp
