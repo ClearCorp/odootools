@@ -34,6 +34,15 @@ if [[ ! -d $LIBBASH_CCORP_DIR ]]; then
 	exit 1
 fi
 
+if [[ ! -f /home/$openerp_user/.config/menus ]]; then
+	mkdir -p /home/$openerp_user/.config/menus
+fi
+if [[ ! -f /home/$openerp_user/.local/share/applications ]]; then
+	mkdir -p /home/$openerp_user/.local/share/applications
+fi
+if [[ ! -f /home/$openerp_user/.local/share/desktop-directories ]]; then
+	mkdir -p /home/$openerp_user/.local/share/desktop-directories
+fi
 if [[ ! -f /home/$openerp_user/.config/menus/applications.menu ]]; then
 	cat << EOF >> /home/$openerp_user/.config/menus/applications.menu
 <!DOCTYPE Menu
