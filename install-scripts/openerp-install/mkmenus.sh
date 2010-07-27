@@ -18,6 +18,11 @@
 #       MA 02110-1301, USA.
 #!/bin/bash
 
+if [[ $1 == "" ]]; then
+	echo "Usage ccorp-openerp-mkmenus <server-name>"
+	exit 1
+fi
+
 if [[ ! -d $LIBBASH_CCORP_DIR ]]; then
 	echo "libbash-ccorp not installed."
 	exit 1

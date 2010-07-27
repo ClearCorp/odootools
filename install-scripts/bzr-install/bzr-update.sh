@@ -46,6 +46,11 @@ function bzrUpdate {
 	fi
 	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/mkserver.sh /usr/local/sbin/ccorp-openerp-mkserver
 
+	if [ -e /usr/local/sbin/ccorp-openerp-mkmenus ]; then
+		rm /usr/local/sbin/ccorp-openerp-mkmenus
+	fi
+	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/mkmenus.sh /usr/local/sbin/ccorp-openerp-mkmenus
+
 	if [ -e /usr/local/sbin/ccorp-ubuntu-server-install ]; then
 		rm /usr/local/sbin/ccorp-ubuntu-server-install
 	fi
