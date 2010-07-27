@@ -57,11 +57,11 @@ log ""
 
 log_echo "Making developer menus..."
 #~ Delete all empty lines
-sed '/^$/d' /home/$openerp_user/.config/menus/application.menu
+sed '/^$/d' /home/$openerp_user/.config/menus/applications.menu
 #~ Delete last line
-sed '$d' /home/$openerp_user/.config/menus/application.menu
+sed '$d' /home/$openerp_user/.config/menus/applications.menu
 #~ Adds new lines
-cat << EOF >> /home/$openerp_user/.config/menus/application.menu
+cat << EOF >> /home/$openerp_user/.config/menus/applications.menu
 	<Menu>
 		<Name>Development</Name>
 		<Menu>
@@ -82,7 +82,7 @@ EOF
 
 for i in "server" "web" "all"; do
 	for j in "start" "stop" "restart"; do
-		echo "				<Filename>openerp-$name-$i-$j.desktop</Filename>" >>  /home/$openerp_user/.local/share/desktop-directories/openerp-$name.desktop
+		echo "				<Filename>openerp-$name-$i-$j.desktop</Filename>" >>  /home/$openerp_user/.config/menus/applications.menu
 		cat << EOF >> /home/$openerp_user/.local/share/applications/openerp-$name-$i-$j.desktop
 #!/usr/bin/env xdg-open
 
@@ -96,7 +96,7 @@ Exec="$LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-dev-control.sh 
 EOF
 	done
 done
-cat << EOF >> /home/$openerp_user/.config/menus/application.menu
+cat << EOF >> /home/$openerp_user/.config/menus/applications.menu
 			</Include>
 		</Menu>
 	</Menu>
