@@ -74,3 +74,7 @@ postgresql)
 	esac
 	;;
 esac
+
+echo "Finished"
+sleep 2
+exit 0

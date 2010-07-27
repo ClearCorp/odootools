@@ -93,7 +93,7 @@ Type=Application
 Terminal=true
 Icon=\$LIBBASH_CCORP_DIR/main-lib/ccorp-favicon.png
 Name=$j $i openerp-$1
-Exec="\$LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-dev-control.sh $1 $i $j"
+Exec=\$LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-dev-control.sh $1 $i $j
 EOF
 	done
 done
