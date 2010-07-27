@@ -23,6 +23,12 @@ if [[ $1 == "" ]]; then
 	exit 1
 fi
 
+openerp_user=$(cat /etc/openerp/user)
+if [[ `id -u` != `id -u $openerp_user` ]]; then
+	echo "ccorp-openerp-mkmenus must be run as $openerp_user"
+	exit 1
+fi
+
 if [[ ! -d $LIBBASH_CCORP_DIR ]]; then
 	echo "libbash-ccorp not installed."
 	exit 1
@@ -53,9 +59,6 @@ function log_echo {
 }
 log ""
 
-openerp_user=$(cat /etc/openerp/user)
-
-function mkmenus {
 log_echo "Making developer menus..."
 #~ Delete all empty lines
 sed '/^$/d' /home/$openerp_user/.config/menus/application.menu
@@ -104,8 +107,4 @@ cat << EOF >> /home/$openerp_user/.config/menus/application.menu
 </Menu>
 EOF
 
-return 0
-}
-
-sudo -u $openerp_user mkmenus $1
 exit 0
