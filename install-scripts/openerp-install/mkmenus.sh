@@ -56,6 +56,17 @@ function log_echo {
 log ""
 
 log_echo "Making developer menus..."
+if [[ ! -f /home/$openerp_user/.config/menus/applications.menu ]]; then
+	cat << EOF >> /home/$openerp_user/.config/menus/applications.menu
+<!DOCTYPE Menu
+  PUBLIC '-//freedesktop//DTD Menu 1.0//EN'
+  'http://standards.freedesktop.org/menu-spec/menu-1.0.dtd'>
+<Menu>
+	<Name>Applications</Name>
+	<MergeFile type="parent">/etc/xdg/menus/applications.menu</MergeFile>
+</Menu>
+EOF
+fi
 #~ Delete all empty lines
 sed '/^$/d' /home/$openerp_user/.config/menus/applications.menu
 #~ Delete last line
@@ -93,7 +104,7 @@ Type=Application
 Terminal=true
 Icon=$LIBBASH_CCORP_DIR/main-lib/ccorp-favicon.png
 Name=$j $i openerp-$1
-Exec=\$LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-dev-control.sh $1 $i $j
+Exec=$LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-dev-control.sh $1 $i $j
 EOF
 	done
 done
