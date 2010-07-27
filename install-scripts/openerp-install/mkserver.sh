@@ -201,6 +201,6 @@ fi
 
 #~ Make developer menus
 if [[ $type == "station" ]]; then
-	sudo -u $openerp_user ccorp-openerp-mkmenus $name
+	sudo -E -u $openerp_user ccorp-openerp-mkmenus $name
 fi
 exit 0
