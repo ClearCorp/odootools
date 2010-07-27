@@ -192,7 +192,60 @@ chown $openerp_user:root /var/run/openerp/$name
 #~ Start server now
 if [[ $start_now =~ ^[Yy]$ ]]; then
 	log_echo "Starting openerp server and web client..."
+	service postgresql-8.4 start
+	service apache2 restart
 	service openerp-server-$name start
 	service openerp-web-$name start
 	log_echo ""
+fi
+
+#~ Make developer menus
+if [[ $type == "station" ]]; then
+	log_echo "Making developer menus..."
+	#~ Delete all empty lines
+	sed '/^$/d' /home/$openerp_user/.config/menus/application.menu
+	#~ Delete last line
+	sed '$d' /home/$openerp_user/.config/menus/application.menu
+	#~ Adds new lines
+	cat << EOF >> /home/$openerp_user/.config/menus/application.menu
+	<Menu>
+		<Name>Development</Name>
+		<Menu>
+			<Name>openerp-ccorp-addons</Name>
+			<Directory>openerp-ccorp-addons.directory</Directory>
+			<Include>
+EOF
+
+	cat << EOF >> /home/$openerp_user/.local/share/desktop-directories/openerp-$name.desktop
+#!/usr/bin/env xdg-open
+
+[Desktop Entry]
+Version=1.0
+Type=Directory
+Icon=$LIBBASH_CCORP_DIR/main-lib/ccorp-favicon.png
+Name=openerp-$name
+EOF
+
+	for i in "server" "web" "all"; do
+		for j in "start" "stop" "restart"; do
+			echo "				<Filename>openerp-$name-$i-$j.desktop</Filename>" >>  /home/$openerp_user/.local/share/desktop-directories/openerp-$name.desktop
+			cat << EOF >> /home/$openerp_user/.local/share/applications/openerp-$name-$i-$j.desktop
+#!/usr/bin/env xdg-open
+
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=true
+Icon=$LIBBASH_CCORP_DIR/main-lib/ccorp-favicon.png
+Name=$j $i openerp-$name
+Exec="$LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-dev-control.sh $name $i $j"
+EOF
+		done
+	done
+	cat << EOF >> /home/$openerp_user/.config/menus/application.menu
+			</Include>
+		</Menu>
+	</Menu>
+</Menu>
+EOF
 fi
