@@ -59,7 +59,8 @@ log_echo "Making developer menus..."
 #~ Delete all empty lines
 sed '/^$/d' /home/$openerp_user/.config/menus/applications.menu
 #~ Delete last line
-sed '$d' /home/$openerp_user/.config/menus/applications.menu
+sed '$d' < /home/$openerp_user/.config/menus/applications.menu > /home/$openerp_user/.config/menus/applications.menu2
+mv /home/$openerp_user/.config/menus/applications.menu2 /home/$openerp_user/.config/menus/applications.menu
 #~ Adds new lines
 cat << EOF >> /home/$openerp_user/.config/menus/applications.menu
 	<Menu>
