@@ -566,4 +566,66 @@ sed -i "s/#\?[[:space:]]*\(allow from all.*\)/allow from all/g" /etc/phppgadmin/
 sed -i "s/#\?[[:space:]]*\(allow from all.*\)/allow from all/g" /etc/phppgadmin/apache.conf >> $INSTALL_LOG_FILE
 /etc/init.d/apache2 restart >> $INSTALL_LOG_FILE
 
+#~ Make developer menus
+if [[ $type == "station" ]]; then
+	log_echo "Making developer menus..."
+	if [[ ! -f /home/$openerp_user/.config/menus/applications.menu ]]; then
+		cat << EOF >> /home/$openerp_user/.config/menus/applications.menu
+<!DOCTYPE Menu
+  PUBLIC '-//freedesktop//DTD Menu 1.0//EN'
+  'http://standards.freedesktop.org/menu-spec/menu-1.0.dtd'>
+<Menu>
+	<Name>Applications</Name>
+	<MergeFile type="parent">/etc/xdg/menus/applications.menu</MergeFile>
+</Menu>
+EOF
+	fi
+	#~ Delete all empty lines
+	sed '/^$/d' /home/$openerp_user/.config/menus/applications.menu
+	#~ Delete last line
+	sed '$d' < /home/$openerp_user/.config/menus/applications.menu > /home/$openerp_user/.config/menus/applications.menu2
+	mv /home/$openerp_user/.config/menus/applications.menu2 /home/$openerp_user/.config/menus/applications.menu
+	#~ Adds new lines
+	cat << EOF >> /home/$openerp_user/.config/menus/applications.menu
+	<Menu>
+		<Name>Development</Name>
+		<Menu>
+			<Name>openerp-main-controls</Name>
+			<Directory>openerp-main-controls.directory</Directory>
+			<Include>
+EOF
+
+	cat << EOF >> /home/$openerp_user/.local/share/desktop-directories/openerp-main-controls.directory
+#!/usr/bin/env xdg-open
+
+[Desktop Entry]
+Version=1.0
+Type=Directory
+Icon=$LIBBASH_CCORP_DIR/install-scripts/openerp-install/ccorp-logo.png
+Name=openerp-main-controls
+EOF
+
+for i in "apache" "postgresql"; do
+	for j in "start" "stop" "restart"; do
+		echo "				<Filename>openerp-$i-$j.desktop</Filename>" >>  /home/$openerp_user/.config/menus/applications.menu
+		cat << EOF >> /home/$openerp_user/.local/share/applications/openerp-$1-$i-$j.desktop
+#!/usr/bin/env xdg-open
+
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=true
+Icon=$LIBBASH_CCORP_DIR/install-scripts/openerp-install/$i-$j.png
+Name=$j $i
+Exec=$LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-dev-control.sh $i $j
+EOF
+	done
+done
+cat << EOF >> /home/$openerp_user/.config/menus/applications.menu
+			</Include>
+		</Menu>
+	</Menu>
+</Menu>
+EOF
+fi
 exit 0
