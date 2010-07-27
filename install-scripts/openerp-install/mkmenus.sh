@@ -70,20 +70,20 @@ cat << EOF >> /home/$openerp_user/.config/menus/applications.menu
 			<Include>
 EOF
 
-cat << EOF >> /home/$openerp_user/.local/share/desktop-directories/openerp-$name.desktop
+cat << EOF >> /home/$openerp_user/.local/share/desktop-directories/openerp-$1.desktop
 #!/usr/bin/env xdg-open
 
 [Desktop Entry]
 Version=1.0
 Type=Directory
 Icon=$LIBBASH_CCORP_DIR/main-lib/ccorp-favicon.png
-Name=openerp-$name
+Name=openerp-$1
 EOF
 
 for i in "server" "web" "all"; do
 	for j in "start" "stop" "restart"; do
-		echo "				<Filename>openerp-$name-$i-$j.desktop</Filename>" >>  /home/$openerp_user/.config/menus/applications.menu
-		cat << EOF >> /home/$openerp_user/.local/share/applications/openerp-$name-$i-$j.desktop
+		echo "				<Filename>openerp-$1-$i-$j.desktop</Filename>" >>  /home/$openerp_user/.config/menus/applications.menu
+		cat << EOF >> /home/$openerp_user/.local/share/applications/openerp-$1-$i-$j.desktop
 #!/usr/bin/env xdg-open
 
 [Desktop Entry]
@@ -91,8 +91,8 @@ Version=1.0
 Type=Application
 Terminal=true
 Icon=$LIBBASH_CCORP_DIR/main-lib/ccorp-favicon.png
-Name=$j $i openerp-$name
-Exec="$LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-dev-control.sh $name $i $j"
+Name=$j $i openerp-$1
+Exec="$LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-dev-control.sh $1 $i $j"
 EOF
 	done
 done
