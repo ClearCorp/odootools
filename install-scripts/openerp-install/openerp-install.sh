@@ -368,6 +368,15 @@ else
 fi
 log_echo ""
 
+# Download openerp ccorp-addons latest stable/trunk branch.
+log_echo "Downloading openerp ccorp-addons latest stable/trunk branch..."
+if [ -e addons ]; then
+	bzr update ccorp-addons >> $INSTALL_LOG_FILE
+else
+	bzr checkout --lightweight lp:openerp-ccorp-addons ccorp-addons >> $INSTALL_LOG_FILE
+fi
+log_echo ""
+
 # Download extra addons
 if [[ $install_extra_addons =~ ^[Yy]$ ]]; then
 	log_echo "Downloading extra addons..."
@@ -463,6 +472,10 @@ log_echo "Installing OpenERP addons..."
 mkdir -p $addons_path >> $INSTALL_LOG_FILE
 cd $sources_path >> $INSTALL_LOG_FILE
 cp -a addons/* $addons_path >> $INSTALL_LOG_FILE
+
+# Install OpenERP ccorp-addons
+log_echo "Installing OpenERP ccorp-addons..."
+cp -a ccorp-addons/* $addons_path >> $INSTALL_LOG_FILE
 
 # Install OpenERP extra addons
 if [[ "$install_extra_addons" =~ ^[Yy]$ ]]; then

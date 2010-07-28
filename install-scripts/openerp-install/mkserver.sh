@@ -203,4 +203,11 @@ fi
 if [[ $type == "station" ]]; then
 	sudo -E -u $openerp_user ccorp-openerp-mkmenus $name
 fi
+
+#~ Add server to hosts file if station
+
+if [[ $type == "station" ]]; then
+	echo "127.0.1.1	$name.localhost" >> /etc/hosts
+fi
+
 exit 0
