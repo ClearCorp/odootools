@@ -65,7 +65,7 @@ Icon=$LIBBASH_CCORP_DIR/install-scripts/openerp-install/icons/ccorp-logo.png
 Name=openerp-main-controls
 EOF
 
-for i in "all apache" "postgresql"; do
+for i in "all" "apache" "postgresql"; do
 	for j in "start" "stop" "restart"; do
 		echo "				<Filename>openerp-$i-$j.desktop</Filename>" >>  /home/$openerp_user/.config/menus/applications.menu
 		cat << EOF >> /home/$openerp_user/.local/share/applications/openerp-$i-$j.desktop
