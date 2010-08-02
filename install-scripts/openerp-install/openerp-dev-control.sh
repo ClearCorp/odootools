@@ -9,21 +9,21 @@ all)
 	case $2 in
 	start)
 		gksudo service apache2 start
-		gksudo service postgresql start
+		gksudo service postgresql-8.4 start
 		for i in $(ls /etc/init.d/openerp-*); do
 			$i start
 		done
 		;;
 	stop)
 		gksudo service apache2 stop
-		gksudo service postgresql stop
+		gksudo service postgresql-8.4 stop
 		for i in $(ls /etc/init.d/openerp-*); do
 			$i stop
 		done
 		;;
 	restart)
 		gksudo service apache2 restart
-		gksudo service postgresql restart
+		gksudo service postgresql-8.4 restart
 		for i in $(ls /etc/init.d/openerp-*); do
 			$i restart
 		done
