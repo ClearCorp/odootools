@@ -61,12 +61,14 @@ postgresql)
 	server)
 		case $3 in
 		start)
+			gksudo service postgresql-8.4 start
 			gksudo service openerp-server-$1 start
 			;;
 		stop)
 			gksudo service openerp-server-$1 stop
 			;;
 		restart)
+			gksudo service postgresql-8.4 start
 			gksudo service openerp-server-$1 restart
 			;;
 		esac
@@ -74,12 +76,14 @@ postgresql)
 	web)
 		case $3 in
 		start)
+			gksudo service apache2 start
 			gksudo service openerp-web-$1 start
 			;;
 		stop)
 			gksudo service openerp-web-$1 stop
 			;;
 		restart)
+			gksudo service apache2 start
 			gksudo service openerp-web-$1 restart
 			;;
 		esac
@@ -87,6 +91,8 @@ postgresql)
 	all)
 		case $3 in
 		start)
+			gksudo service postgresql-8.4 start
+			gksudo service apache2 start
 			gksudo service openerp-server-$1 start
 			gksudo service openerp-web-$1 start
 			;;
@@ -95,6 +101,8 @@ postgresql)
 			gksudo service openerp-web-$1 stop
 			;;
 		restart)
+			gksudo service postgresql-8.4 start
+			gksudo service apache2 start
 			gksudo service openerp-server-$1 restart
 			gksudo service openerp-web-$1 restart
 			;;
