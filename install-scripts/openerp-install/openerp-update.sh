@@ -231,6 +231,33 @@ else
 fi
 log_echo ""
 
+# Download openerp ccorp-addons latest stable/trunk branch.
+log_echo "Downloading openerp ccorp-addons latest stable/trunk branch..."
+if [ -e ccorp-addons ]; then
+	bzr update ccorp-addons >> $INSTALL_LOG_FILE
+else
+	bzr checkout --lightweight lp:openerp-ccorp-addons ccorp-addons >> $INSTALL_LOG_FILE
+fi
+log_echo ""
+
+# Download openerp-costa-rica latest stable/trunk branch.
+log_echo "Downloading openerp-costa-rica latest stable/trunk branch..."
+if [ -e costa-rica ]; then
+	bzr update costa-rica >> $INSTALL_LOG_FILE
+else
+	bzr checkout --lightweight lp:openerp-costa-rica costa-rica >> $INSTALL_LOG_FILE
+fi
+log_echo ""
+
+# Download openerp addons latest stable/trunk branch.
+log_echo "Downloading openerp addons latest stable/trunk branch..."
+if [ -e addons ]; then
+	bzr update addons >> $INSTALL_LOG_FILE
+else
+	bzr checkout --lightweight lp:openobject-addons/$branch addons >> $INSTALL_LOG_FILE
+fi
+log_echo ""
+
 # Download extra addons
 if [[ $install_extra_addons =~ ^[Yy]$ ]]; then
 	log_echo "Downloading extra addons..."
@@ -314,6 +341,14 @@ log_echo "Updating OpenERP addons..."
 mkdir -p $addons_path >> $INSTALL_LOG_FILE
 cd $sources_path >> $INSTALL_LOG_FILE
 cp -a addons/* $addons_path >> $INSTALL_LOG_FILE
+
+# Install OpenERP ccorp-addons
+log_echo "Installing OpenERP ccorp-addons..."
+cp -a ccorp-addons/* $addons_path >> $INSTALL_LOG_FILE
+
+# Install OpenERP costa-rica
+log_echo "Installing OpenERP costa-rica..."
+cp -a costa-rica/* $addons_path >> $INSTALL_LOG_FILE
 
 # Updating OpenERP extra addons
 if [[ "$install_extra_addons" =~ ^[Yy]$ ]]; then
