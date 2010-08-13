@@ -533,6 +533,11 @@ for i in `ls -d $install_path_web/openerp_web*`; do
 	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/company_logo.png $i/openerp/static/images/company_logo.png >> $INSTALL_LOG_FILE
 done
 
+#~ Adds ClearCorp favicon
+for i in `ls -d $install_path_web/openerp_web*`; do
+	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/favicon.ico $i/openerp/static/images/favicon.ico >> $INSTALL_LOG_FILE
+done
+
 #~ Adds bin symlink
 ln -s $install_path_web/openerp-web $base_path/bin/openerp-web >> $INSTALL_LOG_FILE
 
