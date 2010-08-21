@@ -68,10 +68,12 @@ rm -r $install_path/openerp-*
 echo "rm -r $base_path/bin/openerp-*"
 rm -r $base_path/bin/openerp-*
 for i in $(ls /etc/init.d/openerp*); do
+	echo "$i stop"
+	$i stop
 	echo "updaterc.d disable $i"
-	updaterc.d disable $i
+	update-rc.d disable $i
 	echo "rm /etc/init.d/$i"
-	rm /etc/init.d/$i
+	rm $i
 done
 echo "rm -r $base_path/share/man/man1/openerp*"
 rm -r $base_path/share/man/man1/openerp*
