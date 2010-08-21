@@ -70,10 +70,10 @@ rm -r $base_path/bin/openerp-*
 for i in $(ls /etc/init.d/openerp*); do
 	echo "$i stop"
 	$i stop
-	echo "update-rc.d `basename $i` remove"
-	update-rc.d `basename $i` remove
 	echo "rm /etc/init.d/$i"
 	rm $i
+	echo "update-rc.d `basename $i` remove"
+	update-rc.d `basename $i` remove
 done
 echo "rm -r $base_path/share/man/man1/openerp*"
 rm -r $base_path/share/man/man1/openerp*

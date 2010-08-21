@@ -505,6 +505,9 @@ if [[ "$install_nantic" =~ ^[Yy]$ ]]; then
 	cp -a openobject-client-kde/server-modules/* $addons_path >> $INSTALL_LOG_FILE
 fi
 
+#~ Change log dir permissions
+chown -R $openerp_user:$openerp_user /var/log/openerp >> $INSTALL_LOG_FILE
+
 #~ Make pid dir
 mkdir -p /var/run/openerp >> $INSTALL_LOG_FILE
 chown $openerp_user:root /var/run/openerp >> $INSTALL_LOG_FILE
