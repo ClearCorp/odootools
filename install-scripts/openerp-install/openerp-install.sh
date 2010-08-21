@@ -285,11 +285,13 @@ log_echo "Preparing installation"
 log_echo "----------------------"
 
 #Add openerp user
-if [[ ! $server_type =~ ^[Ww]$ ]]; then
-	log_echo "Adding openerp user..."
-	adduser --quiet --system openerp >> $INSTALL_LOG_FILE
-	log_echo ""
+log_echo "Adding openerp user..."
+adduser --system --group openerp >> $INSTALL_LOG_FILE
+if [[ $server_type =~ ^[Ww]$ ]]; then
+	adduser $openerp_user openerp
 fi
+openerp_user="openerp"
+log_echo ""
 
 # Update the system.
 log_echo "Updating the system..."
@@ -302,7 +304,7 @@ echo "Installing the required python libraries for openerp-server..."
 apt-get -qqy install python python-psycopg2 python-reportlab python-egenix-mxdatetime python-tz python-pychart python-pydot python-lxml python-libxslt1 python-vobject python-imaging python-yaml >> $INSTALL_LOG_FILE
 apt-get -qqy install python python-dev build-essential python-setuptools python-profiler python-simplejson >> $INSTALL_LOG_FILE
 apt-get -qqy install python-xlwt >> $INSTALL_LOG_FILE
-apt-get -qqy install pyro >> $INSTALL_LOG_FILE
+apt-get -qqy install postgresql-plpython-8.4 python-qt4 python-dbus python-qt4-dbus pyro >> $INSTALL_LOG_FILE
 log_echo ""
 
 # Install bazaar.
@@ -451,19 +453,17 @@ mkdir -p /etc/openerp/server/ >> $INSTALL_LOG_FILE
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-bin-skeleton /etc/openerp/server/bin-skeleton >> $INSTALL_LOG_FILE
 
 # Change permissions
-chown -R $opnerp_user:root $install_path >> $INSTALL_LOG_FILE
+chown -R $openerp_user:$openerp_user $install_path >> $INSTALL_LOG_FILE
 chmod 755 $addons_path >> $INSTALL_LOG_FILE
 
 # Add filestore dir and change permissions
 mkdir -p $install_path/filestore >> $INSTALL_LOG_FILE
-chown -R $opnerp_user:root $install_path/filestore >> $INSTALL_LOG_FILE
+chown -R $openerp_user:$opnerp_user $install_path/filestore >> $INSTALL_LOG_FILE
 
 # OpenERP Server init and config skeletons
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-init-skeleton /etc/openerp/server/init-skeleton >> $INSTALL_LOG_FILE
 sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/server/init-skeleton >> $INSTALL_LOG_FILE
-sed -i "s#\\[USER\\]#$openerp_user#g" /etc/openerp/server/init-skeleton >> $INSTALL_LOG_FILE
 cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server.conf-skeleton /etc/openerp/server/ >> $INSTALL_LOG_FILE
-sed -i "s#\\[USER\\]#$openerp_user#g" /etc/openerp/server/server.conf-skeleton >> $INSTALL_LOG_FILE
 if [[ $server_type =~ ^[Pp]$ ]]; then
 	sed -i "s#\\[LOGLEVEL\\]#info#g" /etc/openerp/server/server.conf-skeleton >> $INSTALL_LOG_FILE
 else

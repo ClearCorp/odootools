@@ -124,11 +124,12 @@ done
 type=$(cat /etc/openerp/type)
 
 log_echo "Copying openerp-server files..."
-cp -a /usr/local/lib/python2.6/dist-packages/openerp-server-skeleton /usr/local/lib/python2.6/dist-packages/openerp-server-$name
+cp -a /usr/local/lib/python2.6/dist-packages/openerp-server-skeleton /usr/local/lib/python2.6/dist-packages/openerp-server-$name >> $INSTALL_LOG_FILE
 
 log_echo "Creating openerp-server init script..."
-cp -a /etc/openerp/server/init-skeleton /etc/init.d/openerp-server-$name
-sed -i "s#\\[NAME\\]#$name#g" /etc/init.d/openerp-server-$name
+cp -a /etc/openerp/server/init-skeleton /etc/init.d/openerp-server-$name >> $INSTALL_LOG_FILE
+sed -i "s#\\[NAME\\]#$name#g" /etc/init.d/openerp-server-$name >> $INSTALL_LOG_FILE
+sed -i "s#\\[USER\\]#$openerp_user#g" /etc/init.d/openerp-server-$name >> $INSTALL_LOG_FILE
 #~ Start server on boot
 if [[ $start_boot =~ ^[Yy]$ ]]; then
 	log_echo "Creating server rc rules..."
@@ -142,6 +143,7 @@ sed -i "s#\\[NAME\\]#$name#g" /usr/local/bin/openerp-server-$name
 
 log_echo "Creating openerp-server configuration file..."
 cp -a /etc/openerp/server/server.conf-skeleton /etc/openerp/server/$name.conf
+sed -i "s#\\[USER\\]#$openerp_user#g" /etc/openerp/server/$name.conf >> $INSTALL_LOG_FILE
 sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/server/$name.conf
 sed -i "s#\\[XMLPORT\\]#20$port#g" /etc/openerp/server/$name.conf
 sed -i "s#\\[NETPORT\\]#21$port#g" /etc/openerp/server/$name.conf
@@ -156,7 +158,7 @@ touch /var/log/openerp/$name/server.log
 log_echo "Creating openerp-web init script..."
 cp -a /etc/openerp/web-client/init-skeleton /etc/init.d/openerp-web-$name
 sed -i "s#\\[NAME\\]#$name#g" /etc/init.d/openerp-web-$name
-#~ Start server on boot
+#~ Start web client on boot
 if [[ $start_boot =~ ^[Yy]$ ]]; then
 	log_echo "Creating web-client rc rules..."
 	update-rc.d openerp-web-$name defaults >> $INSTALL_LOG_FILE
