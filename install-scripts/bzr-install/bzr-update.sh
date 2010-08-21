@@ -36,6 +36,11 @@ function bzrUpdate {
 	fi
 	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-install.sh /usr/local/sbin/ccorp-openerp-install
 	
+	if [ -e /usr/local/sbin/ccorp-openerp-uninstall ]; then
+		rm /usr/local/sbin/ccorp-openerp-uninstall
+	fi
+	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-uninstall.sh /usr/local/sbin/ccorp-openerp-uninstall
+	
 	if [ -e /usr/local/sbin/ccorp-openerp-update ]; then
 		rm /usr/local/sbin/ccorp-openerp-update
 	fi
