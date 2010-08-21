@@ -286,7 +286,7 @@ log_echo "----------------------"
 
 #Add openerp user
 log_echo "Adding openerp user..."
-adduser --system --group openerp >> $INSTALL_LOG_FILE
+adduser --system --home /var/run/openerp --no-create-home --group openerp >> $INSTALL_LOG_FILE
 if [[ $server_type =~ ^[Ww]$ ]]; then
 	adduser $openerp_user openerp
 fi
