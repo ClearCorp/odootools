@@ -70,8 +70,8 @@ rm -r $base_path/bin/openerp-*
 for i in $(ls /etc/init.d/openerp*); do
 	echo "$i stop"
 	$i stop
-	echo "updaterc.d disable $i"
-	update-rc.d disable $i
+	echo "update-rc.d `basename $i` remove"
+	update-rc.d `basename $i` remove
 	echo "rm /etc/init.d/$i"
 	rm $i
 done
