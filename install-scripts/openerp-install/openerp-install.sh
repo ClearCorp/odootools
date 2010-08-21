@@ -395,6 +395,8 @@ if [[ $install_extra_addons =~ ^[Yy]$ ]]; then
 	else
 		bzr checkout --lightweight lp:openobject-addons/extra-$branch extra-addons >> $INSTALL_LOG_FILE
 	fi
+	log_echo "Removing use_control from extra addons..."
+	rm -r extra-addons/use_control >> $INSTALL_LOG_FILE
 	log_echo ""
 fi
 

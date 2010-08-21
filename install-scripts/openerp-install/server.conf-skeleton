@@ -103,7 +103,7 @@ smtp_password = passwd
 #database =
 
 # Specify the database user name (default None).
-db_user = [USER]
+db_user = [DB_USER]
 
 # Username used when connecting to the database
 #user =

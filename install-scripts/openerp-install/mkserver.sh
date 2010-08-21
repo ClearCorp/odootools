@@ -123,6 +123,11 @@ done
 #~ Set the server type
 type=$(cat /etc/openerp/type)
 
+# Add openerp postgres user
+/usr/bin/sudo -u postgres createuser openerp-$name --superuser --createdb --no-createrole >> $INSTALL_LOG_FILE
+/usr/bin/sudo -u postgres psql template1 -U postgres -c "alter user openerp-$name with password '$openerp_admin_passwd'" >> $INSTALL_LOG_FILE
+log_echo ""
+
 log_echo "Copying openerp-server files..."
 cp -a /usr/local/lib/python2.6/dist-packages/openerp-server-skeleton /usr/local/lib/python2.6/dist-packages/openerp-server-$name >> $INSTALL_LOG_FILE
 
@@ -144,6 +149,7 @@ sed -i "s#\\[NAME\\]#$name#g" /usr/local/bin/openerp-server-$name
 log_echo "Creating openerp-server configuration file..."
 cp -a /etc/openerp/server/server.conf-skeleton /etc/openerp/server/$name.conf
 sed -i "s#\\[USER\\]#$openerp_user#g" /etc/openerp/server/$name.conf >> $INSTALL_LOG_FILE
+sed -i "s#\\[DB_USER\\]#openerp-$name#g" /etc/openerp/server/$name.conf >> $INSTALL_LOG_FILE
 sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/server/$name.conf
 sed -i "s#\\[XMLPORT\\]#20$port#g" /etc/openerp/server/$name.conf
 sed -i "s#\\[NETPORT\\]#21$port#g" /etc/openerp/server/$name.conf
