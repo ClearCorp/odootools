@@ -125,6 +125,7 @@ type=$(cat /etc/openerp/type)
 
 # Add openerp postgres user
 /usr/bin/sudo -u postgres createuser openerp_$name --superuser --createdb --no-createrole >> $INSTALL_LOG_FILE
+echo "/usr/bin/sudo -u postgres psql template1 -U postgres -c \"alter user openerp_$name with password '$openerp_admin_passwd'\""
 /usr/bin/sudo -u postgres psql template1 -U postgres -c "alter user openerp_$name with password '$openerp_admin_passwd'" >> $INSTALL_LOG_FILE
 log_echo ""
 

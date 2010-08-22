@@ -57,6 +57,14 @@ else
 	exit 1
 fi
 
+for i in $(ls /etc/init.d/openerp*); do
+	echo "$i stop"
+	$i stop
+	echo "rm /etc/init.d/$i"
+	rm $i
+	echo "update-rc.d `basename $i` remove"
+	update-rc.d `basename $i` remove
+done
 echo "rm -r /etc/openerp"
 rm -r /etc/openerp
 echo "rm -r /var/log/openerp"
@@ -67,14 +75,6 @@ echo "rm -r $install_path/openerp-*"
 rm -r $install_path/openerp-*
 echo "rm -r $base_path/bin/openerp-*"
 rm -r $base_path/bin/openerp-*
-for i in $(ls /etc/init.d/openerp*); do
-	echo "$i stop"
-	$i stop
-	echo "rm /etc/init.d/$i"
-	rm $i
-	echo "update-rc.d `basename $i` remove"
-	update-rc.d `basename $i` remove
-done
 echo "rm -r $base_path/share/man/man1/openerp*"
 rm -r $base_path/share/man/man1/openerp*
 echo "rm -r $base_path/share/man/man5/openerp*"
