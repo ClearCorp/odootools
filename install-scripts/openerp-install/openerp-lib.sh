@@ -413,3 +413,19 @@ function make_menus {
 	fi
 	exit 0
 }
+
+function add_log_rotation {
+	cat << EOF >> /etc/logrotate.d/openerp
+/var/log/openerp/* /var/log/openerp/*/* {
+	daily
+	rotate 30
+	compress
+	nodelaycompress
+	nocopytruncate
+	ifempty
+	nomissingok
+	create 664 openerp openerp
+	noolddir
+}
+EOF
+}

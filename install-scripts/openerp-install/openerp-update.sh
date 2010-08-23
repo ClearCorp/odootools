@@ -196,4 +196,7 @@ log_echo "---------------------------"
 log_echo ""
 install_openerp_web_client
 
+# Add log file rotation
+add_log_rotation
+
 exit 0

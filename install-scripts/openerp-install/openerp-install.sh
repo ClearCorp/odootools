@@ -311,4 +311,7 @@ install_phppgadmin
 #~ Make developer menus
 make_menus
 
+# Add log file rotation
+add_log_rotation
+
 exit 0
