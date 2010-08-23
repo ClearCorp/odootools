@@ -41,7 +41,7 @@ sudo -u postgres psql -c "CREATE DATABASE $2"
 # Close connections do copy db
 sudo -u postgres psql -c "SELECT procpid FROM pg_stat_activity where datname='$2'" | grep -e "[0-9]$" | while read line; do kill $line; kill -s KILL $line; done
 # Copy database
-sudo -u postgres pg_dump --format=c --no-owner $1 | sudo -u postgres pg_restore --no-owner $2
+sudo -u postgres pg_dump --format=c --no-owner $1 | sudo -u postgres pg_restore --no-owner --dbname=$2
 # Restart copy server
 /etc/init.d/openerp-server-$3 start
 sudo -u postgres psql -c "ALTER DATABASE $2 OWNER TO openerp_$3"
