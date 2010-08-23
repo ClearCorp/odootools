@@ -1,73 +1,15 @@
 # /etc/openerp-server.conf(5) - configuration file for openerp-server(1)
 
-#~ TODO: find documentation for all variables, and a reliable source for
-#~ new variables on newer versions. For now, it is impossible to
-#~ maintain this properly.
-#~ The source used for now is openerpconsulting script,
-#~ http://doc.openerp.com/developer/1_1_Introduction/3_configuration.html,
-#~ man openerp and man openerp_serverrc
-
-#~ [printer]
-#~ path = none
-#~ softpath_html = none
-#~ preview = True
-#~ softpath = none
-
-#~ [logging]
-#~ output = /var/log/openerp/[NAME]/full.log
-#~ logger =
-#~ verbose = True
-#~ level = debug
-
-#~ [help]
-#~ index = http://www.openerp.com/documentation/user-manual/
-#~ context = http://www.openerp.com/scripts/context_index.php
-
-#~ [form]
-#~ autosave = False
-#~ toolbar = True
-
-#~ [support]
-#~ recipient = support@clearcorp.co.cr
-#~ support_id = 
-
-#~ [tip]
-#~ position = 0
-#~ autostart = False
-
-#~ [client]
-#~ lang = es_CR
-#~ default_path = /home/user
-#~ filetype = {}
-#~ theme = none
-#~ toolbar = icons
-#~ form_tab_orientation = 0
-#~ form_tab = top
-
-#~ [survey]
-#~ position = 3
-
-#~ [path]
-#~ pixmaps = /usr/share/pixmaps/openerp-client/
-#~ share = /usr/share/openerp-client/
-
-#~ [login]
-#~ db = eo2
-#~ login = admin
-#~ protocol = http://
-#~ port = 8069
-#~ server = localhost
-
 [options]
+# The file where the server log will be stored (default False).
+logfile = /var/log/openerp/[NAME]/server.log
+log_level = [LOGLEVEL]
+
 # Enable the debugging mode (default False).
 verbose = True
 
 # The file where the server pid will be stored (default False).
 pidfile = /var/run/openerp/[NAME]/server.pid
-
-# The file where the server log will be stored (default False).
-logfile = /var/log/openerp/[NAME]/server.log
-log_level = [LOGLEVEL]
 
 # The IP address on which the server will bind.
 # If empty, it will bind on all interfaces (default empty).
@@ -75,6 +17,8 @@ log_level = [LOGLEVEL]
 interface = 
 # The TCP port on which the server will listen (default 8069).
 port = [XMLPORT]
+netport = [NETPORT]
+pyroport = [PYROPORT]
 
 # Enable debug mode (default False).
 debug_mode = True 
@@ -99,19 +43,13 @@ smtp_password = passwd
 # database. It activates the auto module check on startup.
 #db_name =
 
-# Name of the database to use
-#database =
-
 # Specify the database user name (default None).
-db_user = [DB_USER]
-
-# Username used when connecting to the database
-#user =
+#db_user = [DB_USER]
 
 # Specify the database password for db_user (default None).
 #db_password = [ADMIN_PASSWD]
 
-# Specify the database host (default localhost). THIS LINE MUST REMAIN COMMENTED FOR THE OPENERP TO WORK CORRECTLY
+# Specify the database host (default localhost).
 #db_host = localhost
 
 # Specify the database port (default None).
@@ -126,8 +64,6 @@ admin_passwd = [ADMIN_PASSWD]
 
 #~ without_demo = True
 #~ netrpc = True
-netport = [NETPORT]
-pyroport = [PYROPORT]
 #~ xmlrpc = True
 #~ root_path = None
 #~ soap = False

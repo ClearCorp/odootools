@@ -48,10 +48,10 @@ protocol = 'socket'
 
 #selected_dbs = []
 
-dblist.filter = 'BOTH'
+dblist.filter = 'NONE'
 
 # whether to show Databases button on Login screen or not
-#dbbutton.visible = False
+#dbbutton.visible = True
 
 # will be applied on company logo
 company.url = 'http://www.clearcorp.co.cr'
