@@ -74,6 +74,7 @@ function install_python_lib {
 	apt-get -qqy install python python-dev build-essential python-setuptools python-profiler python-simplejson >> $INSTALL_LOG_FILE
 	apt-get -qqy install python-xlwt >> $INSTALL_LOG_FILE
 	apt-get -qqy install postgresql-plpython-8.4 python-qt4 python-dbus python-qt4-dbus pyro >> $INSTALL_LOG_FILE
+	easy_install -U setproctitle >> $INSTALL_LOG_FILE
 	log_echo ""
 }
 
@@ -329,7 +330,6 @@ function install_openerp_web_client {
 	mkdir -p /etc/openerp/web-client >> $INSTALL_LOG_FILE
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client-init-skeleton /etc/openerp/web-client/init-skeleton >> $INSTALL_LOG_FILE
 	sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/web-client/init-skeleton >> $INSTALL_LOG_FILE
-	sed -i "s#\\[USER\\]#$openerp_user#g" /etc/openerp/web-client/init-skeleton >> $INSTALL_LOG_FILE
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client.conf-skeleton /etc/openerp/web-client/ >> $INSTALL_LOG_FILE
 
 	#~ Sets server type

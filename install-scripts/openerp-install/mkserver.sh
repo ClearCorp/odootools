@@ -124,6 +124,7 @@ done
 type=$(cat /etc/openerp/type)
 
 # Add openerp postgres user
+adduser --system --home /var/run/openerp/$name --no-create-home --ingroup openerp openerp_$name >> $INSTALL_LOG_FILE
 /usr/bin/sudo -u postgres createuser openerp_$name --superuser --createdb --no-createrole >> $INSTALL_LOG_FILE
 /usr/bin/sudo -u postgres psql template1 -U postgres -c "alter user openerp_$name with password '$admin_passwd'" >> $INSTALL_LOG_FILE
 log_echo ""
@@ -137,7 +138,7 @@ sed -i "s#\\[NAME\\]#$name#g" /usr/local/lib/python2.6/dist-packages/openerp-ser
 log_echo "Creating openerp-server init script..."
 cp -a /etc/openerp/server/init-skeleton /etc/init.d/openerp-server-$name >> $INSTALL_LOG_FILE
 sed -i "s#\\[NAME\\]#$name#g" /etc/init.d/openerp-server-$name >> $INSTALL_LOG_FILE
-sed -i "s#\\[USER\\]#$openerp_user#g" /etc/init.d/openerp-server-$name >> $INSTALL_LOG_FILE
+sed -i "s#\\[USER\\]#openerp_$name#g" /etc/init.d/openerp-server-$name >> $INSTALL_LOG_FILE
 #~ Start server on boot
 if [[ $start_boot =~ ^[Yy]$ ]]; then
 	log_echo "Creating server rc rules..."
@@ -151,7 +152,6 @@ sed -i "s#\\[NAME\\]#$name#g" /usr/local/bin/openerp-server-$name
 
 log_echo "Creating openerp-server configuration file..."
 cp -a /etc/openerp/server/server.conf-skeleton /etc/openerp/server/$name.conf
-sed -i "s#\\[USER\\]#$openerp_user#g" /etc/openerp/server/$name.conf >> $INSTALL_LOG_FILE
 sed -i "s#\\[DB_USER\\]#openerp_$name#g" /etc/openerp/server/$name.conf >> $INSTALL_LOG_FILE
 sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/server/$name.conf
 sed -i "s#\\[XMLPORT\\]#20$port#g" /etc/openerp/server/$name.conf
@@ -165,8 +165,9 @@ touch /var/log/openerp/$name/server.log
 
 
 log_echo "Creating openerp-web init script..."
-cp -a /etc/openerp/web-client/init-skeleton /etc/init.d/openerp-web-$name
-sed -i "s#\\[NAME\\]#$name#g" /etc/init.d/openerp-web-$name
+cp -a /etc/openerp/web-client/init-skeleton /etc/init.d/openerp-web-$name >> $INSTALL_LOG_FILE
+sed -i "s#\\[NAME\\]#$name#g" /etc/init.d/openerp-web-$name >> $INSTALL_LOG_FILE
+sed -i "s#\\[USER\\]#openerp_$name#g" /etc/openerp/web-client/init-skeleton >> $INSTALL_LOG_FILE
 #~ Start web client on boot
 if [[ $start_boot =~ ^[Yy]$ ]]; then
 	log_echo "Creating web-client rc rules..."
