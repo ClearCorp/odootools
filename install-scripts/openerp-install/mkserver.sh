@@ -131,6 +131,9 @@ log_echo ""
 log_echo "Copying openerp-server files..."
 cp -a /usr/local/lib/python2.6/dist-packages/openerp-server-skeleton /usr/local/lib/python2.6/dist-packages/openerp-server-$name >> $INSTALL_LOG_FILE
 
+log_echo "Setting openerp server process name..."
+sed -i "s#\\[NAME\\]#$name#g" /usr/local/lib/python2.6/dist-packages/openerp-server-$name/openerp-server.py >> $INSTALL_LOG_FILE
+
 log_echo "Creating openerp-server init script..."
 cp -a /etc/openerp/server/init-skeleton /etc/init.d/openerp-server-$name >> $INSTALL_LOG_FILE
 sed -i "s#\\[NAME\\]#$name#g" /etc/init.d/openerp-server-$name >> $INSTALL_LOG_FILE

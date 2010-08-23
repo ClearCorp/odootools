@@ -26,6 +26,7 @@ fi
 #~ Libraries import
 . $LIBBASH_CCORP_DIR/main-lib/checkRoot.sh
 . $LIBBASH_CCORP_DIR/main-lib/getDist.sh
+. $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-lib.sh
 
 # Check user is root
 checkRoot
@@ -39,13 +40,6 @@ if [[ ! -f $INSTALL_LOG_FILE ]]; then
 	touch $INSTALL_LOG_FILE
 fi
 
-function log {
-	echo "$(date): $1" >> $INSTALL_LOG_FILE
-}
-function log_echo {
-	echo $1
-	log "$1"
-}
 log ""
 
 # Print title
@@ -76,22 +70,9 @@ else
 	exit 1
 fi
 
-# Run the Ubuntu preparation script.
-while [[ ! $run_preparation_script =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to run ccorp-ubuntu-server-update script (recommended if not already done) (y/N)? " -n 1 run_preparation_script
-	if [[ $run_preparation_script == "" ]]; then
-		run_preparation_script="n"
-	fi
-	log_echo ""
-done
-if [[ $run_preparation_script =~ ^[Yy]$ ]]; then
-	log_echo "Running ccorp-ubuntu-server-install..."
-	log_echo ""
-	ccorp-ubuntu-server-install
-	log_echo ""
-	log_echo "Finished ccorp-ubuntu-server-install"
-	log_echo "Continuing ccorp-openerp-update..."
-	log_echo ""
+# Check system values
+if [[ ! check_system_values ]]; then
+	exit 1
 fi
 
 
@@ -171,124 +152,26 @@ else
 fi
 
 #Preparing update
-#######################
-
+#----------------
 log_echo "Preparing update"
 log_echo "----------------"
-
+# Updating user
+add_openerp_user
 # Update the system.
-log_echo "Updating the system..."
-apt-get -qq update >> $INSTALL_LOG_FILE
-apt-get -qqy upgrade >> $INSTALL_LOG_FILE
-log_echo ""
-
+update_system
 # Updating the required python libraries for openerp-server.
-echo "Updating the required python libraries for openerp-server..."
-apt-get -qqy install python python-psycopg2 python-reportlab python-egenix-mxdatetime python-tz python-pychart python-pydot python-lxml python-libxslt1 python-vobject python-imaging python-yaml >> $INSTALL_LOG_FILE
-apt-get -qqy install python python-dev build-essential python-setuptools python-profiler python-simplejson >> $INSTALL_LOG_FILE
-apt-get -qqy install python-xlwt >> $INSTALL_LOG_FILE
-apt-get -qqy install pyro >> $INSTALL_LOG_FILE
-log_echo ""
-
+install_python_lib
 # Updating bazaar.
-log_echo "Updating bazaar..."
-apt-get -qqy install bzr >> $INSTALL_LOG_FILE
-bzr whoami "ClearCorp S.A. <info@clearcorp.co.cr>" >> $INSTALL_LOG_FILE
-log_echo ""
-
+install_bzr
 # Updating postgresql
-log_echo "Updating postgresql..."
-apt-get -qqy install postgresql >> $INSTALL_LOG_FILE
-log_echo ""
-
+install_postgresql
 
 # Downloading OpenERP
-#####################
-
+#--------------------
 log_echo "Downloading OpenERP"
 log_echo "-------------------"
 log_echo ""
-
-mkdir -p $sources_path >> $INSTALL_LOG_FILE
-cd $sources_path >> $INSTALL_LOG_FILE
-
-# Download openerp-server latest stable/trunk release.
-log_echo "Downloading openerp-server latest stable/trunk release..."
-if [ -e openerp-server ]; then
-	bzr update openerp-server >> $INSTALL_LOG_FILE
-else
-	bzr checkout --lightweight lp:openobject-server/$branch openerp-server >> $INSTALL_LOG_FILE
-fi
-log_echo ""
-
-# Download openerp addons latest stable/trunk branch.
-log_echo "Downloading openerp addons latest stable/trunk branch..."
-if [ -e addons ]; then
-	bzr update addons >> $INSTALL_LOG_FILE
-else
-	bzr checkout --lightweight lp:openobject-addons/$branch addons >> $INSTALL_LOG_FILE
-fi
-log_echo ""
-
-# Download openerp ccorp-addons latest stable/trunk branch.
-log_echo "Downloading openerp ccorp-addons latest stable/trunk branch..."
-if [ -e ccorp-addons ]; then
-	bzr update ccorp-addons >> $INSTALL_LOG_FILE
-else
-	bzr checkout --lightweight lp:openerp-ccorp-addons ccorp-addons >> $INSTALL_LOG_FILE
-fi
-log_echo ""
-
-# Download openerp-costa-rica latest stable/trunk branch.
-log_echo "Downloading openerp-costa-rica latest stable/trunk branch..."
-if [ -e costa-rica ]; then
-	bzr update costa-rica >> $INSTALL_LOG_FILE
-else
-	bzr checkout --lightweight lp:openerp-costa-rica costa-rica >> $INSTALL_LOG_FILE
-fi
-log_echo ""
-
-# Download openerp addons latest stable/trunk branch.
-log_echo "Downloading openerp addons latest stable/trunk branch..."
-if [ -e addons ]; then
-	bzr update addons >> $INSTALL_LOG_FILE
-else
-	bzr checkout --lightweight lp:openobject-addons/$branch addons >> $INSTALL_LOG_FILE
-fi
-log_echo ""
-
-# Download extra addons
-if [[ $install_extra_addons =~ ^[Yy]$ ]]; then
-	log_echo "Downloading extra addons..."
-	if [ -e extra-addons ]; then
-		bzr update extra-addons >> $INSTALL_LOG_FILE
-	else
-		bzr checkout --lightweight lp:openobject-addons/extra-$branch extra-addons >> $INSTALL_LOG_FILE
-	fi
-	log_echo ""
-fi
-
-# Download magentoerpconnect
-if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then
-	log_echo "Downloading magentoerpconnect..."
-	if [ -e magentoerpconnect ]; then
-		bzr update magentoerpconnect >> $INSTALL_LOG_FILE
-	else
-		bzr checkout --lightweight lp:magentoerpconnect magentoerpconnect >> $INSTALL_LOG_FILE
-	fi
-	log_echo ""
-fi
-
-# Download nan-tic modules
-if [[ $install_nantic =~ ^[Yy]$ ]]; then
-	log_echo "Downloading nan-tic modules..."
-	if [ -e openobject-client-kde ]; then
-		bzr update openobject-client-kde >> $INSTALL_LOG_FILE
-	else
-		bzr checkout --lightweight lp:~openobject-client-kde/openobject-client-kde/$branch openobject-client-kde >> $INSTALL_LOG_FILE
-	fi
-	log_echo ""
-fi
+download_openerp
 
 
 # Updating OpenERP
@@ -298,83 +181,19 @@ log_echo "Updating OpenERP"
 log_echo "----------------"
 log_echo ""
 
-cd $sources_path >> $INSTALL_LOG_FILE
-
-# Updating OpenERP server
-log_echo "Updating OpenERP Server..."
-cd openerp-server >> $INSTALL_LOG_FILE
-
 #~ Make skeleton installation
 if [ -e $install_path ]; then
 	tar cvfz $sources_path/openerp-server-skeleton-backup-`date +%Y-%m-%d_%H-%M-%S`.tgz $install_path >> $INSTALL_LOG_FILE
 	rm -r $install_path >> $INSTALL_LOG_FILE
 fi
-mkdir -p $install_path >> $INSTALL_LOG_FILE
-cp -a bin/* $install_path/ >> $INSTALL_LOG_FILE
 
-#~ Copy documentation
-mkdir -p $base_path/share/doc/openerp-server >> $INSTALL_LOG_FILE
-cp -a doc/* $base_path/share/doc/openerp-server/ >> $INSTALL_LOG_FILE
+install_openerp
 
-#~ Install man pages
-mkdir -p $base_path/share/man/man1 >> $INSTALL_LOG_FILE
-mkdir -p $base_path/share/man/man5 >> $INSTALL_LOG_FILE
-cp -a man/*.1 $base_path/share/man/man1/ >> $INSTALL_LOG_FILE
-cp -a man/*.5 $base_path/share/man/man5/ >> $INSTALL_LOG_FILE
-
-# Change permissions
-chown -R $opnerp_user:root $install_path >> $INSTALL_LOG_FILE
-chmod 755 $addons_path >> $INSTALL_LOG_FILE
-
-# Add filestore dir and change permissions
-mkdir -p $install_path/filestore >> $INSTALL_LOG_FILE
-chown -R $opnerp_user:root $install_path/filestore >> $INSTALL_LOG_FILE
-
-# Updating OpenERP addons
-log_echo "Updating OpenERP addons..."
-mkdir -p $addons_path >> $INSTALL_LOG_FILE
-cd $sources_path >> $INSTALL_LOG_FILE
-cp -a addons/* $addons_path >> $INSTALL_LOG_FILE
-
-# Install OpenERP ccorp-addons
-log_echo "Installing OpenERP ccorp-addons..."
-cp -a ccorp-addons/* $addons_path >> $INSTALL_LOG_FILE
-
-# Install OpenERP costa-rica
-log_echo "Installing OpenERP costa-rica..."
-cp -a costa-rica/* $addons_path >> $INSTALL_LOG_FILE
-
-# Updating OpenERP extra addons
-if [[ "$install_extra_addons" =~ ^[Yy]$ ]]; then
-	log_echo "Updating OpenERP extra addons..."
-	cp -a extra-addons/* $addons_path >> $INSTALL_LOG_FILE
-fi
-
-# Updating OpenERP magentoerpconnect
-if [[ "$install_magentoerpconnect" =~ ^[Yy]$ ]]; then
-	log_echo "Updating OpenERP magentoerpconnect..."
-	cp -a magentoerpconnect $addons_path >> $INSTALL_LOG_FILE
-fi
-
-# Updating nan-tic modules
-if [[ "$install_nantic" =~ ^[Yy]$ ]]; then
-	log_echo "Updating nan-tic modules..."
-	rm openobject-client-kde/server-modules/*.sh >> $INSTALL_LOG_FILE
-	cp -a openobject-client-kde/server-modules/* $addons_path >> $INSTALL_LOG_FILE
-fi
-
-cd $sources_path >> $INSTALL_LOG_FILE
-
-# Updating OpenERP Web client
-log_echo "Updating OpenERP Web client..."
-easy_install -U openerp-web >> $INSTALL_LOG_FILE >> $INSTALL_LOG_FILE
-
-#~ Adds ClearCorp logo
-for i in `ls -d $install_path_web/openerp_web*`; do
-	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/company_logo.png $i/openerp/static/images/company_logo.png >> $INSTALL_LOG_FILE
-done
-
-#~ Adds bin symlink
-ln -s $install_path_web/openerp-web $base_path/bin/openerp-web >> $INSTALL_LOG_FILE
+# Updating OpenERP Web Client
+#----------------------------
+log_echo "Updating OpenERP Web Client"
+log_echo "---------------------------"
+log_echo ""
+install_openerp_web_client
 
 exit 0

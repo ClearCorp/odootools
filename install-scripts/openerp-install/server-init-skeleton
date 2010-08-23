@@ -25,151 +25,94 @@ PIDFILE=${PIDDIR}/${SERVERNAME}/server.pid
 CONFIGFILE=/etc/openerp/server/${SERVERNAME}.conf
 DAEMON_OPTS="--config=$CONFIGFILE"
 
-[ -x $DAEMON ] || exit 0
-[ -f $CONFIGFILE ] || exit 0
+# Exit if the package is not installed
+[ -x "$DAEMON" ] || exit 0
+
+# Exit if the config file doesn't exist
+[ -x "$DAEMON" ] || exit 0
+
+# Read configuration variable file if it is present
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+# Load the VERBOSE setting and other rcS variables
+. /lib/init/vars.sh
+
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
+. /lib/lsb/init-functions
 
 if [ ! -d $PIDDIR/$SERVERNAME ]; then
 	mkdir -p $PIDDIR/$SERVERNAME
-	chown $USER:root -R $PIDDIR
+	chown -R openerp:openerp $PIDDIR
 fi
 
-checkpid() {
-	[ -f $PIDFILE ] || return 1
-	pid=`cat $PIDFILE`
-	[ -d /proc/$pid ] && return 0
-	return 1
-}
-
 do_start() {
-	start-stop-daemon --start --quiet --pidfile $PIDFILE \
-		--chuid $USER  --background --exec $DAEMON -- $DAEMON_OPTS
+	mkdir -p /var/run/openerp/${SERVERNAME}
+	chown -R openerp:openerp /var/run/openerp/${SERVERNAME}
+	chmod g+w /var/run/openerp/${SERVERNAME}
+	
+	start-stop-daemon --start --quiet  --background \
+		--pidfile $PIDFILE --chuid $USER:openerp --name openerp_${SERVERNAME} \
+		--startas $DAEMON -- $DAEMON_OPTS
 
-	RETVAL=$?
-	i=10
-	max=1
-	count=0
-	while [ $i -gt 0 ]; do
-		sleep 1
-		i=$((i-=1))
-		if [ ! -e $PIDFILE ]; then
-			i=0
-		elif [[ $count == $max ]]; then
-			i=0
-		else
-			count=$((count+=1))
-		fi
-	done
-
-	return $RETVAL
+	return $?
 }
 
 do_stop() {
-	start-stop-daemon --stop --quiet --pidfile $PIDFILE --oknodo
+	start-stop-daemon --stop --quiet --oknodo \
+	--retry TERM/5/KILL/3 \
+	--pidfile $PIDFILE --name openerp_${SERVERNAME}
 
-	RETVAL=$?
-	i=10
-	while [ $i -gt 0 ]; do
-		sleep 1
-		i=$((i-=1))
-		if [ ! -e $PIDFILE ]; then
-			i=0
-		fi
-	done
-	rm -f $PIDFILE  # remove pidfile
-
-	return $RETVAL
-}
-
-do_restart() {
-	do_stop
-
-	do_start
-
-	return $RETVAL
-}
-
-start_daemon() {
-
-	if [ -f $PIDFILE ]; then
-		echo "pidfile already exists: $PIDFILE"
-		exit 1
-	fi
-
-	echo -n "Starting $DESC: "
-
-	do_start
-
-	checkpid
-
-	if [ $? -eq 1 ]; then                
-		rm -f $PIDFILE
-		echo "failed."
-		exit 1
-	fi
-
-	echo "done."
-}
-
-stop_daemon() {
-
-	checkpid
-
-	if [ $? -eq 1 ]; then
-		exit 0
-	fi
-
-	echo -n "Stopping $DESC: "
-
-	do_stop
-
-	if [ $? -eq 1 ]; then
-		echo "failed."
-		exit 1
-	fi
-
-	echo "done."
-}
-
-restart_daemon() {
-
-	echo -n "Reloading $DESC: "
-
-	do_restart
-
-	checkpid
-
-	if [ $? -eq 1 ]; then                
-		rm -f $PIDFILE
-		echo "failed."
-		exit 1
-	fi
-
-	echo "done."
-}
-
-status_daemon() {
-
-	echo -n "Checking $DESC: "
-
-	checkpid
-
-	if [ $? -eq 1 ]; then
-		echo "stopped."
-	else
-		echo "running."
-	fi
+	return $?
 }
 
 case "$1" in
-	start) start_daemon ;;
-	stop) stop_daemon ;;
-	restart|force-reload) restart_daemon ;;
-	status) status_daemon ;;
-	*)
-		N=/etc/init.d/$NAME
-		echo "Usage: $N {start|stop|restart|force-reload|status}" >&2
-		exit 1
+  start)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC" "$NAME"
+	do_start
+	case "$?" in
+		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  stop)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME"
+	do_stop
+	case "$?" in
+		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  status)
+       status_of_proc "$DAEMON" "$NAME" && exit 0 || exit $?
+       ;;
+  restart|force-reload)
+	#
+	# If the "reload" option is implemented then remove the
+	# 'force-reload' alias
+	#
+	log_daemon_msg "Restarting $DESC" "$NAME"
+	do_stop
+	case "$?" in
+	  0|1)
+		do_start
+		case "$?" in
+			0) log_end_msg 0 ;;
+			1) log_end_msg 1 ;; # Old process is still running
+			*) log_end_msg 1 ;; # Failed to start
+		esac
 		;;
+	  *)
+	  	# Failed to stop
+		log_end_msg 1
+		;;
+	esac
+	;;
+  *)
+	#echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload}" >&2
+	echo "Usage: $SCRIPTNAME {start|stop|status|restart|force-reload}" >&2
+	exit 3
+	;;
 esac
 
-exit 0
+:

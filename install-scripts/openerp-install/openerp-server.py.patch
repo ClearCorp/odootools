@@ -1,0 +1,14 @@
+*** ../openerp-server-skeleton/openerp-server.py	2010-05-21 00:25:27.802568000 -0600
+--- openerp-server.py	2010-08-23 00:51:02.766874461 -0600
+***************
+*** 31,36 ****
+--- 31,39 ----
+  (c) 2003-TODAY, Fabien Pinckaers - Tiny sprl
+  """
+  
++ from setproctitle import setproctitle
++ setproctitle("openerp_[NAME]")
++ 
+  #----------------------------------------------------------
+  # python imports
+  #----------------------------------------------------------
