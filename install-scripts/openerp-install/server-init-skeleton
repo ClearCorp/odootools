@@ -52,7 +52,7 @@ check_process() {
 		return 0
 	else
 		i=10
-		while [[ $i -gt 0 ]]; do
+		while [[ $i > 0 ]]; do
 			if [[ -e $PIDFILE ]]; then
 				return 0
 			else

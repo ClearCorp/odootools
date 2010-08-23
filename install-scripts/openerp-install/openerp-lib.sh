@@ -299,9 +299,10 @@ function install_nan_tic_addons {
 
 function install_change_perms {
 	# Change permissions
-	chown -R openerp:openerp $install_path >> $INSTALL_LOG_FILE
+	chown -R openerp:openerp $install_path_web/openerp* >> $INSTALL_LOG_FILE
 	chown -R openerp:openerp /var/log/openerp >> $INSTALL_LOG_FILE
 	chown -R openerp:openerp /var/run/openerp >> $INSTALL_LOG_FILE
+	chown -R openerp:openerp /etc/openerp >> $INSTALL_LOG_FILE
 	chmod -R g+w $install_path >> $INSTALL_LOG_FILE
 	chmod -R g+w /var/log/openerp >> $INSTALL_LOG_FILE
 	chmod -R g+w /var/run/openerp >> $INSTALL_LOG_FILE

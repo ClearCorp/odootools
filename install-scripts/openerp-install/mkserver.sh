@@ -26,6 +26,7 @@ fi
 #~ Libraries import
 . $LIBBASH_CCORP_DIR/main-lib/checkRoot.sh
 . $LIBBASH_CCORP_DIR/main-lib/getDist.sh
+. $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-lib.sh
 
 # Check user is root
 checkRoot
@@ -47,6 +48,29 @@ function log_echo {
 	log "$1"
 }
 log ""
+
+# Set distribution
+dist=""
+getDist dist
+log_echo "Distribution: $dist"
+log_echo ""
+
+# Sets vars corresponding to the distro
+if [[ $dist == "lucid" ]]; then
+	# Ubuntu 10.04, python 2.6
+	posgresql_rel=8.4
+	python_rel=python2.6
+	ubuntu_rel=10.04
+	base_path=/usr/local
+	install_path=$base_path/lib/$python_rel/dist-packages/openerp-server-skeleton
+	install_path_web=$base_path/lib/$python_rel/dist-packages
+	addons_path=$install_path/addons/
+	sources_path=$base_path/src/openerp
+else
+	# Only Lucid supported for now
+	log_echo "ERROR: This program must be executed on Ubuntu Lucid 10.04 (Desktop or Server)"
+	exit 1
+fi
 
 # Print title
 log_echo "OpenERP make server script"
@@ -167,7 +191,7 @@ touch /var/log/openerp/$name/server.log
 log_echo "Creating openerp-web init script..."
 cp -a /etc/openerp/web-client/init-skeleton /etc/init.d/openerp-web-$name >> $INSTALL_LOG_FILE
 sed -i "s#\\[NAME\\]#$name#g" /etc/init.d/openerp-web-$name >> $INSTALL_LOG_FILE
-sed -i "s#\\[USER\\]#openerp_$name#g" /etc/openerp/web-client/init-skeleton >> $INSTALL_LOG_FILE
+sed -i "s#\\[USER\\]#openerp_$name#g" /etc/init.d/openerp-web-$name >> $INSTALL_LOG_FILE
 #~ Start web client on boot
 if [[ $start_boot =~ ^[Yy]$ ]]; then
 	log_echo "Creating web-client rc rules..."
@@ -189,7 +213,6 @@ fi
 log_echo "Creating openerp-web log files..."
 touch /var/log/openerp/$name/web-client-access.log
 touch /var/log/openerp/$name/web-client-error.log
-chown -R $openerp_user:root /var/log/openerp/$name
 
 log_echo "Creating apache rewrite file..."
 cp -a /etc/openerp/apache2/ssl-skeleton /etc/openerp/apache2/rewrites/$name
@@ -199,7 +222,6 @@ service apache2 reload >> $INSTALL_LOG_FILE
 
 log_echo "Creating pid dir..."
 mkdir -p /var/run/openerp/$name
-chown $openerp_user:root /var/run/openerp/$name
 
 #~ Start server now
 if [[ $start_now =~ ^[Yy]$ ]]; then
@@ -221,5 +243,7 @@ fi
 if [[ $type == "station" ]]; then
 	echo "127.0.1.1	$name.localhost" >> /etc/hosts
 fi
+
+install_change_perms
 
 exit 0
