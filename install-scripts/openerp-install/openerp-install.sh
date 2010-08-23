@@ -71,7 +71,8 @@ else
 fi
 
 # Check system values
-if [[ ! check_system_values ]]; then
+check_system_values
+if [[ ! $? ]]; then
 	exit 1
 fi
 
