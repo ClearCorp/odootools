@@ -29,7 +29,7 @@ DAEMON_OPTS="--config=$CONFIGFILE"
 [ -x "$DAEMON" ] || exit 0
 
 # Exit if the config file doesn't exist
-[ -x "$CONFIGFILE" ] || exit 0
+[ -f "$CONFIGFILE" ] || exit 0
 
 # Read configuration variable file if it is present
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME

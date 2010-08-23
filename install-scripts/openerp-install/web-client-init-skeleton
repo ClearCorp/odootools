@@ -29,7 +29,7 @@ DAEMON_OPTS="-c $CONFIGFILE"
 [ -x "$DAEMON" ] || exit 0
 
 # Exit if the config file doesn't exist
-[ -x "$CONFIGFILE" ] || exit 0
+[ -f "$CONFIGFILE" ] || exit 0
 
 # Read configuration variable file if it is present
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME
@@ -37,6 +37,10 @@ DAEMON_OPTS="-c $CONFIGFILE"
 # Load the VERBOSE setting and other rcS variables
 . /lib/init/vars.sh
 VERBOSE="yes"
+
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
+. /lib/lsb/init-functions
 
 if [ ! -d $PIDDIR/$SERVERNAME ]; then
 	mkdir -p $PIDDIR/$SERVERNAME

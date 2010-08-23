@@ -44,7 +44,7 @@ smtp_password = passwd
 #db_name =
 
 # Specify the database user name (default None).
-#db_user = [DB_USER]
+db_user = [DB_USER]
 
 # Specify the database password for db_user (default None).
 #db_password = [ADMIN_PASSWD]
