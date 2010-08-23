@@ -35,6 +35,9 @@ checkRoot
 # Stop copy server
 /etc/init.d/openerp-server-$3 stop
 killall -s KILL openerp_$3
+# Re-create the database
+sudo -u postgres psql -c "DROP DATABASE $2"
+sudo -u postgres psql -c "CREATE DATABASE $2"
 # Close connections do copy db
 sudo -u postgres psql -c "SELECT procpid FROM pg_stat_activity where datname='$2'" | grep -e "[0-9]$" | while read line; do kill $line; kill -s KILL $line; done
 # Copy database
