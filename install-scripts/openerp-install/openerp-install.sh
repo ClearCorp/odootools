@@ -26,6 +26,7 @@ fi
 #~ Libraries import
 . $LIBBASH_CCORP_DIR/main-lib/checkRoot.sh
 . $LIBBASH_CCORP_DIR/main-lib/getDist.sh
+. $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-lib.sh
 
 # Check user is root
 checkRoot
@@ -39,13 +40,6 @@ if [[ ! -f $INSTALL_LOG_FILE ]]; then
 	touch $INSTALL_LOG_FILE
 fi
 
-function log {
-	echo "$(date): $1" >> $INSTALL_LOG_FILE
-}
-function log_echo {
-	echo $1
-	log "$1"
-}
 log ""
 
 # Print title
@@ -76,22 +70,9 @@ else
 	exit 1
 fi
 
-# Run the Ubuntu preparation script.
-while [[ ! $run_preparation_script =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to run ccorp-ubuntu-server-install script (recommended if not already done) (y/N)? " -n 1 run_preparation_script
-	if [[ $run_preparation_script == "" ]]; then
-		run_preparation_script="n"
-	fi
-	log_echo ""
-done
-if [[ $run_preparation_script =~ ^[Yy]$ ]]; then
-	log_echo "Running ccorp-ubuntu-server-install..."
-	log_echo ""
-	ccorp-ubuntu-server-install
-	log_echo ""
-	log_echo "Finished ccorp-ubuntu-server-install"
-	log_echo "Continuing ccorp-openerp-install..."
-	log_echo ""
+# Check system values
+if [[ ! check_system_values ]]; then
+	exit 1
 fi
 
 
@@ -285,13 +266,7 @@ log_echo "Preparing installation"
 log_echo "----------------------"
 
 #Add openerp user
-log_echo "Adding openerp user..."
-adduser --system --home /var/run/openerp --no-create-home --group openerp >> $INSTALL_LOG_FILE
-if [[ $server_type =~ ^[Ww]$ ]]; then
-	adduser $openerp_user openerp
-fi
-openerp_user="openerp"
-log_echo ""
+add_openerp_user
 
 # Update the system.
 log_echo "Updating the system..."
