@@ -72,7 +72,8 @@ do_start() {
 		--pidfile $PIDFILE --chuid $USER:openerp --name openerp_${SERVERNAME} \
 		--startas $DAEMON -- $DAEMON_OPTS
 
-	return check_process
+	check_process
+	return $?
 }
 
 do_stop() {
