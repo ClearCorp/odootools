@@ -42,13 +42,16 @@ VERBOSE="yes"
 # Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
 . /lib/lsb/init-functions
 
+PROCNAME=openerp_$SERVERNAME
+PROCNAME=${PROCNAME:0:15}
+
 if [ ! -d $PIDDIR/$SERVERNAME ]; then
 	mkdir -p $PIDDIR/$SERVERNAME
 	chown $USER:root -R $PIDDIR
 fi
 
 check_process() {
-	if [[ `ps -A | grep -c openerp_$SERVERNAME` == 0 ]]; then
+	if [[ `ps -A | grep -c $PROCNAME` == 0 ]]; then
 		return 0
 	else
 		i=10

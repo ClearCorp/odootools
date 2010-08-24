@@ -42,13 +42,16 @@ VERBOSE="yes"
 # Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
 . /lib/lsb/init-functions
 
+PROCNAME=openerp_$SERVERNAME
+PROCNAME=${PROCNAME:0:15}
+
 if [ ! -d $PIDDIR/$SERVERNAME ]; then
 	mkdir -p $PIDDIR/$SERVERNAME
 	chown -R openerp:openerp $PIDDIR
 fi
 
 check_process() {
-	if [[ `ps -A | grep -c openerp_$SERVERNAME` == 0 ]]; then
+	if [[ `ps -A | grep -c $PROCNAME` == 0 ]]; then
 		return 0
 	else
 		i=10
@@ -69,7 +72,7 @@ do_start() {
 	chmod g+w /var/run/openerp/${SERVERNAME}
 	
 	start-stop-daemon --start --quiet  --background \
-		--pidfile $PIDFILE --chuid $USER:openerp --name openerp_${SERVERNAME} \
+		--pidfile $PIDFILE --chuid $USER:openerp --name $PROCNAME \
 		--startas $DAEMON -- $DAEMON_OPTS
 
 	check_process
@@ -79,7 +82,7 @@ do_start() {
 do_stop() {
 	start-stop-daemon --stop --quiet --oknodo \
 	--retry TERM/5/KILL/3 \
-	--pidfile $PIDFILE --name openerp_${SERVERNAME}
+	--pidfile $PIDFILE --name $PROCNAME
 
 	return $?
 }
