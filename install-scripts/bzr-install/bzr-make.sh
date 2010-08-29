@@ -24,7 +24,7 @@ cat > bzr-install/setup.sh << EOF
 #setup.sh
 
 #Go to script dir
-cd `dirname $0`
+cd \`dirname $0\`
 
 cd install-scripts/bzr-install
 ./bzr-setup.sh
