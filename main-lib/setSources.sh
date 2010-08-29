@@ -92,14 +92,15 @@ EOF
 }
 
 function setSources_bazaar {
+	apt-get -qq update
+	apt-get -yqq install python-software-properties
+	
 	add-apt-repository ppa:bzr/ppa
 	add-apt-repository ppa:bzr-explorer-dev/ppa
 }
 
 function setSources {
 	#Adds add-apt-repository
-	apt-get -yqq install python-software-properties
-
 	setSources_ubuntu $1
 	setSources_webmin $1
 	setSources_bazaar $1
