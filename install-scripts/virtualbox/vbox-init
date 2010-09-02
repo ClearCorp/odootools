@@ -1,0 +1,331 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Author:		Carlos Vásquez E. <carlos.vasquez@clearcorp.co.cr>
+# Version:		0.2
+# Last modified:	01/09/10
+# Provides:		VirtualBox VM: [VMNAME]
+# Required-Start:	$local_fs $remote_fs
+# Required-Stop:	$local_fs $remote_fs
+# Default-Start:	2 3 4 5
+# Default-Stop:		S 0 1 6
+# Short-Description:	Starts a VirtualBox virtual machine
+
+# Note: This script suposes that VirtualBox is installed in the system using
+# ClearNet standards. Otherwise you should change several paths and/or set env
+# variables. See README for detailed instructions on ClearNet installation.
+### END INIT INFO
+
+
+# Do NOT "set -e"
+
+# PATH should only include /usr/* if it runs after the mountnfs.sh script
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+VM_NAME="[VMNAME]"
+DESC="VirtualBox: Starting $VM_NAME"
+NAME=VBoxHeadless
+DAEMON=/usr/bin/$NAME
+DAEMON_ARGS="--startvm $VM_NAME"
+PIDFILE=/var/run/$VM_NAME.pid
+SCRIPTNAME=/etc/init.d/vbox-$VM_NAME
+SHUTDOWN_WAIT=120
+SAVESTATE_WAIT=30
+
+export VBOX_USER_HOME="/virt/vbox"
+
+# Exit if the package is not installed
+[ -x "$DAEMON" ] || exit 0
+
+# Read configuration variable file if it is present
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+# Load the VERBOSE setting and other rcS variables
+[ -f /etc/default/rcS ] && . /etc/default/rcS
+VERBOSE=yes
+
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
+. /lib/lsb/init-functions
+
+#
+# Function that starts the daemon/service
+#
+do_start()
+{
+	# Return
+	#   0 if daemon has been started
+	#   1 if daemon was already running
+	#   2 if daemon could not be started
+	if [ -f $PIDFILE ]; then
+		PID=`cat $PIDFILE`
+		TEST=`ps -A | grep $PID`
+		if [[ $TEST != "" ]]; then
+			return 1
+		else
+			rm -f $PIDFILE
+			start-stop-daemon --start --background -m --pidfile $PIDFILE --exec $DAEMON -- $DAEMON_ARGS > /var/log/vbox.log || return 2
+		fi
+	else
+		start-stop-daemon --start --background -m --pidfile $PIDFILE --exec $DAEMON -- $DAEMON_ARGS > /var/log/vbox.log || return 2
+	fi
+	return 0
+}
+
+#
+# Function that stops the daemon/service
+#
+do_stop()
+{
+	# Return
+	#   0 if daemon has been stopped
+	#   1 if daemon was already stopped
+	#   2 if daemon could not be stopped
+	#   other if a failure occurred
+	if [ -f $PIDFILE ]; then
+		PID=`cat $PIDFILE`
+		TEST=`ps -A | grep $PID`
+
+		if [[ $TEST != "" ]]; then
+			VBoxManage controlvm $VM_NAME savestate &
+	        	for i in `seq 1 $SAVESTATE_WAIT`;
+			do
+				if [ $i == $SAVESTATE_WAIT ]; then
+					start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE --name $NAME
+					RETVAL="$?"
+					[ "$RETVAL" = 2 ] && return 2
+					# Wait for children to finish too if this is a daemon that forks
+					# and if the daemon is only ever run from this initscript.
+					# If the above conditions are not satisfied then add some other code
+					# that waits for the process to drop all resources that could be
+					# needed by services started subsequently.  A last resort is to
+					# sleep for some time.
+					start-stop-daemon --stop --quiet --oknodo --retry=0/30/KILL/5 --exec $DAEMON
+					[ "$?" = 2 ] && return 2
+				else
+					TEST=`ps -A | grep $PID`
+					if [[ $TEST != "" ]]; then
+						sleep 1
+					else
+						RETVAL=0
+						break
+					fi
+				fi
+			done
+		else
+			RETVAL=1
+		fi
+	else
+		RETVAL=1
+	fi
+
+	# Many daemons don't delete their pidfiles when they exit.
+	rm -f $PIDFILE
+	return "$RETVAL"
+}
+
+#
+# Function that poweroff the daemon/service
+#
+do_poweroff()
+{
+	# Return
+	#   0 if daemon has been poweroff
+	#   1 if daemon could not be poweroff
+	#   other if a failure occurred
+	RETVAL=0
+	if [ -f $PIDFILE ]; then
+		PID=`cat $PIDFILE`
+		TEST=`ps -A | grep $PID`
+
+		if [[ $TEST != "" ]]; then
+			VBoxManage controlvm $VM_NAME acpipowerbutton &
+			for i in `seq 1 $SHUTDOWN_WAIT`;
+			do
+				if [ $i == $SHUTDOWN_WAIT ]; then
+					start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE --name $NAME
+					RETVAL="$?"
+					[ "$RETVAL" = 2 ] && return 2
+					# Wait for children to finish too if this is a daemon that forks
+					# and if the daemon is only ever run from this initscript.
+					# If the above conditions are not satisfied then add some other code
+					# that waits for the process to drop all resources that could be
+					# needed by services started subsequently.  A last resort is to
+					# sleep for some time.
+					start-stop-daemon --stop --quiet --oknodo --retry=0/30/KILL/5 --exec $DAEMON
+					[ "$?" = 2 ] && return 2
+				else
+					TEST=`ps -A | grep $PID`
+					if [[ $TEST != "" ]]; then
+						sleep 1
+					else
+						RETVAL=0
+						break
+					fi
+				fi
+			done
+		else
+			rm -f $PIDFILE
+		fi
+	fi
+	return "$RETVAL"
+}
+
+#
+# Function that restart the daemon/service
+#
+do_restart()
+{
+	# Return
+	#   0 if daemon has been restarted
+	#   1 if daemon could not be restarted
+	#   other if a failure occurred
+	do_poweroff
+	RETVAL=$?
+	if [ $RETVAL ]; then
+		do_start
+		RETVAL=$?
+	fi
+	return "$RETVAL"
+}
+
+#
+# Function that force-restart the daemon/service
+#
+do_force_restart()
+{
+	# Return
+	#   0 if daemon has been restarted
+	#   1 if daemon could not be restarted
+	#   other if a failure occurred
+	RETVAL=0
+	if [ -f $PIDFILE ]; then
+		PID=`cat $PIDFILE`
+		TEST=`ps -A | grep $PID`
+
+		if [[ $TEST != "" ]]; then
+			VBoxManage controlvm $VM_NAME poweroff &
+			for i in `seq 1 5`;
+			do
+				if [ $i == 5 ]; then
+					start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE --name $NAME
+					RETVAL="$?"
+					[ "$RETVAL" = 2 ] && return 2
+					# Wait for children to finish too if this is a daemon that forks
+					# and if the daemon is only ever run from this initscript.
+					# If the above conditions are not satisfied then add some other code
+					# that waits for the process to drop all resources that could be
+					# needed by services started subsequently.  A last resort is to
+					# sleep for some time.
+					start-stop-daemon --stop --quiet --oknodo --retry=0/30/KILL/5 --exec $DAEMON
+					[ "$?" = 2 ] && return 2
+				else
+					TEST=`ps -A | grep $PID`
+					if [[ $TEST != "" ]]; then
+						sleep 1
+					else
+						RETVAL=0
+						break
+					fi
+				fi
+			done
+		else
+			rm -f $PIDFILE
+		fi
+	fi
+	if [ $RETVAL ]; then
+		do_start
+		RETVAL=$?
+	fi
+	return "$RETVAL"
+}
+
+case "$1" in
+  start|startvm)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC"
+	do_start
+	case "$?" in
+		0)
+		  [ "$VERBOSE" != no ] && log_end_msg 0
+		  ;;
+		1)
+		  [ "$VERBOSE" != no ] && log_end_msg 0
+		  [ "$VERBOSE" != no ] && echo "   ...already running." >&2
+		  ;;
+		*) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  stop|savestate)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Saving state of $DESC"
+	do_stop
+	case "$?" in
+		0) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		1)
+		  [ "$VERBOSE" != no ] && log_end_msg 0
+		  [ "$VERBOSE" != no ] && echo "   ...not running." >&2
+		  ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  poweroff|apcipowerbutton)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Shutting down $DESC"
+	do_poweroff
+	case "$?" in
+		0) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		1)
+		  [ "$VERBOSE" != no ] && log_end_msg 0
+		  [ "$VERBOSE" != no ] && echo "   ...not running." >&2
+		  ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  reload)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Reloading $DESC"
+	do_stop
+	case "$?" in
+	  0|1)
+		do_start
+		case "$?" in
+			0) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+			1)
+			  [ "$VERBOSE" != no ] && log_end_msg 1
+			  [ "$VERBOSE" != no ] && echo "   ...old process still running." >&2
+			  ;;
+			*)
+			  [ "$VERBOSE" != no ] && log_end_msg 1
+			  [ "$VERBOSE" != no ] && echo "   ...failed to start." >&2
+			  ;;
+		esac
+		;;
+	  *)
+		[ "$VERBOSE" != no ] && log_end_msg 1
+		[ "$VERBOSE" != no ] && echo "   ...failed to stop." >&2
+		;;
+	esac
+	;;
+  restart)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Restarting $DESC"
+	do_restart
+	case "$?" in
+		0) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		*) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  force-restart|force-reload|reset)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Force-Restarting $DESC"
+	do_force_restart
+	case "$?" in
+		0) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		*) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  restart)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Restarting $DESC"
+	do_restart
+	[ "$VERBOSE" != no ] && log_end_msg $?
+	;;
+  *)
+	echo "Usage: $SCRIPTNAME {start|stop|reload|restart|force-restart(force-reload)}" >&2
+	exit 3
+	;;
+esac
+
+:
