@@ -1,6 +1,7 @@
 #!/bin/bash
 # Restore Partition tables, RAID, and LVM'S previously backed up 
 
+apt-get install -y -f mdadm lvm2  
 
 #############FUNCTIONS###########
 
@@ -25,73 +26,76 @@ return 0
 
 #for f in backed-up-files/sd*; do
 
-T=${f##*/}
-echo "restoring partition table from device: ${T%.*}"
-dd  if=$f of=/dev/${T%.*} bs=512 count=1
+#T=${f##*/}
+#echo "restoring partition table from device: ${T%.*}"
+#dd  if=$f of=/dev/${T%.*} bs=512 count=1
+#done
 #partprobe
 
-#done
 
 
 
 # Parsing backed-up-files/RAID.conf so it has form of commands
 
-echo "Parsing backed-up-files/RAID.conf"
+#echo "Parsing backed-up-files/RAID.conf"
 
-cp backed-up-files/RAID.conf backed-up-files/RAID.conf.old
-sed -i 's/ARRAY[[:space:]]*/mdadm create /g' backed-up-files/RAID.conf
-sed -i 's/UUID=[[:alnum:]]*:[[:alnum:]]*:[[:alnum:]]*:[[:alnum:]]*/ /g' backed-up-files/RAID.conf
-sed -i 's/[[:space:]]*level/ --level/g' backed-up-files/RAID.conf
-sed -i 's/[[:space:]]*num/ --num/g' backed-up-files/RAID.conf
-sed -i 's/[[:space:]]*spares/ --spares/g' backed-up-files/RAID.conf
-sed -i 's/[[:space:]]*[[:space:]]devices/ --devices/g' backed-up-files/RAID.conf
-cat backed-up-files/RAID.conf | tr '\n' ' ' > backed-up-files/RAID.conf
-sed -i 's/mdadm/\nmdadm/g' backed-up-files/RAID.conf
-sed '/^$/d' backed-up-files/RAID.conf > backed-up-files/RAID.conf.clean
-echo  >>    backed-up-files/RAID.conf.clean
-mv backed-up-files/RAID.conf.clean backed-up-files/RAID.conf
+#cp backed-up-files/RAID.conf backed-up-files/RAID.conf.old
+#sed -i 's/ARRAY[[:space:]]*/mdadm --create /g' backed-up-files/RAID.conf
+#sed -i 's/UUID=[[:alnum:]]*:[[:alnum:]]*:[[:alnum:]]*:[[:alnum:]]*/ /g' backed-up-files/RAID.conf
+#sed -i 's/metadata=[[:graph:]]*//g' backed-up-files/RAID.conf
+#sed -i 's/[[:space:]]*level/ --level/g' backed-up-files/RAID.conf
+#sed -i 's/[[:space:]]*num/ --raid/g' backed-up-files/RAID.conf
+#sed -i 's/[[:space:]]*spares/ --spares/g' backed-up-files/RAID.conf
+#sed -i 's/[[:space:]]*[[:space:]]devices=/ --force /g' backed-up-files/RAID.conf
+#sed -i 's/,/ /g' backed-up-files/RAID.conf
+#cat backed-up-files/RAID.conf | tr '\n' ' ' > backed-up-files/RAID.conf.temp
+#mv backed-up-files/RAID.conf.temp backed-up-files/RAID.conf
+#sed -i 's/mdadm/\nmdadm/g' backed-up-files/RAID.conf
+#sed '/^$/d' backed-up-files/RAID.conf > backed-up-files/RAID.conf.clean
+#echo  >>    backed-up-files/RAID.conf.clean
+#mv backed-up-files/RAID.conf.clean backed-up-files/RAID.conf
 
 
 # Restores MD devices specified in backed-up-files/RAID.conf 
 
 #exec < backed-up-files/RAID.conf
 
-echo "Restoring MD devices"
-while read line
-	do
-	$line
-	done
+#echo "Restoring MD devices"
+#while read line
+#	do
+#	$line
+#	done
 
 
 
 #creates volume groups and adds the physical volumes to them
-exec < backed-up-files/pvs.conf
+#exec < backed-up-files/pvs.conf
 
-declare -a arrayvgs
+#declare -a arrayvgs
 
-while read line
-	do
-		pv=${line%%;*}
-		templine=${line#*;}
-		vg=${templine%%;*}
-
-		existsinarray $vg $arrayvgs
-		result=$?
-		
-		if [ "$result" -eq 0  ]; then
-		pos=${#arrayvgs[@]}
-		arrayvgs[$pos]=${vg}
-		echo "Creating volume group:$vg and attaching physical volume:$pv"
-
-		vgcreate $vg $pv
-
-		else
-
-		echo "Extending volume group:$vg with physical volume:$pv"
-		vgextend $vg $pv
-		fi
-
-	done
+#while read line
+#	do
+#		pv=${line%%;*}
+#		templine=${line#*;}
+#		vg=${templine%%;*}
+#
+#		existsinarray $vg $arrayvgs
+#		result=$?
+#		
+#		if [ "$result" -eq 0  ]; then
+#		pos=${#arrayvgs[@]}
+#		arrayvgs[$pos]=${vg}
+#		echo "Creating volume group:$vg and attaching physical volume:$pv"
+#
+#		vgcreate $vg $pv
+#
+#		else
+#
+#		echo "Extending volume group:$vg with physical volume:$pv"
+#		vgextend $vg $pv
+#		fi
+#
+#	done
 
 
 ## Creates logical volumes specified in backed-up-files/lvs.conf
@@ -102,8 +106,8 @@ exec <backed-up-files/lvs.conf
 	while read line
 	do
 		lv=${line%%;*}
-                templine=${line#*;}
-                vg=${templine%%;*}
+               templine=${line#*;}
+               vg=${templine%%;*}
 		templine=${templine#*;}
 		attr=${templine%%;*}
 		templine=${templine#*;}
