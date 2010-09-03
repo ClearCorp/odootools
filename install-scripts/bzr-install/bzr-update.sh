@@ -59,7 +59,7 @@ function bzrUpdate {
 	if [ -e /usr/local/sbin/ccorp-openerp-cp-db ]; then
 		rm /usr/local/sbin/ccorp-openerp-cp-db
 	fi
-	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-test-db.sh /usr/local/sbin/ccorp-openerp-cp-db
+	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/test-db/openerp-test-db.sh /usr/local/sbin/ccorp-openerp-cp-db
 
 	if [ -e /usr/local/sbin/ccorp-ubuntu-server-install ]; then
 		rm /usr/local/sbin/ccorp-ubuntu-server-install

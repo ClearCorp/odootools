@@ -1,0 +1,2 @@
+# Copy [DB1] to [DB2]
+*/30 * * * * root /etc/openerp/server/[DB1]-to-[DB2].sh
