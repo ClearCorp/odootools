@@ -231,9 +231,9 @@ while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
 done
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-	read -p "List the packages to install (dnsutils ifstat traceroute locate)? " packages
+	read -p "List the packages to install (dnsutils ifstat traceroute locate psmisc python-software-properties)? " packages
 	if [[ $packages == "" ]]; then
-		packages="dnsutils ifstat traceroute locate"
+		packages="dnsutils ifstat traceroute locate psmisc python-software-properties"
 	fi
 	echo ""
 	apt-get -y install $packages
