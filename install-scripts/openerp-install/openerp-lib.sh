@@ -329,12 +329,30 @@ function install_openerp {
 	install_change_perms
 }
 
+function download_openerp_addons {
+	# Download openerp-web latest stable/trunk branch.
+	log_echo "Downloading openerp-web latest stable/trunk branch..."
+	mkdir -p $sources_path >> $INSTALL_LOG_FILE
+	cd $sources_path >> $INSTALL_LOG_FILE
+	if [ -e openerp-web ]; then
+		bzr update openerp-web >> $INSTALL_LOG_FILE
+	else
+		bzr checkout --lightweight lp:openobject-client-web/$branch openerp-web >> $INSTALL_LOG_FILE
+	fi
+	log_echo ""
+}
+
 function install_openerp_web_client {
 	cd $sources_path >> $INSTALL_LOG_FILE
 
 	# Install OpenERP Web client
 	log_echo "Installing OpenERP Web client..."
-	easy_install -U openerp-web >> $INSTALL_LOG_FILE
+	cp -a openerp-web $install_path_web/openerp-web >> $INSTALL_LOG_FILE
+
+	#~ Copy bin script to /usr/local/bin
+	log_echo "Copy bin script /usr/local/bin"
+	mkdir -p /usr/local/bin/ >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client-bin-skeleton /usr/local/bin/openerp-web >> $INSTALL_LOG_FILE
 
 	# OpenERP Web Client init and config skeletons
 	mkdir -p /etc/openerp/web-client >> $INSTALL_LOG_FILE
@@ -349,14 +367,9 @@ function install_openerp_web_client {
 		sed -i "s/\[TYPE\]/production/g" /etc/openerp/web-client/web-client.conf-skeleton >> $INSTALL_LOG_FILE
 	fi
 
-	#~ Adds ClearCorp logo
-	for i in `ls -d $install_path_web/openerp_web*`; do
-		ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/company_logo.png $i/openerp/static/images/company_logo.png >> $INSTALL_LOG_FILE
-	done
-
 	# Patch Web Client to correct bad style definition
 	log_echo "Patch Web Client to correct bad style definition"
-	for i in `ls -d $install_path_web/openerp_web-5.0.*`; do
+	for i in `ls -d $install_path_web/openerp-web*`; do
 		patch -p1 -i $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/about.mako.patch $i/openerp/controllers/templates/about.mako >> $INSTALL_LOG_FILE
 		patch -p1 -i $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/master.mako.patch $i/openerp/controllers/templates/master.mako >> $INSTALL_LOG_FILE
 		patch -p1 -i $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/sidebar.mako.patch $i/openerp/widgets/templates/sidebar.mako >> $INSTALL_LOG_FILE
@@ -364,13 +377,13 @@ function install_openerp_web_client {
 		patch -p1 -i $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/root.py.patch $i/openerp/controllers/root.py >> $INSTALL_LOG_FILE
 	done
 
-	#~ Adds ClearCorp favicon
-	for i in `ls -d $install_path_web/openerp_web*`; do
-		ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/favicon.ico $i/openerp/static/images/favicon.ico >> $INSTALL_LOG_FILE
+	#~ Adds ClearCorp logos and favicon
+	for i in `ls -d $install_path_web/openerp-web*`; do
+		ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/company_logo.png $i/openerp/static/images/company_logo.png >> $INSTALL_LOG_FILE
+		ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/developed_by_clearcorp.png $i/openerp/static/images/developed_by_clearcorp.png >> $INSTALL_LOG_FILE
+		ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/powered_by_clearcorp.png $i/openerp/static/images/powered_by_clearcorp.png >> $INSTALL_LOG_FILE
+		ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/favicon.ico $i/openerp/static/images/favicon.ico >> $INSTALL_LOG_FILE
 	done
-
-	#~ Adds bin symlink
-	ln -s $install_path_web/openerp-web $base_path/bin/openerp-web >> $INSTALL_LOG_FILE
 }
 
 function install_apache {
