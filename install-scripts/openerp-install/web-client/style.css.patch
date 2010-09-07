@@ -1,14 +1,12 @@
---- style.css	2010-08-26 16:22:51.000000000 -0600
-+++ style.css-mod	2010-08-30 10:03:00.000000000 -0600
-@@ -560,4 +560,31 @@
-     text-align: center;
-     color: #71C837;
-     font-size: 12px;        
--}
-\ No newline at end of file
-+}
+--- style.css	2010-09-06 23:55:59.473517582 -0600
++++ style.css-mod	2010-09-06 23:55:19.834781803 -0600
+@@ -514,3 +514,67 @@
+  * vim: sts=4 st=4 et 
+  *
+  */
 +
-+/*Parte del codigo que estaba alambrado*/
++
++/*This was removed from the mako template*/
 +
 +/*Cuadro que inicia la barra*/
 +.sidebarBox
@@ -34,3 +32,39 @@
 +{
 +	background-color: #666666;
 +}
++
++
++
++/*
++ *
++ * Styles that must be modified to apply a custom template
++ * -------------------------------------------------------
++ *
++ * */
++
++/* links */
++a                   {color: #990000;}
++
++/* titulos */
++.view .titlebar     {color: #950000;}
++.view .titlebar     {border-bottom-color: #363636;}
++
++/* texto bienvenida */
++div.welcome         {color: #990033;}
++td.welcome          {color: #990033;}
++
++td.label_header     {color: #990033;}
++div.label_header    {color: #990033;}
++
++#view_form .requiredfield   {background-color: #CCD9FF;}
++
++#view_form .errorfield,
++#search_form .errorfield    {background-color: #FF6666;}
++
++/* sidebar */
++#sidebar a:hover    {border-top-color: #A6A6A6;}
++#sidebar a:hover    {color: #902D2D;}
++.sidebarTextBox     {background-color: #363636;}
++.sidebarTextBox     {color: white;}
++.sidebarCorner      {background-color: #666666;}
++.sidebarEnd         {background-color: #666666;}
