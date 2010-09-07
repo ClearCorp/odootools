@@ -42,6 +42,9 @@ fi
 
 log ""
 
+# Install logrotate
+cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/logrotate.conf /etc/logrotate.d/openerp.conf
+
 # Print title
 log_echo "OpenERP update script"
 log_echo "---------------------"
