@@ -70,10 +70,20 @@ function update_system {
 function install_python_lib {
 	# Install the required python libraries for openerp-server.
 	echo "Installing the required python libraries for openerp-server..."
-	apt-get -qqy install python python-psycopg2 python-reportlab python-egenix-mxdatetime python-tz python-pychart python-pydot python-lxml python-libxslt1 python-vobject python-imaging python-yaml >> $INSTALL_LOG_FILE
-	apt-get -qqy install python python-dev build-essential python-setuptools python-profiler python-simplejson >> $INSTALL_LOG_FILE
+	# From doc.openerp.com
+	apt-get -qqy install python python-psycopg2 python-reportlab python-egenix-mxdatetime python-tz python-pychart python-pydot python-lxml python-vobject python-imaging python-yaml >> $INSTALL_LOG_FILE
+	# Excel spreadsheets generation
 	apt-get -qqy install python-xlwt >> $INSTALL_LOG_FILE
+	# For nan-tic modules
 	apt-get -qqy install postgresql-plpython-8.4 python-qt4 python-dbus python-qt4-dbus pyro >> $INSTALL_LOG_FILE
+
+	# Install the required python libraries for openerp-web.
+	echo "Installing the required python libraries for openerp-web..."
+	apt-get -qqy install python python-cherrypy3 python-mako python-pybabel python-formencode python-simplejson python-pyparsing >> $INSTALL_LOG_FILE
+
+	# Install the required python libraries for process name change.
+	echo "Installing the required python libraries for process name change..."
+	apt-get -qqy install python-setuptools >> $INSTALL_LOG_FILE
 	easy_install -U setproctitle >> $INSTALL_LOG_FILE
 	log_echo ""
 }
@@ -82,7 +92,6 @@ function install_bzr {
 	# Install bazaar.
 	log_echo "Installing bazaar..."
 	apt-get -qqy install bzr >> $INSTALL_LOG_FILE
-	bzr whoami "ClearCorp S.A. <info@clearcorp.co.cr>" >> $INSTALL_LOG_FILE
 	log_echo ""
 }
 
