@@ -83,7 +83,7 @@ function install_python_lib {
 
 	# Install the required python libraries for process name change.
 	echo "Installing the required python libraries for process name change..."
-	apt-get -qqy install python-setuptools >> $INSTALL_LOG_FILE
+	apt-get -qqy install python-dev build-essential python-setuptools >> $INSTALL_LOG_FILE
 	easy_install -U setproctitle >> $INSTALL_LOG_FILE
 	log_echo ""
 }
