@@ -382,6 +382,7 @@ function install_openerp_web_client {
 		ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/company_logo.png $i/openerp/static/images/company_logo.png >> $INSTALL_LOG_FILE
 		ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/developed_by_clearcorp.png $i/openerp/static/images/developed_by_clearcorp.png >> $INSTALL_LOG_FILE
 		ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/powered_by_clearcorp.png $i/openerp/static/images/powered_by_clearcorp.png >> $INSTALL_LOG_FILE
+		mv $i/openerp/static/images/favicon.ico $i/openerp/static/images/favicon.ico.old >> $INSTALL_LOG_FILE
 		ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/favicon.ico $i/openerp/static/images/favicon.ico >> $INSTALL_LOG_FILE
 	done
 }
