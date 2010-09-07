@@ -197,6 +197,7 @@ install_openerp
 log_echo "Updating OpenERP Web Client"
 log_echo "---------------------------"
 log_echo ""
+download_openerp_web
 install_openerp_web_client
 
 # Add log file rotation

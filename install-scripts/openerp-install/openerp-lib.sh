@@ -329,7 +329,7 @@ function install_openerp {
 	install_change_perms
 }
 
-function download_openerp_addons {
+function download_openerp_web {
 	# Download openerp-web latest stable/trunk branch.
 	log_echo "Downloading openerp-web latest stable/trunk branch..."
 	mkdir -p $sources_path >> $INSTALL_LOG_FILE
