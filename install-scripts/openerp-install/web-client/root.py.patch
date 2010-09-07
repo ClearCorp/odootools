@@ -1,0 +1,39 @@
+--- root.py	2010-09-06 17:30:12.893455295 -0600
++++ root.py-mod	2010-09-06 17:40:24.367220812 -0600
+@@ -125,30 +125,25 @@
+         if os.path.exists(find_resource("openerp", "static/images/company_logo.png")):
+             if comp_url:
+                 res = """   <a href='"""+comp_url+"""' target='_blank'>
+-                                <img src='/static/images/company_logo.png' alt="" border="0" width="205px" height="58px"/>
++                                <img src='/static/images/company_logo.png' alt="" border="0"/>
+                             </a> """
+             else:
+-                 res = """<img src="/static/images/company_logo.png" alt="" border="0" width="205px" height="58px"/>"""
++                 res = """<img src="/static/images/company_logo.png" alt="" border="0"/>"""
+         return res
+ 
+     @expose()
+     @unsecured
+     def developped_by(self):
+-        comp_url = cherrypy.request.app.config['openerp-web'].get('company.url', None)
+-
+         res="""<img src="/static/images/developped_by.png" border="0" width="200" height="60" alt="%(alt)s" usemap="#devby_map"/>
+                     <map name="devby_map">
+                         <area shape="rect" coords="0,20,100,60" href="http://axelor.com" target="_blank"/>
+                         <area shape="rect" coords="120,20,200,60" href="http://openerp.com" target="_blank"/>
+                     </map>"""%(dict(alt=_('Developped by Axelor and Tiny')))
+ 
+-        if os.path.exists(find_resource("openerp", "static/images/company_logo.png")):
+-            if comp_url:
+-                res = """   <a href='"""+comp_url+"""' target='_blank'>
+-                                <img src='/static/images/company_logo.png' alt="" border="0" width="205px" height="58px"/>
+-                            </a> """
+-            else:
+-                 res = """<img src="/static/images/company_logo.png" alt="" border="0" width="205px" height="58px"/>"""
++        if os.path.exists(find_resource("openerp", "static/images/developed_by_clearcorp.png")):
++            res = """   <a href='http://clearcorp.co.cr' target='_blank'>
++                            <img src='/static/images/developed_by_clearcorp.png' alt="Developed by ClearCorp" border="0"/>
++                        </a> """
+         return res
+ 
+     @expose()

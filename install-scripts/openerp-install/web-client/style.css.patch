@@ -1,0 +1,36 @@
+--- style.css	2010-08-26 16:22:51.000000000 -0600
++++ style.css-mod	2010-08-30 10:03:00.000000000 -0600
+@@ -560,4 +560,31 @@
+     text-align: center;
+     color: #71C837;
+     font-size: 12px;        
+-}
+\ No newline at end of file
++}
++
++/*Parte del codigo que estaba alambrado*/
++
++/*Cuadro que inicia la barra*/
++.sidebarBox
++{
++	background: url(/static/images/mainmenu_button.png) repeat-x;
++}
++/*Este es la parte gris que estaba alambrada*/
++.sidebarTextBox
++{
++	background-color: #363636;
++	color: white;
++	font-weight: bold;
++	font-size: 12px;
++}
++/*Esquina de la barra*/
++.sidebarCorner
++{
++	background: url(/static/images/diagonal_left.gif) no-repeat;
++	background-color: #666666;
++}
++/*Final de la barra*/
++.sidebarEnd
++{
++	background-color: #666666;
++}

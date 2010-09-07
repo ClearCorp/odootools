@@ -345,6 +345,16 @@ function install_openerp_web_client {
 		ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/company_logo.png $i/openerp/static/images/company_logo.png >> $INSTALL_LOG_FILE
 	done
 
+	# Patch Web Client to correct bad style definition
+	log_echo "Patch Web Client to correct bad style definition"
+	for i in `ls -d $install_path_web/openerp_web-5.0.*`; do
+		patch -p1 -i $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/about.mako.patch $i/openerp/controllers/templates/about.mako >> $INSTALL_LOG_FILE
+		patch -p1 -i $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/master.mako.patch $i/openerp/controllers/templates/master.mako >> $INSTALL_LOG_FILE
+		patch -p1 -i $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/sidebar.mako.patch $i/openerp/widgets/templates/sidebar.mako >> $INSTALL_LOG_FILE
+		patch -p1 -i $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/style.css.patch $i/openerp/static/css/style.css >> $INSTALL_LOG_FILE
+		patch -p1 -i $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/root.py.patch $i/openerp/controllers/root.py >> $INSTALL_LOG_FILE
+	done
+
 	#~ Adds ClearCorp favicon
 	for i in `ls -d $install_path_web/openerp_web*`; do
 		ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/favicon.ico $i/openerp/static/images/favicon.ico >> $INSTALL_LOG_FILE
