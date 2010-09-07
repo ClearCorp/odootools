@@ -31,62 +31,62 @@ function bzrUpdate {
 
 	# Check user is root
 	checkRoot
-	if [ -e /usr/local/sbin/ccorp-openerp-install ]; then
+	if [ -h /usr/local/sbin/ccorp-openerp-install ]; then
 		rm /usr/local/sbin/ccorp-openerp-install
 	fi
 	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-install.sh /usr/local/sbin/ccorp-openerp-install
 	
-	if [ -e /usr/local/sbin/ccorp-openerp-uninstall ]; then
+	if [ -h /usr/local/sbin/ccorp-openerp-uninstall ]; then
 		rm /usr/local/sbin/ccorp-openerp-uninstall
 	fi
 	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-uninstall.sh /usr/local/sbin/ccorp-openerp-uninstall
 	
-	if [ -e /usr/local/sbin/ccorp-openerp-update ]; then
+	if [ -h /usr/local/sbin/ccorp-openerp-update ]; then
 		rm /usr/local/sbin/ccorp-openerp-update
 	fi
 	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-update.sh /usr/local/sbin/ccorp-openerp-update
 
-	if [ -e /usr/local/sbin/ccorp-openerp-mkserver ]; then
+	if [ -h /usr/local/sbin/ccorp-openerp-mkserver ]; then
 		rm /usr/local/sbin/ccorp-openerp-mkserver
 	fi
 	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/mkserver.sh /usr/local/sbin/ccorp-openerp-mkserver
 
-	if [ -e /usr/local/sbin/ccorp-openerp-mkmenus ]; then
+	if [ -h /usr/local/sbin/ccorp-openerp-mkmenus ]; then
 		rm /usr/local/sbin/ccorp-openerp-mkmenus
 	fi
 	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/mkmenus.sh /usr/local/sbin/ccorp-openerp-mkmenus
 
-	if [ -e /usr/local/sbin/ccorp-openerp-cp-db ]; then
+	if [ -h /usr/local/sbin/ccorp-openerp-cp-db ]; then
 		rm /usr/local/sbin/ccorp-openerp-cp-db
 	fi
 	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/test-db/openerp-test-db.sh /usr/local/sbin/ccorp-openerp-cp-db
 
-	if [ -e /usr/local/sbin/ccorp-ubuntu-server-install ]; then
+	if [ -h /usr/local/sbin/ccorp-ubuntu-server-install ]; then
 		rm /usr/local/sbin/ccorp-ubuntu-server-install
 	fi
 	ln -s $LIBBASH_CCORP_DIR/install-scripts/ubuntu-server-install/ubuntu-server-install.sh /usr/local/sbin/ccorp-ubuntu-server-install
 
-	if [ -e /usr/local/sbin/ccorp-bzr-make ]; then
+	if [ -h /usr/local/sbin/ccorp-bzr-make ]; then
 		rm /usr/local/sbin/ccorp-bzr-make
 	fi
 	ln -s $LIBBASH_CCORP_DIR/install-scripts/bzr-install/bzr-make.sh /usr/local/sbin/ccorp-bzr-make
 
-	if [ -e /usr/local/sbin/ccorp-bzr-update ]; then
+	if [ -h /usr/local/sbin/ccorp-bzr-update ]; then
 		rm /usr/local/sbin/ccorp-bzr-update
 	fi
 	ln -s $LIBBASH_CCORP_DIR/install-scripts/bzr-install/bzr-update.sh /usr/local/sbin/ccorp-bzr-update
 
-	if [ -e /usr/local/sbin/ccorp-users-server-install ]; then
+	if [ -h /usr/local/sbin/ccorp-users-server-install ]; then
 		rm /usr/local/sbin/ccorp-users-server-install
 	fi
 	ln -s $LIBBASH_CCORP_DIR/install-scripts/users-server-install/users-server-install.sh /usr/local/sbin/ccorp-users-server-install
 
-	if [ -e /usr/local/sbin/ccorp-koo-install ]; then
+	if [ -h /usr/local/sbin/ccorp-koo-install ]; then
 		rm /usr/local/sbin/ccorp-koo-install
 	fi
 	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-dev-station/koo-install.sh /usr/local/sbin/ccorp-koo-install
 
-	if [ -e /usr/local/sbin/ccorp-install-fonts ]; then
+	if [ -h /usr/local/sbin/ccorp-install-fonts ]; then
 		rm /usr/local/sbin/ccorp-install-fonts
 	fi
 	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-dev-station/install-fonts.sh /usr/local/sbin/ccorp-install-fonts
