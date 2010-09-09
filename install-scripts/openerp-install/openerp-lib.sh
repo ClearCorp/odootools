@@ -153,10 +153,12 @@ function download_ccorp_addons {
 	log_echo "Downloading openerp ccorp-addons latest stable/trunk branch..."
 	mkdir -p $sources_path >> $INSTALL_LOG_FILE
 	cd $sources_path >> $INSTALL_LOG_FILE
-	if [ -e ccorp-addons ]; then
-		bzr update ccorp-addons >> $INSTALL_LOG_FILE
-	else
-		bzr checkout --lightweight lp:openerp-ccorp-addons ccorp-addons >> $INSTALL_LOG_FILE
+	if [[ $branch != "trunk" ]]; then
+		if [ -e ccorp-addons ]; then
+			bzr update ccorp-addons >> $INSTALL_LOG_FILE
+		else
+			bzr checkout --lightweight lp:openerp-ccorp-addons ccorp-addons >> $INSTALL_LOG_FILE
+		fi
 	fi
 	log_echo ""
 }
@@ -166,10 +168,12 @@ function download_costa_rica_addons {
 	log_echo "Downloading openerp-costa-rica latest stable/trunk branch..."
 	mkdir -p $sources_path >> $INSTALL_LOG_FILE
 	cd $sources_path >> $INSTALL_LOG_FILE
-	if [ -e costa-rica ]; then
-		bzr update costa-rica >> $INSTALL_LOG_FILE
-	else
-		bzr checkout --lightweight lp:openerp-costa-rica costa-rica >> $INSTALL_LOG_FILE
+	if [[ $branch != "trunk" ]]; then
+		if [ -e costa-rica ]; then
+			bzr update costa-rica >> $INSTALL_LOG_FILE
+		else
+			bzr checkout --lightweight lp:openerp-costa-rica costa-rica >> $INSTALL_LOG_FILE
+		fi
 	fi
 	log_echo ""
 }
