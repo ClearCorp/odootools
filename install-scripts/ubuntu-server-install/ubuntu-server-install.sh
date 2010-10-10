@@ -64,7 +64,7 @@ EOF
 			if [[ `grep -c "$def_locale" /usr/share/i18n/SUPPORTED` == 0 ]]; then
 				echo "Locale $def_locale invalid. Please enter a valid locale."
 				echo "See /usr/share/i18n/SUPPORTED for a complete list of valid locales."
-			elif [[ `grep -c "$def_locale" /usr/share/i18n/SUPPORTED` > 0 ]]; then
+			elif [[ `grep -c "$def_locale" /usr/share/i18n/SUPPORTED` > 1 ]]; then
 				echo "Several locales found with your entry, please be more specific:"
 				grep "$def_locale" /usr/share/i18n/SUPPORTED
 			elif [[ `grep -c "$def_locale" /var/lib/locales/supported.d/local` > 0 ]]; then
