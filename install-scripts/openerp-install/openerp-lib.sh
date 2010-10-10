@@ -220,13 +220,23 @@ function download_nan_tic_addons {
 }
 
 function download_openerp {
-	download_openerp_server
-	download_openerp_addons
-	download_ccorp_addons
-	download_costa_rica_addons
-	if [[ $install_extra_addons =~ ^[Yy]$ ]]; then download_extra_addons; fi
-	if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then download_magentoerpconnect; fi
-	if [[ $install_nantic =~ ^[Yy]$ ]]; then download_nan_tic_addons; fi
+	if [[ $branch == "5.0" ]]; then
+		download_openerp_server
+		if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then download_openerp_addons; fi
+		if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then download_ccorp_addons; fi
+		if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then download_costa_rica_addons; fi
+		if [[ $install_extra_addons =~ ^[Yy]$ ]]; then download_extra_addons; fi
+		if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then download_magentoerpconnect; fi
+		if [[ $install_nantic =~ ^[Yy]$ ]]; then download_nan_tic_addons; fi
+	elif [[ $branch == "trunk" ]]; then
+		download_openerp_server
+		if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then download_openerp_addons; fi
+		#if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then download_ccorp_addons; fi
+		#if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then download_costa_rica_addons; fi
+		#if [[ $install_extra_addons =~ ^[Yy]$ ]]; then download_extra_addons; fi
+		#if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then download_magentoerpconnect; fi
+		#if [[ $install_nantic =~ ^[Yy]$ ]]; then download_nan_tic_addons; fi
+	fi
 }
 
 function install_openerp_server {
@@ -323,13 +333,23 @@ function install_change_perms {
 }
 
 function install_openerp {
-	install_openerp_server
-	install_openerp_addons
-	install_ccorp_addons
-	install_costa_rica_addons
-	if [[ $install_extra_addons =~ ^[Yy]$ ]]; then install_extra_addons; fi
-	if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then install_magentoerpconnect; fi
-	if [[ $install_nantic =~ ^[Yy]$ ]]; then install_nan_tic_addons; fi
+	if [[ $branch == "5.0" ]]; then
+		install_openerp_server
+		if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then install_openerp_addons; fi
+		if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then install_ccorp_addons; fi
+		if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then install_costa_rica_addons; fi
+		if [[ $install_extra_addons =~ ^[Yy]$ ]]; then install_extra_addons; fi
+		if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then install_magentoerpconnect; fi
+		if [[ $install_nantic =~ ^[Yy]$ ]]; then install_nan_tic_addons; fi
+	elif [[ $branch == "trunk" ]]; then
+		install_openerp_server
+		if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then install_openerp_addons; fi
+		#if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then install_ccorp_addons; fi
+		#if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then install_costa_rica_addons; fi
+		#if [[ $install_extra_addons =~ ^[Yy]$ ]]; then install_extra_addons; fi
+		#if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then install_magentoerpconnect; fi
+		#if [[ $install_nantic =~ ^[Yy]$ ]]; then install_nan_tic_addons; fi
+	fi
 	install_change_perms
 }
 

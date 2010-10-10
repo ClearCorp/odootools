@@ -117,7 +117,10 @@ else
 	if [[ $server_type =~ ^[Pp]$ ]]; then
 		log_echo "This is a production server"
 		echo "production" > /etc/openerp/type
-		branch="s"
+		branch="5"
+		install_openerp_addons="n"
+		install_ccorp_addons="n"
+		install_costa_rica_addons="n"
 		install_extra_addons="n"
 		install_magentoerpconnect="n"
 		install_nantic="n"
@@ -129,14 +132,14 @@ fi
 echo $openerp_user > /etc/openerp/user
 
 #Choose the branch to install
-while [[ ! $branch =~ ^[SsTt]$ ]]; do
-	read -p "Which branch do you want to install (Stable/trunk)? " -n 1 branch
+while [[ ! $branch =~ ^[56]$ ]]; do
+	read -p "Which branch do you want to install (_5/6)? " -n 1 branch
 	if [[ $branch == "" ]]; then
-		branch="s"
+		branch="5"
 	fi
 	log_echo ""
 done
-if [[ $branch =~ ^[Ss]$ ]]; then
+if [[ $branch =~ ^[5]$ ]]; then
 	log_echo "This installation will use stable branch."
 	branch="5.0"
 else
@@ -145,6 +148,36 @@ else
 fi
 echo $branch > /etc/openerp/branch
 echo ""
+
+#Install openerp_addons
+while [[ ! $install_openerp_addons =~ ^[YyNn]$ ]]; do
+        read -p "Would you like to install openerp addons (Y/n)? " -n 1 install_openerp_addons
+        if [[ $install_openerp_addons == "" ]]; then
+                install_openerp_addons="y"
+        fi
+        log_echo ""
+done
+echo $install_openerp_addons > /etc/openerp/openerp_addons
+
+#Install ccorp_addons
+while [[ ! $install_ccorp_addons =~ ^[YyNn]$ ]]; do
+        read -p "Would you like to install ccorp addons (Y/n)? " -n 1 install_ccorp_addons
+        if [[ $install_ccorp_addons == "" ]]; then
+                install_ccorp_addons="y"
+        fi
+        log_echo ""
+done
+echo $install_ccorp_addons > /etc/openerp/ccorp_addons
+
+#Install costa_rica_addons
+while [[ ! $install_costa_rica_addons =~ ^[YyNn]$ ]]; do
+        read -p "Would you like to install Costa Rica addons (Y/n)? " -n 1 install_costa_rica_addons
+        if [[ $install_costa_rica_addons == "" ]]; then
+                install_costa_rica_addons="y"
+        fi
+        log_echo ""
+done
+echo $install_costa_rica_addons > /etc/openerp/costa_rica_addons
 
 #Install extra-addons
 while [[ ! $install_extra_addons =~ ^[YyNn]$ ]]; do

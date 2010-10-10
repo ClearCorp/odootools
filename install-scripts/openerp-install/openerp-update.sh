@@ -115,6 +115,42 @@ else
 	fi
 fi
 
+#~ Detects if openerp_addons is installed
+if [ ! -e /etc/openerp/openerp_addons ]; then
+	log_echo "OpenERP addons installation file not found (/etc/openerp/openerp_addons)"
+	exit 1
+else
+	install_openerp_addons=`cat /etc/openerp/openerp_addons`
+	if [[ ! $install_openerp_addons =~ ^[YyNn]$ ]]; then
+		log_echo "OpenERP addons installation state invalid (/etc/openerp/openerp_addons): $install_openerp_addons"
+		exit 1
+	fi
+fi
+
+#~ Detects if ccorp_addons is installed
+if [ ! -e /etc/openerp/extra_addons ]; then
+	log_echo "ccorp_addons installation file not found (/etc/openerp/extra_addons)"
+	exit 1
+else
+	install_extra_addons=`cat /etc/openerp/extra_addons`
+	if [[ ! $install_extra_addons =~ ^[YyNn]$ ]]; then
+		log_echo "ccorp_addons installation state invalid (/etc/openerp/extra_addons): $install_extra_addons"
+		exit 1
+	fi
+fi
+
+#~ Detects if costa_rica_addons is installed
+if [ ! -e /etc/openerp/extra_addons ]; then
+	log_echo "costa_rica_addons installation file not found (/etc/openerp/extra_addons)"
+	exit 1
+else
+	install_extra_addons=`cat /etc/openerp/extra_addons`
+	if [[ ! $install_extra_addons =~ ^[YyNn]$ ]]; then
+		log_echo "costa_rica_addons installation state invalid (/etc/openerp/extra_addons): $install_extra_addons"
+		exit 1
+	fi
+fi
+
 #~ Detects if extra-addons is installed
 if [ ! -e /etc/openerp/extra_addons ]; then
 	log_echo "Extra-addons installation file not found (/etc/openerp/extra_addons)"
