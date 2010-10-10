@@ -48,6 +48,7 @@ es_CR.UTF-8 UTF-8
 EOF
 	REPLY="Y"
 	while [[ $REPLY =~ ^[Yy]$ ]]; do
+		REPLY=""
 		while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
 			echo "Locales ready to install:"
 			cat /var/lib/locales/supported.d/local
