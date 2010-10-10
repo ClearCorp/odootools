@@ -32,6 +32,49 @@ echo ""
 # Configure locales
 REPLY='none'
 while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
+	read -p "Do you want to select locales for installation (Y/n)? " -n 1
+	if [[ $REPLY == "" ]]; then
+		REPLY="y"
+	fi
+	echo ""
+done
+
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+	cat > /var/lib/locales/supported.d/local << EOF
+en_US ISO-8859-1
+en_US.UTF-8 UTF-8
+es_ES.UTF-8 UTF-8
+es_CR.UTF-8 UTF-8
+EOF
+	REPLY="Y"
+	while [[ $REPLY =~ ^[Yy]$ ]]; do
+		echo "Locales ready to install:"
+		cat /var/lib/locales/supported.d/local
+		read -p "Do you want to select another locale for installation?: " REPLY
+		if [[ $REPLY =~ ^[Yy]$ ]]; then
+			def_locale=""
+			read -p "Enter the extra locale to install: " def_locale
+			if [[ `grep -c "$def_locale" /usr/share/i18n/SUPPORTED` == 0 ]]; then
+				echo "Locale $def_locale invalid. Please enter a valid locale."
+				echo "See /usr/share/i18n/SUPPORTED for a complete list of valid locales."
+			elif [[ `grep -c "$def_locale" /usr/share/i18n/SUPPORTED` > 0 ]]; then
+				echo "Several locales found with your entry, please be more specific:"
+				grep "$def_locale" /usr/share/i18n/SUPPORTED
+			elif [[ `grep -c "$def_locale" /var/lib/locales/supported.d/local` > 0 ]]; then
+				echo "Locale $def_locale is already selected."
+			else
+				echo "Selecting $def_locale for installation"
+				echo `grep "$def_locale" /usr/share/i18n/SUPPORTED` >> /var/lib/locales/supported.d/local
+			fi
+		fi
+	done
+	locale-gen
+fi
+echo ""
+
+# Configure locales
+REPLY='none'
+while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
 	read -p "Do you want to set the default locale (Y/n)? " -n 1
 	if [[ $REPLY == "" ]]; then
 		REPLY="y"
@@ -42,18 +85,18 @@ done
 if [[ $REPLY =~ ^[Yy]$ ]]; then
 	no_locale=1
 	while [[ $no_locale == 1 ]]; do
-		read -p "Enter the default locale for this machine (es_CR.UTF-8): " def_locale
+		echo "Locales installed:"
+		cat /var/lib/locales/supported.d/local
+		read -p "Enter the default locale for this machine (en_EN.UTF-8): " def_locale
 		if [[ $def_locale == "" ]]; then
-			def_locale="es_CR.UTF-8"
+			def_locale="en_EN.UTF-8"
 		fi
-		if [[ `egrep -c "^$def_locale " /usr/share/i18n/SUPPORTED` > 0 ]]; then
+		if [[ `egrep -c "^$def_locale " /var/lib/locales/supported.d/local` > 0 ]]; then
 			no_locale=0
 		else
-			echo "Locale $def_locale invalid. Please enter a valid locale."
-			echo "See /usr/share/i18n/SUPPORTED for a complete list of valid locales."
+			echo "Locale $def_locale invalid. Please enter a valid installed locale."
 		fi
 	done
-	locale-gen $def_locale
 	if [[ `grep -c LC_CTYPE /etc/environment` == 0 ]]; then
 		echo "LC_CTYPE=\"$def_locale\"" >> /etc/environment
 	else
