@@ -433,8 +433,8 @@ function make_menus {
 }
 
 function add_log_rotation {
-	cat << EOF >> /etc/logrotate.d/openerp
-/var/log/openerp/* /var/log/openerp/*/* {
+	cat << EOF > /etc/logrotate.d/openerp
+/var/log/openerp/*.log /var/log/openerp/*/*.log {
 	daily
 	rotate 30
 	compress
