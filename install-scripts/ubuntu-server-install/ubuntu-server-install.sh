@@ -17,7 +17,7 @@ checkRoot
 # Sets the root password.
 REPLY='none'
 while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to set root password (Y/n)? " -n 1
+	read -p "Do you want to set root password (Y/n)? " -n 1 REPLY
 	if [[ $REPLY == "" ]]; then
 		REPLY="y"
 	fi
@@ -32,7 +32,7 @@ echo ""
 # Configure locales
 REPLY='none'
 while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to select locales for installation (Y/n)? " -n 1
+	read -p "Do you want to select locales for installation (Y/n)? " -n 1 REPLY
 	if [[ $REPLY == "" ]]; then
 		REPLY="y"
 	fi
@@ -48,9 +48,15 @@ es_CR.UTF-8 UTF-8
 EOF
 	REPLY="Y"
 	while [[ $REPLY =~ ^[Yy]$ ]]; do
-		echo "Locales ready to install:"
-		cat /var/lib/locales/supported.d/local
-		read -p "Do you want to select another locale for installation?: " REPLY
+		while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
+			echo "Locales ready to install:"
+			cat /var/lib/locales/supported.d/local
+			read -p "Do you want to select another locale for installation (Y/n)?: " -n 1 REPLY
+			if [[ $REPLY == "" ]]; then
+				REPLY="y"
+			fi
+			echo ""
+		done
 		if [[ $REPLY =~ ^[Yy]$ ]]; then
 			def_locale=""
 			read -p "Enter the extra locale to install: " def_locale
@@ -75,7 +81,7 @@ echo ""
 # Configure locales
 REPLY='none'
 while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to set the default locale (Y/n)? " -n 1
+	read -p "Do you want to set the default locale (Y/n)? " -n 1 REPLY
 	if [[ $REPLY == "" ]]; then
 		REPLY="y"
 	fi
@@ -118,7 +124,7 @@ echo ""
 # Sets the hostname.
 REPLY='none'
 while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to set the hostname (Y/n)? " -n 1
+	read -p "Do you want to set the hostname (Y/n)? " -n 1 REPLY
 	if [[ $REPLY == "" ]]; then
 		REPLY="y"
 	fi
@@ -160,7 +166,7 @@ echo ""
 # Sets the timezone.
 REPLY='none'
 while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to set the timezone (Y/n)? " -n 1
+	read -p "Do you want to set the timezone (Y/n)? " -n 1 REPLY
 	if [[ $REPLY == "" ]]; then
 		REPLY="y"
 	fi
@@ -176,7 +182,7 @@ echo ""
 # Sync time with NTP
 REPLY='none'
 while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to sync the system time with NTP (Y/n)? " -n 1
+	read -p "Do you want to sync the system time with NTP (Y/n)? " -n 1 REPLY
 	if [[ $REPLY == "" ]]; then
 		REPLY="y"
 	fi
@@ -199,7 +205,7 @@ echo ""
 # Sets apt sources.
 REPLY='none'
 while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to set the apt sources (Y/n)? " -n 1
+	read -p "Do you want to set the apt sources (Y/n)? " -n 1 REPLY
 	if [[ $REPLY == "" ]]; then
 		REPLY="y"
 	fi
@@ -217,7 +223,7 @@ echo ""
 # Update the system.
 REPLY='none'
 while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to update the system (Y/n)? " -n 1
+	read -p "Do you want to update the system (Y/n)? " -n 1 REPLY
 	if [[ $REPLY == "" ]]; then
 		REPLY="y"
 	fi
@@ -234,7 +240,7 @@ echo ""
 # Install webmin
 REPLY='none'
 while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to install webmin (Y/n)? " -n 1
+	read -p "Do you want to install webmin (Y/n)? " -n 1 REPLY
 	if [[ $REPLY == "" ]]; then
 		REPLY="y"
 	fi
@@ -250,7 +256,7 @@ echo ""
 # Remove unnecesary packages and daemons.
 REPLY='none'
 while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to remove unnecesary packages and daemons (Y/n)? " -n 1
+	read -p "Do you want to remove unnecesary packages and daemons (Y/n)? " -n 1 REPLY
 	if [[ $REPLY == "" ]]; then
 		REPLY="y"
 	fi
@@ -266,7 +272,7 @@ echo ""
 # Install extra packages.
 REPLY='none'
 while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to install extra packages (Y/n)? " -n 1
+	read -p "Do you want to install extra packages (Y/n)? " -n 1 REPLY
 	if [[ $REPLY == "" ]]; then
 		REPLY="y"
 	fi
@@ -286,7 +292,7 @@ echo ""
 # Clean apt cache.
 REPLY='none'
 while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to clean apt cache (Y/n)? " -n 1
+	read -p "Do you want to clean apt cache (Y/n)? " -n 1 REPLY
 	if [[ $REPLY == "" ]]; then
 		REPLY="y"
 	fi
@@ -301,7 +307,7 @@ echo ""
 # Regenerate SSH keys on next reboot.
 REPLY='none'
 while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to regenerate SSH keys on next reboot (y/N)? " -n 1
+	read -p "Do you want to regenerate SSH keys on next reboot (y/N)? " -n 1 REPLY
 	if [[ $REPLY == "" ]]; then
 		REPLY="n"
 	fi
