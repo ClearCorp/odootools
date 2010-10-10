@@ -94,9 +94,9 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 	while [[ $no_locale == 1 ]]; do
 		echo "Locales installed:"
 		cat /var/lib/locales/supported.d/local
-		read -p "Enter the default locale for this machine (en_EN.UTF-8): " def_locale
+		read -p "Enter the default locale for this machine (en_US.UTF-8): " def_locale
 		if [[ $def_locale == "" ]]; then
-			def_locale="en_EN.UTF-8"
+			def_locale="en_US.UTF-8"
 		fi
 		if [[ `egrep -c "^$def_locale " /var/lib/locales/supported.d/local` > 0 ]]; then
 			no_locale=0
