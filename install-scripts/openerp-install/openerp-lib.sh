@@ -260,6 +260,10 @@ function install_openerp_server {
 	mkdir -p $base_path/share/man/man5 >> $INSTALL_LOG_FILE
 	cp -a man/*.1 $base_path/share/man/man1/ >> $INSTALL_LOG_FILE
 	cp -a man/*.5 $base_path/share/man/man5/ >> $INSTALL_LOG_FILE
+	# Copy pixmaps
+	if [[ $branch == "trunk" ]]; then
+		cp -a pixmaps $install_path/ >> $INSTALL_LOG_FILE
+	fi
 
 	#~ Copy bin script skeleton to /etc
 	log_echo "Copy bin script skeleton to /etc"
