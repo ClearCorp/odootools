@@ -1,0 +1,11 @@
+/var/log/openerp/*.log /var/log/openerp/*/*.log {
+	daily
+	rotate 30
+	compress
+	nodelaycompress
+	copytruncate
+	notifempty
+	nomissingok
+	create 664 openerp openerp
+	noolddir
+}
