@@ -81,8 +81,8 @@ deb http://$archive.ubuntu.com/ubuntu/ $1-security multiverse
 #deb-src http://$archive.ubuntu.com/ubuntu/ $1-backports multiverse
 
 # Partner repository
-deb http://$archive.canonical.com/ubuntu $1 partner
-#deb-src http://$archive.canonical.com/ubuntu $1 partner
+deb http://archive.canonical.com/ubuntu $1 partner
+#deb-src http://archive.canonical.com/ubuntu $1 partner
 EOF
 }
 
