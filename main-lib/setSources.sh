@@ -9,6 +9,10 @@ function addKey {
 }
 
 function setSources_ubuntu {
+	archive="archive"
+	if [[ `grep .ec2 /etc/apt/sources.list -c` > 0 ]]
+		archive="egrep [^./]*\.ec2 /etc/apt/sources.list -o -m 1"
+	fi
 # Ubuntu repository
 	cat > /etc/apt/sources.list << EOF
 # See http://help.ubuntu.com/community/UpgradeNotes for how to upgrade to
@@ -37,48 +41,48 @@ function setSources_ubuntu {
 ## respective vendors as a service to Ubuntu users.
 
 # Main repository
-deb http://archive.ubuntu.com/ubuntu/ $1 main
-deb http://archive.ubuntu.com/ubuntu/ $1-updates main
-deb http://archive.ubuntu.com/ubuntu/ $1-security main
-#deb http://archive.ubuntu.com/ubuntu/ $1-backports main
-#deb-src http://archive.ubuntu.com/ubuntu/ $1 main
-#deb-src http://archive.ubuntu.com/ubuntu/ $1-updates main
-#deb-src http://archive.ubuntu.com/ubuntu/ $1-security main
-#deb-src http://archive.ubuntu.com/ubuntu/ $1-backports main
+deb http://$archive.ubuntu.com/ubuntu/ $1 main
+deb http://$archive.ubuntu.com/ubuntu/ $1-updates main
+deb http://$archive.ubuntu.com/ubuntu/ $1-security main
+#deb http://$archive.ubuntu.com/ubuntu/ $1-backports main
+#deb-src http://$archive.ubuntu.com/ubuntu/ $1 main
+#deb-src http://$archive.ubuntu.com/ubuntu/ $1-updates main
+#deb-src http://$archive.ubuntu.com/ubuntu/ $1-security main
+#deb-src http://$archive.ubuntu.com/ubuntu/ $1-backports main
 
 # Restricted repository
-deb http://archive.ubuntu.com/ubuntu/ $1 restricted
-deb http://archive.ubuntu.com/ubuntu/ $1-updates restricted
-deb http://archive.ubuntu.com/ubuntu/ $1-security restricted
-#deb http://archive.ubuntu.com/ubuntu/ $1-backports restricted
-#deb-src http://archive.ubuntu.com/ubuntu/ $1 restricted
-#deb-src http://archive.ubuntu.com/ubuntu/ $1-updates restricted
-#deb-src http://archive.ubuntu.com/ubuntu/ $1-security restricted
-#deb-src http://archive.ubuntu.com/ubuntu/ $1-backports restricted
+deb http://$archive.ubuntu.com/ubuntu/ $1 restricted
+deb http://$archive.ubuntu.com/ubuntu/ $1-updates restricted
+deb http://$archive.ubuntu.com/ubuntu/ $1-security restricted
+#deb http://$archive.ubuntu.com/ubuntu/ $1-backports restricted
+#deb-src http://$archive.ubuntu.com/ubuntu/ $1 restricted
+#deb-src http://$archive.ubuntu.com/ubuntu/ $1-updates restricted
+#deb-src http://$archive.ubuntu.com/ubuntu/ $1-security restricted
+#deb-src http://$archive.ubuntu.com/ubuntu/ $1-backports restricted
 
 # Universe repository
-deb http://archive.ubuntu.com/ubuntu/ $1 universe
-deb http://archive.ubuntu.com/ubuntu/ $1-updates universe
-deb http://archive.ubuntu.com/ubuntu/ $1-security universe
-#deb http://archive.ubuntu.com/ubuntu/ $1-backports universe
-#deb-src http://archive.ubuntu.com/ubuntu/ $1 universe
-#deb-src http://archive.ubuntu.com/ubuntu/ $1-updates universe
-#deb-src http://archive.ubuntu.com/ubuntu/ $1-security universe
-#deb-src http://archive.ubuntu.com/ubuntu/ $1-backports universe
+deb http://$archive.ubuntu.com/ubuntu/ $1 universe
+deb http://$archive.ubuntu.com/ubuntu/ $1-updates universe
+deb http://$archive.ubuntu.com/ubuntu/ $1-security universe
+#deb http://$archive.ubuntu.com/ubuntu/ $1-backports universe
+#deb-src http://$archive.ubuntu.com/ubuntu/ $1 universe
+#deb-src http://$archive.ubuntu.com/ubuntu/ $1-updates universe
+#deb-src http://$archive.ubuntu.com/ubuntu/ $1-security universe
+#deb-src http://$archive.ubuntu.com/ubuntu/ $1-backports universe
 
 # Multiverse repository
-deb http://archive.ubuntu.com/ubuntu/ $1 multiverse
-deb http://archive.ubuntu.com/ubuntu/ $1-updates multiverse
-deb http://archive.ubuntu.com/ubuntu/ $1-security multiverse
-#deb http://archive.ubuntu.com/ubuntu/ $1-backports multiverse
-#deb-src http://archive.ubuntu.com/ubuntu/ $1 multiverse
-#deb-src http://archive.ubuntu.com/ubuntu/ $1-updates multiverse
-#deb-src http://archive.ubuntu.com/ubuntu/ $1-security multiverse
-#deb-src http://archive.ubuntu.com/ubuntu/ $1-backports multiverse
+deb http://$archive.ubuntu.com/ubuntu/ $1 multiverse
+deb http://$archive.ubuntu.com/ubuntu/ $1-updates multiverse
+deb http://$archive.ubuntu.com/ubuntu/ $1-security multiverse
+#deb http://$archive.ubuntu.com/ubuntu/ $1-backports multiverse
+#deb-src http://$archive.ubuntu.com/ubuntu/ $1 multiverse
+#deb-src http://$archive.ubuntu.com/ubuntu/ $1-updates multiverse
+#deb-src http://$archive.ubuntu.com/ubuntu/ $1-security multiverse
+#deb-src http://$archive.ubuntu.com/ubuntu/ $1-backports multiverse
 
 # Partner repository
-deb http://archive.canonical.com/ubuntu $1 partner
-#deb-src http://archive.canonical.com/ubuntu $1 partner
+deb http://$archive.canonical.com/ubuntu $1 partner
+#deb-src http://$archive.canonical.com/ubuntu $1 partner
 EOF
 }
 
