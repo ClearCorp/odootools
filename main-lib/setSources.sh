@@ -11,7 +11,7 @@ function addKey {
 function setSources_ubuntu {
 	archive="archive"
 	if [[ `grep .ec2 /etc/apt/sources.list -c` > 0 ]]; then
-		archive="egrep [^./]*\.ec2 /etc/apt/sources.list -o -m 1"
+		archive=`egrep [^./]*\.ec2 /etc/apt/sources.list -o -m 1`
 	fi
 # Ubuntu repository
 	cat > /etc/apt/sources.list << EOF
