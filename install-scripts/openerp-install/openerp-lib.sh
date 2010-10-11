@@ -380,9 +380,9 @@ function install_openerp_web_client {
 
 	# OpenERP Web Client init and config skeletons
 	mkdir -p /etc/openerp/web-client >> $INSTALL_LOG_FILE
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client-init-skeleton /etc/openerp/web-client/init-skeleton >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client-init-skeleton /etc/openerp/web-client/init-skeleton >> $INSTALL_LOG_FILE
 	sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/web-client/init-skeleton >> $INSTALL_LOG_FILE
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client.conf-skeleton /etc/openerp/web-client/ >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client.conf-skeleton /etc/openerp/web-client/ >> $INSTALL_LOG_FILE
 
 	#~ Sets server type
 	if [[ "$server_type" =~ ^[DdWw]$ ]]; then
