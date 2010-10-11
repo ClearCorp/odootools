@@ -130,7 +130,7 @@ function download_openerp_server {
 	if [ -e openerp-server ]; then
 		bzr update openerp-server >> $INSTALL_LOG_FILE
 	else
-		bzr checkout --lightweight lp:openobject-server/$branch openerp-server >> $INSTALL_LOG_FILE
+		bzr checkout --lightweight http://server01.rs.clearcorp.co.cr/bzr/openerp-server/$branch openerp-server >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }
