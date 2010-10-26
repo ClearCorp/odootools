@@ -64,7 +64,7 @@ if [[ $dist == "lucid" ]]; then
 	install_path_web=$base_path/lib/$python_rel/dist-packages
 	addons_path=$install_path/addons/
 	sources_path=$base_path/src/openerp
-elif [[ $dist == "maverik" ]]; then
+elif [[ $dist == "maverick" ]]; then
 	# Ubuntu 10.10, python 2.6
 	posgresql_rel=8.4
 	python_rel=python2.6
@@ -76,7 +76,7 @@ elif [[ $dist == "maverik" ]]; then
 	sources_path=$base_path/src/openerp
 else
 	# Only Lucid supported for now
-	log_echo "ERROR: This program must be executed on Ubuntu Lucid 10.04 (Desktop or Server)"
+	log_echo "ERROR: This program must be executed on Ubuntu Lucid 10.04 or 10.10 (Desktop or Server)"
 	exit 1
 fi
 
