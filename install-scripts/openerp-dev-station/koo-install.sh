@@ -68,6 +68,14 @@ if [[ $dist == "lucid" ]]; then
 	base_path=/usr/local
 	install_path=$base_path/lib/$python_rel/dist-packages
 	sources_path=$base_path/src
+elif [[ $dist == "maverick" ]]; then
+	# Ubuntu 10.10, python 2.6
+	posgresql_rel=8.4
+	python_rel=python2.6
+	ubuntu_rel=10.10
+	base_path=/usr/local
+	install_path=$base_path/lib/$python_rel/dist-packages
+	sources_path=$base_path/src
 else
 	# Only Karmic supported for now
 	log_echo "ERROR: This program must be executed on Ubuntu Lucid 10.04 (Desktop or Server)"
