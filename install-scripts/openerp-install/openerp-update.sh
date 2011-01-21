@@ -64,7 +64,7 @@ if [[ $dist == "lucid" ]]; then
 	install_path_web=$base_path/lib/$python_rel/dist-packages
 	addons_path=$install_path/addons/
 	sources_path=$base_path/src/openerp
-if [[ $dist == "maverick" ]]; then
+elif [[ $dist == "maverick" ]]; then
 	# Ubuntu 10.10, python 2.6
 	posgresql_rel=8.4
 	python_rel=python2.6
