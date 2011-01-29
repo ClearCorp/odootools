@@ -143,13 +143,13 @@ echo $openerp_user > /etc/openerp/user
 
 #Choose the branch to install
 while [[ ! $branch =~ ^[56]$ ]]; do
-	read -p "Which branch do you want to install (_5/6)? " -n 1 branch
+	read -p "Which branch do you want to install (5/_6_)? " -n 1 branch
 	if [[ $branch == "" ]]; then
 		branch="5"
 	fi
 	log_echo ""
 done
-if [[ $branch =~ ^[5]$ ]]; then
+if [[ $branch =~ ^[6]$ ]]; then
 	log_echo "This installation will use stable branch."
 	branch="5.0"
 else
