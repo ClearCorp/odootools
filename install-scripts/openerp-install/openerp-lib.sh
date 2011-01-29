@@ -71,7 +71,7 @@ function install_python_lib {
 	# Install the required python libraries for openerp-server.
 	echo "Installing the required python libraries for openerp-server..."
 	# From doc.openerp.com
-	apt-get -qqy install python python-psycopg2 python-reportlab python-egenix-mxdatetime python-tz python-pychart python-pydot python-lxml python-vobject python-imaging python-yaml >> $INSTALL_LOG_FILE
+	apt-get -qqy install python python-psycopg2 python-reportlab python-egenix-mxdatetime python-tz python-pychart python-pydot python-lxml python-vobject python-imaging python-yaml python-mako >> $INSTALL_LOG_FILE
 	# Excel spreadsheets generation
 	apt-get -qqy install python-xlwt >> $INSTALL_LOG_FILE
 	# For nan-tic modules
@@ -124,7 +124,7 @@ function change_postgres_passwd {
 
 function download_openerp_server {
 	# Download openerp-server latest stable/trunk release.
-	log_echo "Downloading openerp-server latest stable/trunk release..."
+	log_echo "Downloading openerp-server latest $branch release..."
 	mkdir -p $sources_path >> $INSTALL_LOG_FILE
 	cd $sources_path >> $INSTALL_LOG_FILE
 	if [ -e openerp-server ]; then
@@ -137,7 +137,7 @@ function download_openerp_server {
 
 function download_openerp_addons {
 	# Download openerp addons latest stable/trunk branch.
-	log_echo "Downloading openerp addons latest stable/trunk branch..."
+	log_echo "Downloading openerp addons latest $branch branch..."
 	mkdir -p $sources_path >> $INSTALL_LOG_FILE
 	cd $sources_path >> $INSTALL_LOG_FILE
 	if [ -e addons ]; then
@@ -150,30 +150,26 @@ function download_openerp_addons {
 
 function download_ccorp_addons {
 	# Download openerp ccorp-addons latest stable/trunk branch.
-	log_echo "Downloading openerp ccorp-addons latest stable/trunk branch..."
+	log_echo "Downloading openerp ccorp-addons latest $branch branch..."
 	mkdir -p $sources_path >> $INSTALL_LOG_FILE
 	cd $sources_path >> $INSTALL_LOG_FILE
-	if [[ $branch != "trunk" ]]; then
-		if [ -e ccorp-addons ]; then
-			bzr update ccorp-addons >> $INSTALL_LOG_FILE
-		else
-			bzr checkout --lightweight lp:openerp-ccorp-addons ccorp-addons >> $INSTALL_LOG_FILE
-		fi
+	if [ -e ccorp-addons ]; then
+		bzr update ccorp-addons >> $INSTALL_LOG_FILE
+	else
+		bzr checkout --lightweight lp:openerp-ccorp-addons ccorp-addons >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }
 
 function download_costa_rica_addons {
 	# Download openerp-costa-rica latest stable/trunk branch.
-	log_echo "Downloading openerp-costa-rica latest stable/trunk branch..."
+	log_echo "Downloading openerp-costa-rica latest $branch branch..."
 	mkdir -p $sources_path >> $INSTALL_LOG_FILE
 	cd $sources_path >> $INSTALL_LOG_FILE
-	if [[ $branch != "trunk" ]]; then
-		if [ -e costa-rica ]; then
-			bzr update costa-rica >> $INSTALL_LOG_FILE
-		else
-			bzr checkout --lightweight lp:openerp-costa-rica costa-rica >> $INSTALL_LOG_FILE
-		fi
+	if [ -e costa-rica ]; then
+		bzr update costa-rica >> $INSTALL_LOG_FILE
+	else
+		bzr checkout --lightweight lp:openerp-costa-rica costa-rica >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }
@@ -228,14 +224,14 @@ function download_openerp {
 		if [[ $install_extra_addons =~ ^[Yy]$ ]]; then download_extra_addons; fi
 		if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then download_magentoerpconnect; fi
 		if [[ $install_nantic =~ ^[Yy]$ ]]; then download_nan_tic_addons; fi
-	elif [[ $branch == "trunk" ]]; then
+	elif [[ $branch == "6.0" ]]; then
 		download_openerp_server
 		if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then download_openerp_addons; fi
-		#if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then download_ccorp_addons; fi
-		#if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then download_costa_rica_addons; fi
-		#if [[ $install_extra_addons =~ ^[Yy]$ ]]; then download_extra_addons; fi
-		#if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then download_magentoerpconnect; fi
-		#if [[ $install_nantic =~ ^[Yy]$ ]]; then download_nan_tic_addons; fi
+		if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then download_ccorp_addons; fi
+		if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then download_costa_rica_addons; fi
+		if [[ $install_extra_addons =~ ^[Yy]$ ]]; then download_extra_addons; fi
+		if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then download_magentoerpconnect; fi
+		if [[ $install_nantic =~ ^[Yy]$ ]]; then download_nan_tic_addons; fi
 	fi
 }
 
@@ -249,7 +245,7 @@ function install_openerp_server {
 	cp -a bin/* $install_path/ >> $INSTALL_LOG_FILE
 	# Patch openerp-server.py to change process names
 	log_echo "Patch openerp-server.py to change process names"
-	patch -p1 -i $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-server.py.patch $install_path/openerp-server.py >> $INSTALL_LOG_FILE
+	patch -p1 -i $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-server.py-$branch.patch $install_path/openerp-server.py >> $INSTALL_LOG_FILE
 	#~ Copy documentation
 	log_echo "Copy documentation"
 	mkdir -p $base_path/share/doc/openerp-server >> $INSTALL_LOG_FILE
@@ -261,7 +257,7 @@ function install_openerp_server {
 	cp -a man/*.1 $base_path/share/man/man1/ >> $INSTALL_LOG_FILE
 	cp -a man/*.5 $base_path/share/man/man5/ >> $INSTALL_LOG_FILE
 	# Copy pixmaps
-	if [[ $branch == "trunk" ]]; then
+	if [[ $branch == "6.0" ]]; then
 		cp -a pixmaps $install_path/ >> $INSTALL_LOG_FILE
 	fi
 
@@ -345,21 +341,21 @@ function install_openerp {
 		if [[ $install_extra_addons =~ ^[Yy]$ ]]; then install_extra_addons; fi
 		if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then install_magentoerpconnect; fi
 		if [[ $install_nantic =~ ^[Yy]$ ]]; then install_nan_tic_addons; fi
-	elif [[ $branch == "trunk" ]]; then
+	elif [[ $branch == "6.0" ]]; then
 		install_openerp_server
 		if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then install_openerp_addons; fi
-		#if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then install_ccorp_addons; fi
-		#if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then install_costa_rica_addons; fi
-		#if [[ $install_extra_addons =~ ^[Yy]$ ]]; then install_extra_addons; fi
-		#if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then install_magentoerpconnect; fi
-		#if [[ $install_nantic =~ ^[Yy]$ ]]; then install_nan_tic_addons; fi
+		if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then install_ccorp_addons; fi
+		if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then install_costa_rica_addons; fi
+		if [[ $install_extra_addons =~ ^[Yy]$ ]]; then install_extra_addons; fi
+		if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then install_magentoerpconnect; fi
+		if [[ $install_nantic =~ ^[Yy]$ ]]; then install_nan_tic_addons; fi
 	fi
 	install_change_perms
 }
 
 function download_openerp_web {
 	# Download openerp-web latest stable/trunk branch.
-	log_echo "Downloading openerp-web latest stable/trunk branch..."
+	log_echo "Downloading openerp-web latest $branch branch..."
 	mkdir -p $sources_path >> $INSTALL_LOG_FILE
 	cd $sources_path >> $INSTALL_LOG_FILE
 	if [ -e openerp-web ]; then

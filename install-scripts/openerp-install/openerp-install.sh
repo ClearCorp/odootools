@@ -150,13 +150,14 @@ while [[ ! $branch =~ ^[56]$ ]]; do
 	log_echo ""
 done
 if [[ $branch =~ ^[6]$ ]]; then
-	log_echo "This installation will use stable branch."
+	log_echo "This installation will use 5.0 branch."
 	branch="5.0"
 else
-	log_echo "This installation will use trunk branch."
-	branch="trunk"
+	log_echo "This installation will use 6.0 branch."
+	branch="6.0"
 fi
 echo $branch > /etc/openerp/branch
+sources_path="$sources_path-$branch"
 echo ""
 
 #Install openerp_addons
