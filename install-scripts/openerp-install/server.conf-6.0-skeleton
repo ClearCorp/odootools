@@ -199,13 +199,13 @@ language = es_CR
 load_language = None
 
 # (char) Import a CSV or a PO file with translations and exit.
-# Options: language and db_name are required (default None).
-translate_in = None
+# Options: language and db_name are required (default blank).
+translate_in = 
 
 # (char) Export all sentences to be translated to a CSV file, a PO file
 # or a TGZ archive and exit. Options: language and db_name are required.
-# (default None).
-translate_out = None
+# (default blank).
+translate_out = 
 
 # (list) Specify modules to export. Use in combination with
 # translate_out (default ['all']).
