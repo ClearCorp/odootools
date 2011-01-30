@@ -185,7 +185,7 @@ cp -a /etc/openerp/server/bin-skeleton /usr/local/bin/openerp-server-$name
 sed -i "s#\\[NAME\\]#$name#g" /usr/local/bin/openerp-server-$name
 
 log_echo "Creating openerp-server configuration file..."
-cp -a /etc/openerp/server/server.conf-skeleton /etc/openerp/server/$name.conf
+cp -a /etc/openerp/server/server.conf-$branch-skeleton /etc/openerp/server/$name.conf
 sed -i "s#\\[DB_USER\\]#openerp_$name#g" /etc/openerp/server/$name.conf >> $INSTALL_LOG_FILE
 sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/server/$name.conf
 sed -i "s#\\[XMLPORT\\]#20$port#g" /etc/openerp/server/$name.conf
