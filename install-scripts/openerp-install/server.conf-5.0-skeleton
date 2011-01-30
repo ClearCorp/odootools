@@ -6,7 +6,7 @@ logfile = /var/log/openerp/[NAME]/server.log
 log_level = [LOGLEVEL]
 
 # Enable the debugging mode (default False).
-verbose = True
+verbose = [DEBUGMODE]
 
 # The file where the server pid will be stored (default False).
 pidfile = /var/run/openerp/[NAME]/server.pid

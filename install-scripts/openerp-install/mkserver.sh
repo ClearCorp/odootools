@@ -190,7 +190,8 @@ sed -i "s#\\[DB_USER\\]#openerp_$name#g" /etc/openerp/server/$name.conf >> $INST
 sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/server/$name.conf
 sed -i "s#\\[XMLPORT\\]#20$port#g" /etc/openerp/server/$name.conf
 sed -i "s#\\[NETPORT\\]#21$port#g" /etc/openerp/server/$name.conf
-sed -i "s#\\[PYROPORT\\]#23$port#g" /etc/openerp/server/$name.conf
+sed -i "s#\\[XMLSPORT\\]#22$port#g" /etc/openerp/server/$name.conf
+sed -i "s#\\[PYROPORT\\]#24$port#g" /etc/openerp/server/$name.conf
 sed -i "s#\\[ADMIN_PASSWD\\]#$admin_passwd#g" /etc/openerp/server/$name.conf
 
 log_echo "Creating openerp-server log files..."
@@ -212,7 +213,7 @@ fi
 log_echo "Creating openerp-web configuration file..."
 cp -a /etc/openerp/web-client/web-client.conf-skeleton /etc/openerp/web-client/$name.conf
 sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/web-client/$name.conf
-sed -i "s#\\[PORT\\]#22$port#g" /etc/openerp/web-client/$name.conf
+sed -i "s#\\[PORT\\]#23$port#g" /etc/openerp/web-client/$name.conf
 sed -i "s#\\[SERVER_PORT\\]#21$port#g" /etc/openerp/web-client/$name.conf
 if [[ $type == "develpment" ]]; then
 	sed -i "s/#\?[[:space:]]*\(dbbutton\.visible.*\)/dbbutton.visible = True/g" /etc/openerp/web-client/$name.conf
@@ -227,7 +228,7 @@ touch /var/log/openerp/$name/web-client-error.log
 log_echo "Creating apache rewrite file..."
 cp -a /etc/openerp/apache2/ssl-skeleton /etc/openerp/apache2/rewrites/$name
 sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/apache2/rewrites/$name
-sed -i "s#\\[PORT\\]#22$port#g" /etc/openerp/apache2/rewrites/$name
+sed -i "s#\\[PORT\\]#23$port#g" /etc/openerp/apache2/rewrites/$name
 service apache2 reload >> $INSTALL_LOG_FILE
 
 log_echo "Creating pid dir..."

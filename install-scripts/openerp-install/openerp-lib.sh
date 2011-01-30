@@ -265,14 +265,16 @@ function install_openerp_server {
 	log_echo "Copy bin script skeleton to /etc"
 	mkdir -p /etc/openerp/server/ >> $INSTALL_LOG_FILE
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-bin-skeleton /etc/openerp/server/bin-skeleton >> $INSTALL_LOG_FILE
-	# OpenERP Server init and config skeletons
+	# OpenERP Server init
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-init-skeleton /etc/openerp/server/init-skeleton >> $INSTALL_LOG_FILE
 	sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/server/init-skeleton >> $INSTALL_LOG_FILE
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server.conf-skeleton /etc/openerp/server/ >> $INSTALL_LOG_FILE
+	# OpenERP Server config skeletons
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server.conf-$branch-skeleton /etc/openerp/server/ >> $INSTALL_LOG_FILE
 	if [[ $server_type =~ ^[Pp]$ ]]; then
-		sed -i "s#\\[LOGLEVEL\\]#info#g" /etc/openerp/server/server.conf-skeleton >> $INSTALL_LOG_FILE
+		sed -i "s#\\[LOGLEVEL\\]#info#g" /etc/openerp/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
 	else
-		sed -i "s#\\[LOGLEVEL\\]#debug#g" /etc/openerp/server/server.conf-skeleton >> $INSTALL_LOG_FILE
+		sed -i "s#\\[LOGLEVEL\\]#debug#g" /etc/openerp/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
+		sed -i "s#\\[DEBUGMODE\\]#True#g" /etc/openerp/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
 	fi
 
 	# Make filestore dir
