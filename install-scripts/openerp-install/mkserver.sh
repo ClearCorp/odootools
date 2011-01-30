@@ -88,6 +88,7 @@ log_echo "--------------------------"
 log_echo ""
 
 openerp_user=$(cat /etc/openerp/user)
+branch=$(cat /etc/openerp/branch)
 
 name=""
 while [[ $name == "" ]]; do
