@@ -212,7 +212,7 @@ if [[ $start_boot =~ ^[Yy]$ ]]; then
 fi
 
 log_echo "Creating openerp-web configuration file..."
-cp -a /etc/openerp/web-client/web-client.conf-skeleton /etc/openerp/web-client/$name.conf
+cp -a /etc/openerp/web-client/web-client.conf-$branch-skeleton /etc/openerp/web-client/$name.conf
 sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/web-client/$name.conf
 sed -i "s#\\[PORT\\]#23$port#g" /etc/openerp/web-client/$name.conf
 sed -i "s#\\[SERVER_PORT\\]#21$port#g" /etc/openerp/web-client/$name.conf

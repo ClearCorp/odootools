@@ -52,7 +52,7 @@ openerp.server.timeout = 450
 dblist.filter = 'NONE'
 
 # whether to show Databases button on Login screen or not
-#dbbutton.visible = True
+dbbutton.visible = False
 
 # will be applied on company logo
 company.url = 'http://www.clearcorp.co.cr'

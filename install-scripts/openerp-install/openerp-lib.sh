@@ -384,13 +384,14 @@ function install_openerp_web_client {
 	mkdir -p /etc/openerp/web-client >> $INSTALL_LOG_FILE
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client-init-skeleton /etc/openerp/web-client/init-skeleton >> $INSTALL_LOG_FILE
 	sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/web-client/init-skeleton >> $INSTALL_LOG_FILE
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client.conf-skeleton /etc/openerp/web-client/ >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client.conf-$branch-skeleton /etc/openerp/web-client/ >> $INSTALL_LOG_FILE
 
 	#~ Sets server type
 	if [[ "$server_type" =~ ^[DdWw]$ ]]; then
-		sed -i "s/\[TYPE\]/development/g" /etc/openerp/web-client/web-client.conf-skeleton >> $INSTALL_LOG_FILE
+		sed -i "s/dbbutton\.visible = False/dbbutton.visible = True/g" /etc/openerp/web-client/web-client.conf-$branch-skeleton >> $INSTALL_LOG_FILE
+		sed -i "s/\[TYPE\]/development/g" /etc/openerp/web-client/web-client.conf-$branch-skeleton >> $INSTALL_LOG_FILE
 	else
-		sed -i "s/\[TYPE\]/production/g" /etc/openerp/web-client/web-client.conf-skeleton >> $INSTALL_LOG_FILE
+		sed -i "s/\[TYPE\]/production/g" /etc/openerp/web-client/web-client.conf-$branch-skeleton >> $INSTALL_LOG_FILE
 	fi
 }
 
