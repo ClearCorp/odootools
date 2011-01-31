@@ -65,7 +65,7 @@ publisher_warranty_url = http://clearcorp.co.cr
 db_name = False
 
 # (char) Specify the database user name (default False).
-db_user = False
+db_user = openerp_[NAME]
 
 # (char) Specify the database password for db_user (default False).
 db_password = False
