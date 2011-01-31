@@ -266,8 +266,8 @@ function install_openerp_server {
 	mkdir -p /etc/openerp/server/ >> $INSTALL_LOG_FILE
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-bin-skeleton /etc/openerp/server/bin-skeleton >> $INSTALL_LOG_FILE
 	# OpenERP Server init
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-init-skeleton /etc/openerp/server/init-skeleton >> $INSTALL_LOG_FILE
-	sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/server/init-skeleton >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-init-$branch-skeleton /etc/openerp/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
+	sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
 	# OpenERP Server config skeletons
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server.conf-$branch-skeleton /etc/openerp/server/ >> $INSTALL_LOG_FILE
 	if [[ $server_type =~ ^[Pp]$ ]]; then
