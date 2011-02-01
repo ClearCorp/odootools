@@ -82,7 +82,7 @@ fi
 
 # Check system values
 check_system_values
-if [[ ! $? ]]; then
+if [[ $? == 1 ]]; then
 	exit 1
 fi
 
