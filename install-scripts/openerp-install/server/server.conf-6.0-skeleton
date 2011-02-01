@@ -65,16 +65,16 @@ publisher_warranty_url = http://clearcorp.co.cr
 db_name = False
 
 # (char) Specify the database user name (default False).
-db_user = openerp_[NAME]
+db_user = 
 
 # (char) Specify the database password for db_user (default False).
-db_password = False
+db_password = 
 
 # (char) Specify the database host (default localhost).
-db_host = localhost
+db_host = 
 
 # (char) Specify the database port (default 5432).
-db_port = 5432
+db_port = 
 
 # (int) Specify the the maximum number of physical connections to
 # posgresql (default 64).

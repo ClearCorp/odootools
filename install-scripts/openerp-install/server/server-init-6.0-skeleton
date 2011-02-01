@@ -18,9 +18,6 @@
 # Description:			OpenERP is a complete ERP and CRM software.
 ### END INIT INFO
 
-# Source function library.
-. /etc/rc.d/init.d/functions
-
 SERVERNAME=[NAME]
 BASE_PATH=[PATH]
 

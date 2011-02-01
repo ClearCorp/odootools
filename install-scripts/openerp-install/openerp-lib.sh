@@ -245,7 +245,7 @@ function install_openerp_server {
 	cp -a bin/* $install_path/ >> $INSTALL_LOG_FILE
 	# Patch openerp-server.py to change process names
 	log_echo "Patch openerp-server.py to change process names"
-	patch -p1 -i $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-server.py-$branch.patch $install_path/openerp-server.py >> $INSTALL_LOG_FILE
+	patch -p1 -i $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/openerp-server.py-$branch.patch $install_path/openerp-server.py >> $INSTALL_LOG_FILE
 	#~ Copy documentation
 	log_echo "Copy documentation"
 	mkdir -p $base_path/share/doc/openerp-server >> $INSTALL_LOG_FILE
@@ -264,12 +264,12 @@ function install_openerp_server {
 	#~ Copy bin script skeleton to /etc
 	log_echo "Copy bin script skeleton to /etc"
 	mkdir -p /etc/openerp/server/ >> $INSTALL_LOG_FILE
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-bin-skeleton /etc/openerp/server/bin-skeleton >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/server-bin-skeleton /etc/openerp/server/bin-skeleton >> $INSTALL_LOG_FILE
 	# OpenERP Server init
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-init-$branch-skeleton /etc/openerp/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/server-init-$branch-skeleton /etc/openerp/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
 	sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
 	# OpenERP Server config skeletons
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server.conf-$branch-skeleton /etc/openerp/server/ >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/server.conf-$branch-skeleton /etc/openerp/server/ >> $INSTALL_LOG_FILE
 	if [[ $server_type =~ ^[Pp]$ ]]; then
 		sed -i "s#\\[LOGLEVEL\\]#info#g" /etc/openerp/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
 	else
