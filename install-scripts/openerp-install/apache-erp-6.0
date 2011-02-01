@@ -1,0 +1,9 @@
+RewriteEngine On
+
+RewriteCond %{HTTP_HOST} ^(.*)
+RewriteRule ^/$ https://%1
+
+RequestHeader set "X-Forwarded-Proto" "https"
+
+# Fix IE problem (http error 408/409)
+SetEnv proxy-nokeepalive 1
