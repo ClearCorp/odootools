@@ -216,7 +216,7 @@ cp -a /etc/openerp/web-client/web-client.conf-$branch-skeleton /etc/openerp/web-
 sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/web-client/$name.conf
 sed -i "s#\\[PORT\\]#23$port#g" /etc/openerp/web-client/$name.conf
 sed -i "s#\\[SERVER_PORT\\]#21$port#g" /etc/openerp/web-client/$name.conf
-if [[ $type == "develpment" ]]; then
+if [[ $type == "development" ]]; then
 	sed -i "s/#\?[[:space:]]*\(dbbutton\.visible.*\)/dbbutton.visible = True/g" /etc/openerp/web-client/$name.conf
 else
 	sed -i "s/#\?[[:space:]]*\(dbbutton\.visible.*\)/dbbutton.visible = False/g" /etc/openerp/web-client/$name.conf
