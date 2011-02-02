@@ -53,32 +53,7 @@ getDist dist
 log_echo "Distribution: $dist"
 log_echo ""
 
-# Sets vars corresponding to the distro
-if [[ $dist == "lucid" ]]; then
-	# Ubuntu 10.04, python 2.6
-	posgresql_rel=8.4
-	python_rel=python2.6
-	ubuntu_rel=10.04
-	base_path=/usr/local
-	install_path=$base_path/lib/$python_rel/dist-packages
-	install_path_web=$base_path/lib/$python_rel/dist-packages
-	addons_path=$install_path/addons/
-	sources_path=$base_path/src/openerp
-elif [[ $dist == "maverick" ]]; then
-	# Ubuntu 10.10, python 2.6
-	posgresql_rel=8.4
-	python_rel=python2.6
-	ubuntu_rel=10.10
-	base_path=/usr/local
-	install_path=$base_path/lib/$python_rel/dist-packages
-	install_path_web=$base_path/lib/$python_rel/dist-packages
-	addons_path=$install_path/addons/
-	sources_path=$base_path/src/openerp
-else
-	# Only Lucid supported for now
-	log_echo "ERROR: This program must be executed on Ubuntu Lucid 10.04 or 10.10 (Desktop or Server)"
-	exit 1
-fi
+openerp_get_dist
 
 # Check system values
 check_system_values

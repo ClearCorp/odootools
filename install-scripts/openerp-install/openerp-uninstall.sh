@@ -26,6 +26,7 @@ fi
 #~ Libraries import
 . $LIBBASH_CCORP_DIR/main-lib/checkRoot.sh
 . $LIBBASH_CCORP_DIR/main-lib/getDist.sh
+. $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-lib.sh
 
 # Check user is root
 checkRoot
@@ -41,21 +42,7 @@ getDist dist
 echo "Distribution: $dist"
 echo ""
 
-# Sets vars corresponding to the distro
-if [[ $dist == "lucid" ]]; then
-	# Ubuntu 10.04, python 2.6
-	posgresql_rel=8.4
-	python_rel=python2.6
-	ubuntu_rel=10.04
-	base_path=/usr/local
-	install_path=$base_path/lib/$python_rel/dist-packages
-	addons_path=$install_path/addons/
-	sources_path=$base_path/src/openerp
-else
-	# Only Lucid supported for now
-	echo "ERROR: This program must be executed on Ubuntu Lucid 10.04 (Desktop or Server)"
-	exit 1
-fi
+openerp_get_dist
 
 for i in $(ls /etc/init.d/openerp*); do
 	echo "$i stop"
