@@ -9,3 +9,8 @@ RewriteCond %{HTTP_HOST} ^[NAME]\..*
 RewriteRule ^/(.*)$ http://127.0.0.1:[PORT]/$1 [P,L,NC]
 
 ProxyPassReverse / http://127.0.0.1:[PORT]/
+
+RequestHeader set "X-Forwarded-Proto" "https"
+
+# Fix IE problem (http error 408/409)
+SetEnv proxy-nokeepalive 1
