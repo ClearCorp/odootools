@@ -252,7 +252,7 @@ fi
 
 #~ Make developer menus
 if [[ $server_type == "station" ]]; then
-	sudo -E -u $openerp_user ccorp-openerp-mkmenus $name
+	sudo -E -u $openerp_user ccorp-openerp-mkmenus $branch $name
 fi
 
 #~ Add server to hosts file if station
