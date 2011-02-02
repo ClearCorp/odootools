@@ -237,10 +237,10 @@ cp -a /etc/openerp/$branch/web-client/web-client.conf-$branch-skeleton /etc/open
 sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/$branch/web-client/$name.conf
 sed -i "s#\\[PORT\\]#23$port#g" /etc/openerp/$branch/web-client/$name.conf
 sed -i "s#\\[SERVER_PORT\\]#21$port#g" /etc/openerp/$branch/web-client/$name.conf
-if [[ $type == "development" ]]; then
-	sed -i "s/#\?[[:space:]]*\(dbbutton\.visible.*\)/dbbutton.visible = True/g" /etc/openerp/$branch/web-client/$name.conf
-else
+if [[ $type == "production" ]]; then
 	sed -i "s/#\?[[:space:]]*\(dbbutton\.visible.*\)/dbbutton.visible = False/g" /etc/openerp/$branch/web-client/$name.conf
+else
+	sed -i "s/#\?[[:space:]]*\(dbbutton\.visible.*\)/dbbutton.visible = True/g" /etc/openerp/$branch/web-client/$name.conf
 fi
 
 log_echo "Creating openerp-web log files..."
