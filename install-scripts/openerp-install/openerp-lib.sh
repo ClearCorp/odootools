@@ -85,7 +85,6 @@ function install_python_lib {
 	echo "Installing the required python libraries for process name change..."
 	apt-get -qqy install python-dev build-essential python-setuptools >> $INSTALL_LOG_FILE
 	easy_install -U setproctitle >> $INSTALL_LOG_FILE
-	log_echo ""
 
 	# Install the required python libraries for webdav
 	echo "Installing the required python libraries for webdav..."
@@ -382,11 +381,10 @@ function install_openerp_web_client {
 
 	#~ Copy bin script to /usr/local/bin
 	log_echo "Copy bin script /usr/local/bin"
-	mkdir -p /usr/local/bin/ >> $INSTALL_LOG_FILE
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client-bin-$branch-skeleton /etc/openerp/$branch/web-client/bin-skeleton >> $INSTALL_LOG_FILE
+	mkdir -p /etc/openerp/$branch/web-client >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client-bin-skeleton /etc/openerp/$branch/web-client/bin-skeleton >> $INSTALL_LOG_FILE
 
 	# OpenERP Web Client init and config skeletons
-	mkdir -p /etc/openerp/$branch/web-client >> $INSTALL_LOG_FILE
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client-init-skeleton /etc/openerp/$branch/web-client/init-skeleton >> $INSTALL_LOG_FILE
 	sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/$branch/web-client/init-skeleton >> $INSTALL_LOG_FILE
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client.conf-$branch-skeleton /etc/openerp/$branch/web-client/ >> $INSTALL_LOG_FILE
