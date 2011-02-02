@@ -89,113 +89,31 @@ fi
 # Initial questions
 ####################
 
-#~ Detects server type
-if [ ! -e /etc/openerp/type ]; then
-	log_echo "Server type not found (/etc/openerp/type)"
-	exit 1
+# Source installation variables
+if [ -d /etc/openerp/5.0 && ! -d /etc/openerp/6.0 ]; then
+	branch=5.0
+elif [ ! -d /etc/openerp/5.0 && -d /etc/openerp/6.0 ]; then
+	branch=6.0
 else
-	server_type=`cat /etc/openerp/type`
-	if [[ ! $server_type =~ ^station|development|production$ ]]; then
-		log_echo "Server type invalid (/etc/openerp/type): $server_type"
-		exit 1
-	fi
+	branch=""
+	while [[ ! $branch =~ ^[56]$ ]]; do
+		read -p "You have installed versions 5 and 6, choose the version to update (5/_6_): " branch
+		if [[ $branch == "" ]]; then
+			branch="6"
+		fi
+		log_echo ""
+	done
 fi
 
-#~ Detects server user
-if [ ! -e /etc/openerp/user ]; then
-	log_echo "Server user not found (/etc/openerp/user)"
-	exit 1
+if [[ $branch =~ ^[5]$ ]]; then
+	log_echo "This server will use 5.0 branch."
+	branch="5.0"
 else
-	openerp_user=`cat /etc/openerp/user`
-	if [[ ! `id $openerp_user` ]]; then
-		log_echo "Server user invalid (/etc/openerp/user): $openerp_user"
-		exit 1
-	fi
+	log_echo "This server will use 6.0 branch."
+	branch="6.0"
 fi
 
-#~ Detects server branch
-if [ ! -e /etc/openerp/branch ]; then
-	log_echo "Server branch not found (/etc/openerp/branch)"
-	exit 1
-else
-	branch=`cat /etc/openerp/branch`
-	if [[ ! $branch =~ ^5[.]0|trunk$ ]]; then
-		log_echo "Server branch invalid (/etc/openerp/branch): $branch"
-		exit 1
-	fi
-fi
-
-#~ Detects if openerp_addons is installed
-if [ ! -e /etc/openerp/openerp_addons ]; then
-	log_echo "OpenERP addons installation file not found (/etc/openerp/openerp_addons)"
-	exit 1
-else
-	install_openerp_addons=`cat /etc/openerp/openerp_addons`
-	if [[ ! $install_openerp_addons =~ ^[YyNn]$ ]]; then
-		log_echo "OpenERP addons installation state invalid (/etc/openerp/openerp_addons): $install_openerp_addons"
-		exit 1
-	fi
-fi
-
-#~ Detects if ccorp_addons is installed
-if [ ! -e /etc/openerp/extra_addons ]; then
-	log_echo "ccorp_addons installation file not found (/etc/openerp/extra_addons)"
-	exit 1
-else
-	install_extra_addons=`cat /etc/openerp/extra_addons`
-	if [[ ! $install_extra_addons =~ ^[YyNn]$ ]]; then
-		log_echo "ccorp_addons installation state invalid (/etc/openerp/extra_addons): $install_extra_addons"
-		exit 1
-	fi
-fi
-
-#~ Detects if costa_rica_addons is installed
-if [ ! -e /etc/openerp/extra_addons ]; then
-	log_echo "costa_rica_addons installation file not found (/etc/openerp/extra_addons)"
-	exit 1
-else
-	install_extra_addons=`cat /etc/openerp/extra_addons`
-	if [[ ! $install_extra_addons =~ ^[YyNn]$ ]]; then
-		log_echo "costa_rica_addons installation state invalid (/etc/openerp/extra_addons): $install_extra_addons"
-		exit 1
-	fi
-fi
-
-#~ Detects if extra-addons is installed
-if [ ! -e /etc/openerp/extra_addons ]; then
-	log_echo "Extra-addons installation file not found (/etc/openerp/extra_addons)"
-	exit 1
-else
-	install_extra_addons=`cat /etc/openerp/extra_addons`
-	if [[ ! $install_extra_addons =~ ^[YyNn]$ ]]; then
-		log_echo "Extra-addons installation state invalid (/etc/openerp/extra_addons): $install_extra_addons"
-		exit 1
-	fi
-fi
-
-#~ Detects if magentoerpconnect is installed
-if [ ! -e /etc/openerp/magentoerpconnect ]; then
-	log_echo "magentoerpconnect installation file not found (/etc/openerp/magentoerpconnect)"
-	exit 1
-else
-	install_magentoerpconnect=`cat /etc/openerp/magentoerpconnect`
-	if [[ ! $install_magentoerpconnect =~ ^[YyNn]$ ]]; then
-		log_echo "magentoerpconnect installation state invalid (/etc/openerp/magentoerpconnect): $install_magentoerpconnect"
-		exit 1
-	fi
-fi
-
-#~ Detects if nantic is installed
-if [ ! -e /etc/openerp/nantic ]; then
-	log_echo "nantic installation file not found (/etc/openerp/nantic)"
-	exit 1
-else
-	install_nantic=`cat /etc/openerp/nantic`
-	if [[ ! $install_nantic =~ ^[YyNn]$ ]]; then
-		log_echo "nantic installation state invalid (/etc/openerp/nantic): $install_nantic"
-		exit 1
-	fi
-fi
+. /etc/openerp/$branch/install.cfg
 
 #Preparing update
 #----------------

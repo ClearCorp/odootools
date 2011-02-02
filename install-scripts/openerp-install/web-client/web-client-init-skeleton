@@ -14,6 +14,7 @@
 
 SERVERNAME=[NAME]
 BASE_PATH=[PATH]
+BRANCH=[BRANCH]
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin
 DAEMON=${BASE_PATH}/bin/openerp-web
@@ -22,7 +23,7 @@ DESC="OpenERP Web client"
 USER=[USER]
 PIDDIR=/var/run/openerp
 PIDFILE=${PIDDIR}/${SERVERNAME}/web-client.pid
-CONFIGFILE=/etc/openerp/web-client/${SERVERNAME}.conf
+CONFIGFILE=/etc/openerp/${BRANCH}/web-client/${SERVERNAME}.conf
 DAEMON_OPTS="-c $CONFIGFILE"
 
 # Exit if the package is not installed

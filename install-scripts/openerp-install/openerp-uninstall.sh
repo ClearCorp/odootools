@@ -32,7 +32,7 @@ checkRoot
 
 # Print title
 echo "OpenERP uninstallation script"
-echo "---------------------------"
+echo "-----------------------------"
 echo ""
 
 # Set distribution
@@ -65,8 +65,8 @@ for i in $(ls /etc/init.d/openerp*); do
 	echo "update-rc.d `basename $i` remove"
 	update-rc.d `basename $i` remove
 done
-echo "rm -r /etc/openerp"
-rm -r /etc/openerp
+echo "rm -r /etc/openerp/$branch"
+rm -r /etc/openerp/$branch
 echo "rm -r /var/log/openerp"
 rm -r /var/log/openerp
 echo "rm -r /var/run/openerp"

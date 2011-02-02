@@ -54,7 +54,7 @@ function add_openerp_user {
 	adduser --system --home /var/run/openerp --no-create-home --group openerp >> $INSTALL_LOG_FILE
 	#Add group in case the user existed without a group (previous versions)
 	addgroup openerp >> $INSTALL_LOG_FILE
-	if [[ $server_type =~ ^[Ww]$ ]]; then
+	if [[ $server_type =~ ^station$ ]]; then
 		adduser $openerp_user openerp
 	fi
 	log_echo ""
@@ -263,18 +263,18 @@ function install_openerp_server {
 
 	#~ Copy bin script skeleton to /etc
 	log_echo "Copy bin script skeleton to /etc"
-	mkdir -p /etc/openerp/server/ >> $INSTALL_LOG_FILE
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/server-bin-skeleton /etc/openerp/server/bin-skeleton >> $INSTALL_LOG_FILE
+	mkdir -p /etc/openerp/$branch/server/ >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/server-bin-skeleton /etc/openerp/$branch/server/bin-skeleton >> $INSTALL_LOG_FILE
 	# OpenERP Server init
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/server-init-$branch-skeleton /etc/openerp/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
-	sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/server-init-$branch-skeleton /etc/openerp/$branch/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
+	sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/$branch/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
 	# OpenERP Server config skeletons
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/server.conf-$branch-skeleton /etc/openerp/server/ >> $INSTALL_LOG_FILE
-	if [[ $server_type =~ ^[Pp]$ ]]; then
-		sed -i "s#\\[LOGLEVEL\\]#info#g" /etc/openerp/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/server.conf-$branch-skeleton /etc/openerp/$branch/server/ >> $INSTALL_LOG_FILE
+	if [[ $server_type =~ ^production$ ]]; then
+		sed -i "s#\\[LOGLEVEL\\]#info#g" /etc/openerp/$branch/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
 	else
-		sed -i "s#\\[LOGLEVEL\\]#debug#g" /etc/openerp/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
-		sed -i "s#\\[DEBUGMODE\\]#True#g" /etc/openerp/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
+		sed -i "s#\\[LOGLEVEL\\]#debug#g" /etc/openerp/$branch/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
+		sed -i "s#\\[DEBUGMODE\\]#True#g" /etc/openerp/$branch/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
 	fi
 
 	# Make filestore dir
@@ -324,10 +324,10 @@ function install_nan_tic_addons {
 
 function install_change_perms {
 	# Change permissions
-	chown -R openerp:openerp $install_path_web/openerp* >> $INSTALL_LOG_FILE
-	chown -R openerp:openerp /var/log/openerp >> $INSTALL_LOG_FILE
-	chown -R openerp:openerp /var/run/openerp >> $INSTALL_LOG_FILE
-	chown -R openerp:openerp /etc/openerp >> $INSTALL_LOG_FILE
+	chown -R $openerp_user:openerp $install_path_web/openerp* >> $INSTALL_LOG_FILE
+	chown -R $openerp_user:openerp /var/log/openerp >> $INSTALL_LOG_FILE
+	chown -R $openerp_user:openerp /var/run/openerp >> $INSTALL_LOG_FILE
+	chown -R $openerp_user:openerp /etc/openerp >> $INSTALL_LOG_FILE
 	chmod -R g+w $install_path >> $INSTALL_LOG_FILE
 	chmod -R g+w /var/log/openerp >> $INSTALL_LOG_FILE
 	chmod -R g+w /var/run/openerp >> $INSTALL_LOG_FILE
@@ -381,17 +381,17 @@ function install_openerp_web_client {
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client-bin-skeleton /usr/local/bin/openerp-web >> $INSTALL_LOG_FILE
 
 	# OpenERP Web Client init and config skeletons
-	mkdir -p /etc/openerp/web-client >> $INSTALL_LOG_FILE
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client-init-skeleton /etc/openerp/web-client/init-skeleton >> $INSTALL_LOG_FILE
-	sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/web-client/init-skeleton >> $INSTALL_LOG_FILE
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client.conf-$branch-skeleton /etc/openerp/web-client/ >> $INSTALL_LOG_FILE
+	mkdir -p /etc/openerp/$branch/web-client >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client-init-skeleton /etc/openerp/$branch/web-client/init-skeleton >> $INSTALL_LOG_FILE
+	sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/$branch/web-client/init-skeleton >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client.conf-$branch-skeleton /etc/openerp/$branch/web-client/ >> $INSTALL_LOG_FILE
 
 	#~ Sets server type
-	if [[ "$server_type" =~ ^[DdWw]$ ]]; then
-		sed -i "s/dbbutton\.visible = False/dbbutton.visible = True/g" /etc/openerp/web-client/web-client.conf-$branch-skeleton >> $INSTALL_LOG_FILE
-		sed -i "s/\[TYPE\]/development/g" /etc/openerp/web-client/web-client.conf-$branch-skeleton >> $INSTALL_LOG_FILE
+	if [[ "$server_type" =~ ^development|station$ ]]; then
+		sed -i "s/dbbutton\.visible = False/dbbutton.visible = True/g" /etc/openerp/$branch/web-client/web-client.conf-$branch-skeleton >> $INSTALL_LOG_FILE
+		sed -i "s/\[TYPE\]/development/g" /etc/openerp/$branch/web-client/web-client.conf-$branch-skeleton >> $INSTALL_LOG_FILE
 	else
-		sed -i "s/\[TYPE\]/production/g" /etc/openerp/web-client/web-client.conf-$branch-skeleton >> $INSTALL_LOG_FILE
+		sed -i "s/\[TYPE\]/production/g" /etc/openerp/$branch/web-client/web-client.conf-$branch-skeleton >> $INSTALL_LOG_FILE
 	fi
 }
 
@@ -426,8 +426,8 @@ function install_apache {
 
 	log_echo "Configuring site config files..."
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-erp-$branch /etc/apache2/sites-available/erp >> $INSTALL_LOG_FILE
-	mkdir -p /etc/openerp/apache2/rewrites >> $INSTALL_LOG_FILE
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-ssl-skeleton /etc/openerp/apache2/ssl-skeleton >> $INSTALL_LOG_FILE
+	mkdir -p /etc/openerp/$branch/apache2/rewrites >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-ssl-skeleton /etc/openerp/$branch/apache2/ssl-skeleton >> $INSTALL_LOG_FILE
 	sed -i "s/ServerAdmin webmaster@localhost/ServerAdmin support@clearnet.co.cr\n\n\tInclude \/etc\/apache2\/sites-available\/erp/g" /etc/apache2/sites-available/default >> $INSTALL_LOG_FILE
 	sed -i "s/ServerAdmin webmaster@localhost/ServerAdmin support@clearnet.co.cr\n\n\tInclude \/etc\/openerp\/apache2\/rewrites/g" /etc/apache2/sites-available/default-ssl >> $INSTALL_LOG_FILE
 

@@ -22,7 +22,7 @@ DESC="OpenERP server"
 USER=[USER]
 PIDDIR=/var/run/openerp
 PIDFILE=${PIDDIR}/${SERVERNAME}/server.pid
-CONFIGFILE=/etc/openerp/server/${SERVERNAME}.conf
+CONFIGFILE=/etc/openerp/5.0/server/${SERVERNAME}.conf
 DAEMON_OPTS="--config=$CONFIGFILE"
 
 # Exit if the package is not installed

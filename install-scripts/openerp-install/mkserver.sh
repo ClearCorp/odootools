@@ -87,8 +87,31 @@ log_echo "OpenERP make server script"
 log_echo "--------------------------"
 log_echo ""
 
-openerp_user=$(cat /etc/openerp/user)
-branch=$(cat /etc/openerp/branch)
+# Source installation variables
+if [ -d /etc/openerp/5.0 && ! -d /etc/openerp/6.0 ]; then
+	branch=5.0
+elif [ ! -d /etc/openerp/5.0 && -d /etc/openerp/6.0 ]; then
+	branch=6.0
+else
+	branch=""
+	while [[ ! $branch =~ ^[56]$ ]]; do
+		read -p "You have installed versions 5 and 6, choose the version for this server (5/_6_): " branch
+		if [[ $branch == "" ]]; then
+			branch="6"
+		fi
+		log_echo ""
+	done
+fi
+
+if [[ $branch =~ ^[5]$ ]]; then
+	log_echo "This server will use 5.0 branch."
+	branch="5.0"
+else
+	log_echo "This server will use 6.0 branch."
+	branch="6.0"
+fi
+
+. /etc/openerp/$branch/install.cfg
 
 name=""
 while [[ $name == "" ]]; do
@@ -99,9 +122,9 @@ while [[ $name == "" ]]; do
 done
 
 #~ Set the openerp port
-if [[ ! -f /etc/openerp/ports ]]; then
-	mkdir -p /etc/openerp
-	touch /etc/openerp/ports
+if [[ ! -f /etc/openerp/$branch/ports ]]; then
+	mkdir -p /etc/openerp/$branch
+	touch /etc/openerp/$branch/ports
 fi
 port=""
 test="^[0-9]{2}$"
@@ -110,12 +133,12 @@ while [[ $port == "" ]]; do
 	if [[ ! $port =~ $test ]]; then
 		log_echo "The port has to contain exactly 2 digits."
 		port=""
-	elif [[ `grep -c $port /etc/openerp/ports` != 0 ]]; then
-		log_echo "The port $port is already in use (/etc/openerp/ports)."
+	elif [[ `grep -c $port /etc/openerp/$branch/ports` != 0 ]]; then
+		log_echo "The port $port is already in use (/etc/openerp/$branch/ports)."
 		port=""
 	fi
 done
-echo $port >> /etc/openerp/ports
+echo $port >> /etc/openerp/$branch/ports
 log_echo "Selected port is: $port"
 
 #~ Start the server now
@@ -155,9 +178,6 @@ while [[ $admin_passwd == "" ]]; do
 	log_echo ""
 done
 
-#~ Set the server type
-type=$(cat /etc/openerp/type)
-
 # Add openerp postgres user
 adduser --system --home /var/run/openerp/$name --no-create-home --ingroup openerp openerp_$name >> $INSTALL_LOG_FILE
 /usr/bin/sudo -u postgres createuser openerp_$name --superuser --createdb --no-createrole >> $INSTALL_LOG_FILE
@@ -171,7 +191,7 @@ log_echo "Setting openerp server process name..."
 sed -i "s#\\[NAME\\]#$name#g" /usr/local/lib/python2.6/dist-packages/openerp-server-$name/openerp-server.py >> $INSTALL_LOG_FILE
 
 log_echo "Creating openerp-server init script..."
-cp -a /etc/openerp/server/init-$branch-skeleton /etc/init.d/openerp-server-$name >> $INSTALL_LOG_FILE
+cp -a /etc/openerp/$branch/server/init-$branch-skeleton /etc/init.d/openerp-server-$name >> $INSTALL_LOG_FILE
 sed -i "s#\\[NAME\\]#$name#g" /etc/init.d/openerp-server-$name >> $INSTALL_LOG_FILE
 sed -i "s#\\[USER\\]#openerp_$name#g" /etc/init.d/openerp-server-$name >> $INSTALL_LOG_FILE
 #~ Start server on boot
@@ -182,18 +202,18 @@ if [[ $start_boot =~ ^[Yy]$ ]]; then
 fi
 
 log_echo "Creating openerp-server bin script..."
-cp -a /etc/openerp/server/bin-skeleton /usr/local/bin/openerp-server-$name
+cp -a /etc/openerp/$branch/server/bin-skeleton /usr/local/bin/openerp-server-$name
 sed -i "s#\\[NAME\\]#$name#g" /usr/local/bin/openerp-server-$name
 
 log_echo "Creating openerp-server configuration file..."
-cp -a /etc/openerp/server/server.conf-$branch-skeleton /etc/openerp/server/$name.conf
-sed -i "s#\\[DB_USER\\]#openerp_$name#g" /etc/openerp/server/$name.conf >> $INSTALL_LOG_FILE
-sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/server/$name.conf
-sed -i "s#\\[XMLPORT\\]#20$port#g" /etc/openerp/server/$name.conf
-sed -i "s#\\[NETPORT\\]#21$port#g" /etc/openerp/server/$name.conf
-sed -i "s#\\[XMLSPORT\\]#22$port#g" /etc/openerp/server/$name.conf
-sed -i "s#\\[PYROPORT\\]#24$port#g" /etc/openerp/server/$name.conf
-sed -i "s#\\[ADMIN_PASSWD\\]#$admin_passwd#g" /etc/openerp/server/$name.conf
+cp -a /etc/openerp/$branch/server/server.conf-$branch-skeleton /etc/openerp/$branch/server/$name.conf
+sed -i "s#\\[DB_USER\\]#openerp_$name#g" /etc/openerp/$branch/server/$name.conf >> $INSTALL_LOG_FILE
+sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/$branch/server/$name.conf
+sed -i "s#\\[XMLPORT\\]#20$port#g" /etc/openerp/$branch/server/$name.conf
+sed -i "s#\\[NETPORT\\]#21$port#g" /etc/openerp/$branch/server/$name.conf
+sed -i "s#\\[XMLSPORT\\]#22$port#g" /etc/openerp/$branch/server/$name.conf
+sed -i "s#\\[PYROPORT\\]#24$port#g" /etc/openerp/$branch/server/$name.conf
+sed -i "s#\\[ADMIN_PASSWD\\]#$admin_passwd#g" /etc/openerp/$branch/server/$name.conf
 
 log_echo "Creating openerp-server log files..."
 mkdir -p /var/log/openerp/$name
@@ -201,9 +221,10 @@ touch /var/log/openerp/$name/server.log
 
 
 log_echo "Creating openerp-web init script..."
-cp -a /etc/openerp/web-client/init-skeleton /etc/init.d/openerp-web-$name >> $INSTALL_LOG_FILE
+cp -a /etc/openerp/$branch/web-client/init-skeleton /etc/init.d/openerp-web-$name >> $INSTALL_LOG_FILE
 sed -i "s#\\[NAME\\]#$name#g" /etc/init.d/openerp-web-$name >> $INSTALL_LOG_FILE
 sed -i "s#\\[USER\\]#openerp_$name#g" /etc/init.d/openerp-web-$name >> $INSTALL_LOG_FILE
+sed -i "s#\\[BRANCH\\]#$branch#g" /etc/init.d/openerp-web-$name >> $INSTALL_LOG_FILE
 #~ Start web client on boot
 if [[ $start_boot =~ ^[Yy]$ ]]; then
 	log_echo "Creating web-client rc rules..."
@@ -212,14 +233,14 @@ if [[ $start_boot =~ ^[Yy]$ ]]; then
 fi
 
 log_echo "Creating openerp-web configuration file..."
-cp -a /etc/openerp/web-client/web-client.conf-$branch-skeleton /etc/openerp/web-client/$name.conf
-sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/web-client/$name.conf
-sed -i "s#\\[PORT\\]#23$port#g" /etc/openerp/web-client/$name.conf
-sed -i "s#\\[SERVER_PORT\\]#21$port#g" /etc/openerp/web-client/$name.conf
+cp -a /etc/openerp/$branch/web-client/web-client.conf-$branch-skeleton /etc/openerp/$branch/web-client/$name.conf
+sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/$branch/web-client/$name.conf
+sed -i "s#\\[PORT\\]#23$port#g" /etc/openerp/$branch/web-client/$name.conf
+sed -i "s#\\[SERVER_PORT\\]#21$port#g" /etc/openerp/$branch/web-client/$name.conf
 if [[ $type == "development" ]]; then
-	sed -i "s/#\?[[:space:]]*\(dbbutton\.visible.*\)/dbbutton.visible = True/g" /etc/openerp/web-client/$name.conf
+	sed -i "s/#\?[[:space:]]*\(dbbutton\.visible.*\)/dbbutton.visible = True/g" /etc/openerp/$branch/web-client/$name.conf
 else
-	sed -i "s/#\?[[:space:]]*\(dbbutton\.visible.*\)/dbbutton.visible = False/g" /etc/openerp/web-client/$name.conf
+	sed -i "s/#\?[[:space:]]*\(dbbutton\.visible.*\)/dbbutton.visible = False/g" /etc/openerp/$branch/web-client/$name.conf
 fi
 
 log_echo "Creating openerp-web log files..."
@@ -227,9 +248,9 @@ touch /var/log/openerp/$name/web-client-access.log
 touch /var/log/openerp/$name/web-client-error.log
 
 log_echo "Creating apache rewrite file..."
-cp -a /etc/openerp/apache2/ssl-skeleton /etc/openerp/apache2/rewrites/$name
-sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/apache2/rewrites/$name
-sed -i "s#\\[PORT\\]#23$port#g" /etc/openerp/apache2/rewrites/$name
+cp -a /etc/openerp/$branch/apache2/ssl-skeleton /etc/openerp/$branch/apache2/rewrites/$name
+sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/$branch/apache2/rewrites/$name
+sed -i "s#\\[PORT\\]#23$port#g" /etc/openerp/$branch/apache2/rewrites/$name
 service apache2 reload >> $INSTALL_LOG_FILE
 
 log_echo "Creating pid dir..."
