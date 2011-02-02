@@ -246,7 +246,7 @@ cp -a /etc/openerp/$branch/web-client/web-client.conf-$branch-skeleton /etc/open
 sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/$branch/web-client/$name.conf
 sed -i "s#\\[PORT\\]#23$port#g" /etc/openerp/$branch/web-client/$name.conf
 sed -i "s#\\[SERVER_PORT\\]#21$port#g" /etc/openerp/$branch/web-client/$name.conf
-if [[ $type == "production" ]]; then
+if [[ $server_type == "production" ]]; then
 	sed -i "s/#\?[[:space:]]*\(dbbutton\.visible.*\)/dbbutton.visible = False/g" /etc/openerp/$branch/web-client/$name.conf
 else
 	sed -i "s/#\?[[:space:]]*\(dbbutton\.visible.*\)/dbbutton.visible = True/g" /etc/openerp/$branch/web-client/$name.conf
@@ -276,13 +276,13 @@ if [[ $start_now =~ ^[Yy]$ ]]; then
 fi
 
 #~ Make developer menus
-if [[ $type == "station" ]]; then
+if [[ $server_type == "station" ]]; then
 	sudo -E -u $openerp_user ccorp-openerp-mkmenus $name
 fi
 
 #~ Add server to hosts file if station
 
-if [[ $type == "station" ]]; then
+if [[ $server_type == "station" ]]; then
 	echo "127.0.1.1	$name.localhost" >> /etc/hosts
 fi
 

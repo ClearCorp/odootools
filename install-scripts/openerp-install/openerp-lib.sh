@@ -452,7 +452,7 @@ function install_phppgadmin {
 
 function make_menus {
 	#~ Make developer menus
-	if [[ $type == "station" ]]; then
+	if [[ $server_type == "station" ]]; then
 		sudo -u $openerp_user $LIBBASH_CCORP_DIR/install-scripts/openerp-install/mkmenus-ccorp-main.sh
 	fi
 	exit 0
