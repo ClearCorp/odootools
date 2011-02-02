@@ -123,9 +123,9 @@ while [[ $name == "" ]]; do
 done
 
 #~ Set the openerp port
-if [[ ! -f /etc/openerp/$branch/ports ]]; then
-	mkdir -p /etc/openerp/$branch
-	touch /etc/openerp/$branch/ports
+if [[ ! -f /etc/openerp/ports ]]; then
+	mkdir -p /etc/openerp
+	touch /etc/openerp/ports
 fi
 port=""
 test="^[0-9]{2}$"
@@ -134,12 +134,12 @@ while [[ $port == "" ]]; do
 	if [[ ! $port =~ $test ]]; then
 		log_echo "The port has to contain exactly 2 digits."
 		port=""
-	elif [[ `grep -c $port /etc/openerp/$branch/ports` != 0 ]]; then
-		log_echo "The port $port is already in use (/etc/openerp/$branch/ports)."
+	elif [[ `grep -c $port /etc/openerp/ports` != 0 ]]; then
+		log_echo "The port $port is already in use (/etc/openerp/ports)."
 		port=""
 	fi
 done
-echo $port >> /etc/openerp/$branch/ports
+echo $port >> /etc/openerp/ports
 log_echo "Selected port is: $port"
 
 #~ Start the server now
@@ -256,9 +256,9 @@ touch /var/log/openerp/$name/web-client-access.log
 touch /var/log/openerp/$name/web-client-error.log
 
 log_echo "Creating apache rewrite file..."
-cp -a /etc/openerp/$branch/apache2/ssl-skeleton /etc/openerp/$branch/apache2/rewrites/$name
-sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/$branch/apache2/rewrites/$name
-sed -i "s#\\[PORT\\]#23$port#g" /etc/openerp/$branch/apache2/rewrites/$name
+cp -a /etc/openerp/apache2/ssl-$branch-skeleton /etc/openerp/apache2/rewrites/$name
+sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/apache2/rewrites/$name
+sed -i "s#\\[PORT\\]#23$port#g" /etc/openerp/apache2/rewrites/$name
 service apache2 reload >> $INSTALL_LOG_FILE
 
 log_echo "Creating pid dir..."
