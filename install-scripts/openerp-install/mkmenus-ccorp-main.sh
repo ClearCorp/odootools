@@ -31,15 +31,15 @@ else
 		if [[ $branch == "" ]]; then
 			branch="6"
 		fi
-		log_echo ""
+		echo ""
 	done
 fi
 
 if [[ $branch =~ ^[5]$ ]]; then
-	log_echo "This server will use 5.0 branch."
+	echo "This server will use 5.0 branch."
 	branch="5.0"
 else
-	log_echo "This server will use 6.0 branch."
+	echo "This server will use 6.0 branch."
 	branch="6.0"
 fi
 
