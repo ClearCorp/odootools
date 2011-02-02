@@ -185,7 +185,7 @@ adduser --system --home /var/run/openerp/$name --no-create-home --ingroup opener
 log_echo ""
 
 log_echo "Copying openerp-server files..."
-cp -a /usr/local/lib/python2.6/dist-packages/openerp-server-skeleton /usr/local/lib/python2.6/dist-packages/openerp-server-$name >> $INSTALL_LOG_FILE
+cp -a /usr/local/lib/python2.6/dist-packages/openerp-server-$branch-skeleton /usr/local/lib/python2.6/dist-packages/openerp-server-$name >> $INSTALL_LOG_FILE
 
 log_echo "Setting openerp server process name..."
 sed -i "s#\\[NAME\\]#$name#g" /usr/local/lib/python2.6/dist-packages/openerp-server-$name/openerp-server.py >> $INSTALL_LOG_FILE
@@ -219,6 +219,9 @@ log_echo "Creating openerp-server log files..."
 mkdir -p /var/log/openerp/$name
 touch /var/log/openerp/$name/server.log
 
+
+log_echo "Copying openerp-web files..."
+cp -a /usr/local/lib/python2.6/dist-packages/openerp-web-$branch-skeleton /usr/local/lib/python2.6/dist-packages/openerp-web-$name >> $INSTALL_LOG_FILE
 
 log_echo "Creating openerp-web init script..."
 cp -a /etc/openerp/$branch/web-client/bin-skeleton /usr/local/bin/openerp-web-$name >> $INSTALL_LOG_FILE

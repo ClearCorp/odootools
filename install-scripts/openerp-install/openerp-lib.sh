@@ -377,7 +377,7 @@ function install_openerp_web_client {
 
 	# Install OpenERP Web client
 	log_echo "Installing OpenERP Web client..."
-	cp -a openerp-web $install_path_web/openerp-web >> $INSTALL_LOG_FILE
+	cp -a openerp-web $install_path_web/openerp-web-$branch-skeleton >> $INSTALL_LOG_FILE
 
 	#~ Copy bin script to /usr/local/bin
 	log_echo "Copy bin script /usr/local/bin"
