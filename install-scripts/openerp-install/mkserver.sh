@@ -62,7 +62,7 @@ if [[ $dist == "lucid" ]]; then
 	python_rel=python2.6
 	ubuntu_rel=10.04
 	base_path=/usr/local
-	install_path=$base_path/lib/$python_rel/dist-packages/openerp-server-skeleton
+	install_path=$base_path/lib/$python_rel/dist-packages
 	install_path_web=$base_path/lib/$python_rel/dist-packages
 	addons_path=$install_path/addons/
 	sources_path=$base_path/src/openerp
@@ -72,7 +72,7 @@ elif [[ $dist == "maverick" ]]; then
 	python_rel=python2.6
 	ubuntu_rel=10.10
 	base_path=/usr/local
-	install_path=$base_path/lib/$python_rel/dist-packages/openerp-server-skeleton
+	install_path=$base_path/lib/$python_rel/dist-packages
 	install_path_web=$base_path/lib/$python_rel/dist-packages
 	addons_path=$install_path/addons/
 	sources_path=$base_path/src/openerp
@@ -112,6 +112,7 @@ else
 fi
 
 . /etc/openerp/$branch/install.cfg
+install_path="$install_path/openerp-server-$branch-skeleton"
 
 name=""
 while [[ $name == "" ]]; do
@@ -284,6 +285,7 @@ if [[ $type == "station" ]]; then
 	echo "127.0.1.1	$name.localhost" >> /etc/hosts
 fi
 
+install_path="$install_path_web/openerp-server-$name"
 install_change_perms
 
 exit 0
