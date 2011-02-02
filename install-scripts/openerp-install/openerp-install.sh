@@ -60,7 +60,7 @@ if [[ $dist == "lucid" ]]; then
 	python_rel=python2.6
 	ubuntu_rel=10.04
 	base_path=/usr/local
-	install_path=$base_path/lib/$python_rel/dist-packages/openerp-server-skeleton
+	install_path=$base_path/lib/$python_rel/dist-packages
 	install_path_web=$base_path/lib/$python_rel/dist-packages
 	addons_path=$install_path/addons/
 	sources_path=$base_path/src/openerp
@@ -70,7 +70,7 @@ elif [[ $dist == "maverick" ]]; then
 	python_rel=python2.6
 	ubuntu_rel=10.10
 	base_path=/usr/local
-	install_path=$base_path/lib/$python_rel/dist-packages/openerp-server-skeleton
+	install_path=$base_path/lib/$python_rel/dist-packages
 	install_path_web=$base_path/lib/$python_rel/dist-packages
 	addons_path=$install_path/addons/
 	sources_path=$base_path/src/openerp
@@ -82,7 +82,7 @@ fi
 
 # Check system values
 check_system_values
-if [[ ! $? ]]; then
+if [[ $? == 1 ]]; then
 	exit 1
 fi
 
@@ -98,10 +98,10 @@ while [[ ! $server_type =~ ^[SsWw]$ ]]; do
 	fi
 	log_echo ""
 done
-mkdir -p /etc/openerp
+
 if [[ $server_type =~ ^[Ww]$ ]]; then
 	log_echo "This is a working station"
-	echo "station" > /etc/openerp/type
+	server_type="station"
 	#~ Select user
 	openerp_user=""
 	while [[ $openerp_user == "" ]]; do
@@ -123,40 +123,33 @@ else
 		fi
 		log_echo ""
 	done
-	mkdir -p /etc/openerp
 	if [[ $server_type =~ ^[Pp]$ ]]; then
 		log_echo "This is a production server"
-		echo "production" > /etc/openerp/type
-		branch="5"
-		install_openerp_addons="n"
-		install_ccorp_addons="n"
-		install_costa_rica_addons="n"
-		install_extra_addons="n"
-		install_magentoerpconnect="n"
-		install_nantic="n"
+		server_type="production"
 	else
-		echo "development" > /etc/openerp/type
+		server_type="development"
 	fi
 	openerp_user="openerp"
 fi
-echo $openerp_user > /etc/openerp/user
 
 #Choose the branch to install
 while [[ ! $branch =~ ^[56]$ ]]; do
-	read -p "Which branch do you want to install (_5/6)? " -n 1 branch
+	read -p "Which branch do you want to install (5/_6_)? " -n 1 branch
 	if [[ $branch == "" ]]; then
-		branch="5"
+		branch="6"
 	fi
 	log_echo ""
 done
 if [[ $branch =~ ^[5]$ ]]; then
-	log_echo "This installation will use stable branch."
+	log_echo "This installation will use 5.0 branch."
 	branch="5.0"
 else
-	log_echo "This installation will use trunk branch."
-	branch="trunk"
+	log_echo "This installation will use 6.0 branch."
+	branch="6.0"
 fi
-echo $branch > /etc/openerp/branch
+sources_path=$sources_path-$branch
+install_path=$install_path/openerp-server-$branch-skeleton
+addons_path=$install_path/addons/
 echo ""
 
 #Install openerp_addons
@@ -167,7 +160,6 @@ while [[ ! $install_openerp_addons =~ ^[YyNn]$ ]]; do
         fi
         log_echo ""
 done
-echo $install_openerp_addons > /etc/openerp/openerp_addons
 
 #Install ccorp_addons
 while [[ ! $install_ccorp_addons =~ ^[YyNn]$ ]]; do
@@ -177,7 +169,6 @@ while [[ ! $install_ccorp_addons =~ ^[YyNn]$ ]]; do
         fi
         log_echo ""
 done
-echo $install_ccorp_addons > /etc/openerp/ccorp_addons
 
 #Install costa_rica_addons
 while [[ ! $install_costa_rica_addons =~ ^[YyNn]$ ]]; do
@@ -187,7 +178,6 @@ while [[ ! $install_costa_rica_addons =~ ^[YyNn]$ ]]; do
         fi
         log_echo ""
 done
-echo $install_costa_rica_addons > /etc/openerp/costa_rica_addons
 
 #Install extra-addons
 while [[ ! $install_extra_addons =~ ^[YyNn]$ ]]; do
@@ -197,7 +187,6 @@ while [[ ! $install_extra_addons =~ ^[YyNn]$ ]]; do
         fi
         log_echo ""
 done
-echo $install_extra_addons > /etc/openerp/extra_addons
 
 #Install magentoerpconnect
 while [[ ! $install_magentoerpconnect =~ ^[YyNn]$ ]]; do
@@ -207,7 +196,6 @@ while [[ ! $install_magentoerpconnect =~ ^[YyNn]$ ]]; do
         fi
         log_echo ""
 done
-echo $install_magentoerpconnect > /etc/openerp/magentoerpconnect
 
 #Install nan-tic modules
 while [[ ! $install_nantic =~ ^[YyNn]$ ]]; do
@@ -217,7 +205,6 @@ while [[ ! $install_nantic =~ ^[YyNn]$ ]]; do
         fi
         log_echo ""
 done
-echo $install_nantic > /etc/openerp/nantic
 
 #Select FQDN
 fqdn=""
@@ -302,6 +289,20 @@ while [[ ! $install_apache =~ ^[YyNn]$ ]]; do
 	fi
 	log_echo ""
 done
+
+#Writting config file
+#--------------------
+mkdir -p /etc/openerp/$branch
+
+echo "branch=$branch" > /etc/openerp/$branch/install.cfg
+echo "server_type=$server_type" >> /etc/openerp/$branch/install.cfg
+echo "openerp_user=$openerp_user" >> /etc/openerp/$branch/install.cfg
+echo "install_openerp_addons=$install_openerp_addons" >> /etc/openerp/$branch/install.cfg
+echo "install_ccorp_addons=$install_ccorp_addons" >> /etc/openerp/$branch/install.cfg
+echo "install_costa_rica_addons=$install_costa_rica_addons" >> /etc/openerp/$branch/install.cfg
+echo "install_extra_addons=$install_extra_addons" >> /etc/openerp/$branch/install.cfg
+echo "install_magentoerpconnect=$install_magentoerpconnect" >> /etc/openerp/$branch/install.cfg
+echo "install_nantic=$install_nantic" >> /etc/openerp/$branch/install.cfg
 
 #Preparing installation
 #----------------------

@@ -18,7 +18,33 @@
 #       MA 02110-1301, USA.
 #!/bin/bash
 
-openerp_user=$(cat /etc/openerp/user)
+
+# Source installation variables
+if [ -d /etc/openerp/5.0 ] && [ ! -d /etc/openerp/6.0 ]; then
+	branch=5
+elif [ ! -d /etc/openerp/5.0 ] && [ -d /etc/openerp/6.0 ]; then
+	branch=6
+else
+	branch=""
+	while [[ ! $branch =~ ^[56]$ ]]; do
+		read -p "You have installed versions 5 and 6, choose the version for this server (5/_6_): " branch
+		if [[ $branch == "" ]]; then
+			branch="6"
+		fi
+		log_echo ""
+	done
+fi
+
+if [[ $branch =~ ^[5]$ ]]; then
+	log_echo "This server will use 5.0 branch."
+	branch="5.0"
+else
+	log_echo "This server will use 6.0 branch."
+	branch="6.0"
+fi
+
+. /etc/openerp/$branch/install.cfg
+
 if [[ `id -u` != `id -u $openerp_user` ]]; then
 	echo "ccorp-openerp-mkmenus must be run as $openerp_user"
 	exit 1

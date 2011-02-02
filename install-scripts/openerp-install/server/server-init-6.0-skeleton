@@ -1,10 +1,16 @@
 #!/bin/bash
+#
+# chkconfig: 345 95 05
+# description: OpenERP server
+#
+# pidfile: /var/run/openerp-server.pid
+# config: /etc/openerp-server.conf
 
 ### BEGIN INIT INFO
 # Provides:				openerp-server-[NAME]
-# Required-Start:		$syslog
-# Required-Stop:		$syslog
-# Should-Start:			$network
+# Required-Start:		postgresql
+# Required-Stop:		postgresql
+# Should-Start:			$network harddrake
 # Should-Stop:			$network
 # Default-Start:		2 3 4 5
 # Default-Stop:			0 1 6
@@ -22,7 +28,8 @@ DESC="OpenERP server"
 USER=[USER]
 PIDDIR=/var/run/openerp
 PIDFILE=${PIDDIR}/${SERVERNAME}/server.pid
-CONFIGFILE=/etc/openerp/server/${SERVERNAME}.conf
+LOCKFILE=/var/lock/subsys/openerp-server-${SERVERNAME}
+CONFIGFILE=/etc/openerp/6.0/server/${SERVERNAME}.conf
 DAEMON_OPTS="--config=$CONFIGFILE"
 
 # Exit if the package is not installed
@@ -71,8 +78,8 @@ do_start() {
 	chown -R openerp:openerp /var/run/openerp/${SERVERNAME}
 	chmod g+w /var/run/openerp/${SERVERNAME}
 	
-	start-stop-daemon --start --quiet  --background \
-		--pidfile $PIDFILE --chuid $USER:openerp --name $PROCNAME \
+	sudo -u $USER start-stop-daemon --start --quiet  --background \
+		--pidfile $PIDFILE --group openerp --name $PROCNAME \
 		--startas $DAEMON -- $DAEMON_OPTS
 
 	check_process

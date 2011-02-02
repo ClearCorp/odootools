@@ -1,3 +1,3 @@
 #!/bin/sh
-cd /usr/local/lib/python2.6/dist-packages/openerp-web
+cd /usr/local/lib/python2.6/dist-packages/openerp-web-[NAME]
 exec /usr/bin/python ./openerp-web.py $@

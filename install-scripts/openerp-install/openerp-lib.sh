@@ -54,7 +54,7 @@ function add_openerp_user {
 	adduser --system --home /var/run/openerp --no-create-home --group openerp >> $INSTALL_LOG_FILE
 	#Add group in case the user existed without a group (previous versions)
 	addgroup openerp >> $INSTALL_LOG_FILE
-	if [[ $server_type =~ ^[Ww]$ ]]; then
+	if [[ $server_type =~ ^station$ ]]; then
 		adduser $openerp_user openerp
 	fi
 	log_echo ""
@@ -71,7 +71,7 @@ function install_python_lib {
 	# Install the required python libraries for openerp-server.
 	echo "Installing the required python libraries for openerp-server..."
 	# From doc.openerp.com
-	apt-get -qqy install python python-psycopg2 python-reportlab python-egenix-mxdatetime python-tz python-pychart python-pydot python-lxml python-vobject python-imaging python-yaml >> $INSTALL_LOG_FILE
+	apt-get -qqy install python python-psycopg2 python-reportlab python-egenix-mxdatetime python-tz python-pychart python-pydot python-lxml python-vobject python-imaging python-yaml python-mako >> $INSTALL_LOG_FILE
 	# Excel spreadsheets generation
 	apt-get -qqy install python-xlwt >> $INSTALL_LOG_FILE
 	# For nan-tic modules
@@ -85,6 +85,10 @@ function install_python_lib {
 	echo "Installing the required python libraries for process name change..."
 	apt-get -qqy install python-dev build-essential python-setuptools >> $INSTALL_LOG_FILE
 	easy_install -U setproctitle >> $INSTALL_LOG_FILE
+
+	# Install the required python libraries for webdav
+	echo "Installing the required python libraries for webdav..."
+	easy_install -U pywebdav >> $INSTALL_LOG_FILE
 	log_echo ""
 }
 
@@ -124,20 +128,20 @@ function change_postgres_passwd {
 
 function download_openerp_server {
 	# Download openerp-server latest stable/trunk release.
-	log_echo "Downloading openerp-server latest stable/trunk release..."
+	log_echo "Downloading openerp-server latest $branch release..."
 	mkdir -p $sources_path >> $INSTALL_LOG_FILE
 	cd $sources_path >> $INSTALL_LOG_FILE
 	if [ -e openerp-server ]; then
 		bzr update openerp-server >> $INSTALL_LOG_FILE
 	else
-		bzr checkout --lightweight http://server01.rs.clearcorp.co.cr/bzr/openerp-server/$branch openerp-server >> $INSTALL_LOG_FILE
+		bzr checkout --lightweight http://server01.rs.clearcorp.co.cr/bzr/openerp/openerp-server/$branch openerp-server >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }
 
 function download_openerp_addons {
 	# Download openerp addons latest stable/trunk branch.
-	log_echo "Downloading openerp addons latest stable/trunk branch..."
+	log_echo "Downloading openerp addons latest $branch branch..."
 	mkdir -p $sources_path >> $INSTALL_LOG_FILE
 	cd $sources_path >> $INSTALL_LOG_FILE
 	if [ -e addons ]; then
@@ -150,30 +154,26 @@ function download_openerp_addons {
 
 function download_ccorp_addons {
 	# Download openerp ccorp-addons latest stable/trunk branch.
-	log_echo "Downloading openerp ccorp-addons latest stable/trunk branch..."
+	log_echo "Downloading openerp ccorp-addons latest $branch branch..."
 	mkdir -p $sources_path >> $INSTALL_LOG_FILE
 	cd $sources_path >> $INSTALL_LOG_FILE
-	if [[ $branch != "trunk" ]]; then
-		if [ -e ccorp-addons ]; then
-			bzr update ccorp-addons >> $INSTALL_LOG_FILE
-		else
-			bzr checkout --lightweight lp:openerp-ccorp-addons ccorp-addons >> $INSTALL_LOG_FILE
-		fi
+	if [ -e ccorp-addons ]; then
+		bzr update ccorp-addons >> $INSTALL_LOG_FILE
+	else
+		bzr checkout --lightweight lp:openerp-ccorp-addons ccorp-addons >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }
 
 function download_costa_rica_addons {
 	# Download openerp-costa-rica latest stable/trunk branch.
-	log_echo "Downloading openerp-costa-rica latest stable/trunk branch..."
+	log_echo "Downloading openerp-costa-rica latest $branch branch..."
 	mkdir -p $sources_path >> $INSTALL_LOG_FILE
 	cd $sources_path >> $INSTALL_LOG_FILE
-	if [[ $branch != "trunk" ]]; then
-		if [ -e costa-rica ]; then
-			bzr update costa-rica >> $INSTALL_LOG_FILE
-		else
-			bzr checkout --lightweight lp:openerp-costa-rica costa-rica >> $INSTALL_LOG_FILE
-		fi
+	if [ -e costa-rica ]; then
+		bzr update costa-rica >> $INSTALL_LOG_FILE
+	else
+		bzr checkout --lightweight lp:openerp-costa-rica costa-rica >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }
@@ -228,14 +228,14 @@ function download_openerp {
 		if [[ $install_extra_addons =~ ^[Yy]$ ]]; then download_extra_addons; fi
 		if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then download_magentoerpconnect; fi
 		if [[ $install_nantic =~ ^[Yy]$ ]]; then download_nan_tic_addons; fi
-	elif [[ $branch == "trunk" ]]; then
+	elif [[ $branch == "6.0" ]]; then
 		download_openerp_server
 		if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then download_openerp_addons; fi
-		#if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then download_ccorp_addons; fi
-		#if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then download_costa_rica_addons; fi
-		#if [[ $install_extra_addons =~ ^[Yy]$ ]]; then download_extra_addons; fi
-		#if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then download_magentoerpconnect; fi
-		#if [[ $install_nantic =~ ^[Yy]$ ]]; then download_nan_tic_addons; fi
+		if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then download_ccorp_addons; fi
+		if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then download_costa_rica_addons; fi
+		if [[ $install_extra_addons =~ ^[Yy]$ ]]; then download_extra_addons; fi
+		if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then download_magentoerpconnect; fi
+		if [[ $install_nantic =~ ^[Yy]$ ]]; then download_nan_tic_addons; fi
 	fi
 }
 
@@ -249,7 +249,7 @@ function install_openerp_server {
 	cp -a bin/* $install_path/ >> $INSTALL_LOG_FILE
 	# Patch openerp-server.py to change process names
 	log_echo "Patch openerp-server.py to change process names"
-	patch -p1 -i $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-server.py.patch $install_path/openerp-server.py >> $INSTALL_LOG_FILE
+	patch -p1 -i $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/openerp-server.py-$branch.patch $install_path/openerp-server.py >> $INSTALL_LOG_FILE
 	#~ Copy documentation
 	log_echo "Copy documentation"
 	mkdir -p $base_path/share/doc/openerp-server >> $INSTALL_LOG_FILE
@@ -261,22 +261,24 @@ function install_openerp_server {
 	cp -a man/*.1 $base_path/share/man/man1/ >> $INSTALL_LOG_FILE
 	cp -a man/*.5 $base_path/share/man/man5/ >> $INSTALL_LOG_FILE
 	# Copy pixmaps
-	if [[ $branch == "trunk" ]]; then
+	if [[ $branch == "6.0" ]]; then
 		cp -a pixmaps $install_path/ >> $INSTALL_LOG_FILE
 	fi
 
 	#~ Copy bin script skeleton to /etc
 	log_echo "Copy bin script skeleton to /etc"
-	mkdir -p /etc/openerp/server/ >> $INSTALL_LOG_FILE
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-bin-skeleton /etc/openerp/server/bin-skeleton >> $INSTALL_LOG_FILE
-	# OpenERP Server init and config skeletons
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server-init-skeleton /etc/openerp/server/init-skeleton >> $INSTALL_LOG_FILE
-	sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/server/init-skeleton >> $INSTALL_LOG_FILE
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server.conf-skeleton /etc/openerp/server/ >> $INSTALL_LOG_FILE
-	if [[ $server_type =~ ^[Pp]$ ]]; then
-		sed -i "s#\\[LOGLEVEL\\]#info#g" /etc/openerp/server/server.conf-skeleton >> $INSTALL_LOG_FILE
+	mkdir -p /etc/openerp/$branch/server/ >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/server-bin-skeleton /etc/openerp/$branch/server/bin-skeleton >> $INSTALL_LOG_FILE
+	# OpenERP Server init
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/server-init-$branch-skeleton /etc/openerp/$branch/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
+	sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/$branch/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
+	# OpenERP Server config skeletons
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/server.conf-$branch-skeleton /etc/openerp/$branch/server/ >> $INSTALL_LOG_FILE
+	if [[ $server_type =~ ^production$ ]]; then
+		sed -i "s#\\[LOGLEVEL\\]#info#g" /etc/openerp/$branch/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
 	else
-		sed -i "s#\\[LOGLEVEL\\]#debug#g" /etc/openerp/server/server.conf-skeleton >> $INSTALL_LOG_FILE
+		sed -i "s#\\[LOGLEVEL\\]#debug#g" /etc/openerp/$branch/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
+		sed -i "s#\\[DEBUGMODE\\]#True#g" /etc/openerp/$branch/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
 	fi
 
 	# Make filestore dir
@@ -326,10 +328,10 @@ function install_nan_tic_addons {
 
 function install_change_perms {
 	# Change permissions
-	chown -R openerp:openerp $install_path_web/openerp* >> $INSTALL_LOG_FILE
-	chown -R openerp:openerp /var/log/openerp >> $INSTALL_LOG_FILE
-	chown -R openerp:openerp /var/run/openerp >> $INSTALL_LOG_FILE
-	chown -R openerp:openerp /etc/openerp >> $INSTALL_LOG_FILE
+	chown -R $openerp_user:openerp $install_path_web/openerp* >> $INSTALL_LOG_FILE
+	chown -R $openerp_user:openerp /var/log/openerp >> $INSTALL_LOG_FILE
+	chown -R $openerp_user:openerp /var/run/openerp >> $INSTALL_LOG_FILE
+	chown -R $openerp_user:openerp /etc/openerp >> $INSTALL_LOG_FILE
 	chmod -R g+w $install_path >> $INSTALL_LOG_FILE
 	chmod -R g+w /var/log/openerp >> $INSTALL_LOG_FILE
 	chmod -R g+w /var/run/openerp >> $INSTALL_LOG_FILE
@@ -345,21 +347,21 @@ function install_openerp {
 		if [[ $install_extra_addons =~ ^[Yy]$ ]]; then install_extra_addons; fi
 		if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then install_magentoerpconnect; fi
 		if [[ $install_nantic =~ ^[Yy]$ ]]; then install_nan_tic_addons; fi
-	elif [[ $branch == "trunk" ]]; then
+	elif [[ $branch == "6.0" ]]; then
 		install_openerp_server
 		if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then install_openerp_addons; fi
-		#if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then install_ccorp_addons; fi
-		#if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then install_costa_rica_addons; fi
-		#if [[ $install_extra_addons =~ ^[Yy]$ ]]; then install_extra_addons; fi
-		#if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then install_magentoerpconnect; fi
-		#if [[ $install_nantic =~ ^[Yy]$ ]]; then install_nan_tic_addons; fi
+		if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then install_ccorp_addons; fi
+		if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then install_costa_rica_addons; fi
+		if [[ $install_extra_addons =~ ^[Yy]$ ]]; then install_extra_addons; fi
+		if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then install_magentoerpconnect; fi
+		if [[ $install_nantic =~ ^[Yy]$ ]]; then install_nan_tic_addons; fi
 	fi
 	install_change_perms
 }
 
 function download_openerp_web {
 	# Download openerp-web latest stable/trunk branch.
-	log_echo "Downloading openerp-web latest stable/trunk branch..."
+	log_echo "Downloading openerp-web latest $branch branch..."
 	mkdir -p $sources_path >> $INSTALL_LOG_FILE
 	cd $sources_path >> $INSTALL_LOG_FILE
 	if [ -e openerp-web ]; then
@@ -375,24 +377,24 @@ function install_openerp_web_client {
 
 	# Install OpenERP Web client
 	log_echo "Installing OpenERP Web client..."
-	cp -a openerp-web $install_path_web/openerp-web >> $INSTALL_LOG_FILE
+	cp -a openerp-web $install_path_web/openerp-web-$branch-skeleton >> $INSTALL_LOG_FILE
 
 	#~ Copy bin script to /usr/local/bin
 	log_echo "Copy bin script /usr/local/bin"
-	mkdir -p /usr/local/bin/ >> $INSTALL_LOG_FILE
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client-bin-skeleton /usr/local/bin/openerp-web >> $INSTALL_LOG_FILE
+	mkdir -p /etc/openerp/$branch/web-client >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client-bin-skeleton /etc/openerp/$branch/web-client/bin-skeleton >> $INSTALL_LOG_FILE
 
 	# OpenERP Web Client init and config skeletons
-	mkdir -p /etc/openerp/web-client >> $INSTALL_LOG_FILE
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client-init-skeleton /etc/openerp/web-client/init-skeleton >> $INSTALL_LOG_FILE
-	sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/web-client/init-skeleton >> $INSTALL_LOG_FILE
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client.conf-skeleton /etc/openerp/web-client/ >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client-init-skeleton /etc/openerp/$branch/web-client/init-skeleton >> $INSTALL_LOG_FILE
+	sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/$branch/web-client/init-skeleton >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client.conf-$branch-skeleton /etc/openerp/$branch/web-client/ >> $INSTALL_LOG_FILE
 
 	#~ Sets server type
-	if [[ "$server_type" =~ ^[DdWw]$ ]]; then
-		sed -i "s/\[TYPE\]/development/g" /etc/openerp/web-client/web-client.conf-skeleton >> $INSTALL_LOG_FILE
+	if [[ "$server_type" =~ ^development|station$ ]]; then
+		sed -i "s/dbbutton\.visible = False/dbbutton.visible = True/g" /etc/openerp/$branch/web-client/web-client.conf-$branch-skeleton >> $INSTALL_LOG_FILE
+		sed -i "s/\[TYPE\]/development/g" /etc/openerp/$branch/web-client/web-client.conf-$branch-skeleton >> $INSTALL_LOG_FILE
 	else
-		sed -i "s/\[TYPE\]/production/g" /etc/openerp/web-client/web-client.conf-skeleton >> $INSTALL_LOG_FILE
+		sed -i "s/\[TYPE\]/production/g" /etc/openerp/$branch/web-client/web-client.conf-$branch-skeleton >> $INSTALL_LOG_FILE
 	fi
 }
 
@@ -428,9 +430,9 @@ function install_apache {
 	log_echo "Configuring site config files..."
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-erp /etc/apache2/sites-available/erp >> $INSTALL_LOG_FILE
 	mkdir -p /etc/openerp/apache2/rewrites >> $INSTALL_LOG_FILE
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-ssl-skeleton /etc/openerp/apache2/ssl-skeleton >> $INSTALL_LOG_FILE
-	sed -i "s/ServerAdmin webmaster@localhost/ServerAdmin support@clearnet.co.cr\n\n\tInclude \/etc\/apache2\/sites-available\/erp/g" /etc/apache2/sites-available/default >> $INSTALL_LOG_FILE
-	sed -i "s/ServerAdmin webmaster@localhost/ServerAdmin support@clearnet.co.cr\n\n\tInclude \/etc\/openerp\/apache2\/rewrites/g" /etc/apache2/sites-available/default-ssl >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-ssl-$branch-skeleton /etc/openerp/apache2/ssl-$branch-skeleton >> $INSTALL_LOG_FILE
+	sed -i "s/ServerAdmin .*$/ServerAdmin support@clearnet.co.cr\n\n\tInclude \/etc\/apache2\/sites-available\/erp/g" /etc/apache2/sites-available/default >> $INSTALL_LOG_FILE
+	sed -i "s/ServerAdmin .*$/ServerAdmin support@clearnet.co.cr\n\n\tInclude \/etc\/openerp\/apache2\/rewrites/g" /etc/apache2/sites-available/default-ssl >> $INSTALL_LOG_FILE
 
 
 	log_echo "Restarting Apache..."
