@@ -1,0 +1,11 @@
+<Proxy *>
+	Order deny,allow
+	Allow from all
+</Proxy>
+
+RewriteEngine On
+
+RewriteCond %{HTTP_HOST} ^[NAME]\..*
+RewriteRule ^/(.*)$ http://127.0.0.1:[PORT]/$1 [P,L,NC]
+
+ProxyPassReverse / http://127.0.0.1:[PORT]/
