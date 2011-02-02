@@ -21,7 +21,7 @@
 if [[ $1 == "5.0" ]] | [[ $1 == "6.0" ]]; then
 	echo "This server will use $1 branch."
 	branch=$1
-elif
+else
 	# Source installation variables
 	if [ -d /etc/openerp/5.0 ] && [ ! -d /etc/openerp/6.0 ]; then
 		branch="5"
