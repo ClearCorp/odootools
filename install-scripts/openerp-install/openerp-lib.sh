@@ -86,6 +86,11 @@ function install_python_lib {
 	apt-get -qqy install python-dev build-essential python-setuptools >> $INSTALL_LOG_FILE
 	easy_install -U setproctitle >> $INSTALL_LOG_FILE
 	log_echo ""
+
+	# Install the required python libraries for webdav
+	echo "Installing the required python libraries for webdav..."
+	easy_install -U pywebdav >> $INSTALL_LOG_FILE
+	log_echo ""
 }
 
 function install_bzr {
