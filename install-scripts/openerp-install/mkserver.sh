@@ -88,9 +88,9 @@ log_echo "--------------------------"
 log_echo ""
 
 # Source installation variables
-if [ -d /etc/openerp/5.0 && ! -d /etc/openerp/6.0 ]; then
+if [ -d /etc/openerp/5.0 ] && [ ! -d /etc/openerp/6.0 ]; then
 	branch=5.0
-elif [ ! -d /etc/openerp/5.0 && -d /etc/openerp/6.0 ]; then
+elif [ ! -d /etc/openerp/5.0 ] && [ -d /etc/openerp/6.0 ]; then
 	branch=6.0
 else
 	branch=""
