@@ -112,7 +112,8 @@ else
 fi
 
 . /etc/openerp/$branch/install.cfg
-install_path="$install_path/openerp-server-$branch-skeleton"
+install_path=$install_path/openerp-server-$branch-skeleton
+addons_path=$install_path/addons/
 
 name=""
 while [[ $name == "" ]]; do

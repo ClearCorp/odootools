@@ -147,8 +147,9 @@ else
 	log_echo "This installation will use 6.0 branch."
 	branch="6.0"
 fi
-sources_path="$sources_path-$branch"
-install_path="$install_path/openerp-server-$branch-skeleton"
+sources_path=$sources_path-$branch
+install_path=$install_path/openerp-server-$branch-skeleton
+addons_path=$install_path/addons/
 echo ""
 
 #Install openerp_addons
