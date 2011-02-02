@@ -221,6 +221,10 @@ touch /var/log/openerp/$name/server.log
 
 
 log_echo "Creating openerp-web init script..."
+cp -a /etc/openerp/$branch/web-client/bin-skeleton /usr/local/bin/openerp-web-$name >> $INSTALL_LOG_FILE
+sed -i "s#\\[NAME\\]#$name#g" /usr/local/bin/openerp-web-$name >> $INSTALL_LOG_FILE
+
+log_echo "Creating openerp-web init script..."
 cp -a /etc/openerp/$branch/web-client/init-skeleton /etc/init.d/openerp-web-$name >> $INSTALL_LOG_FILE
 sed -i "s#\\[NAME\\]#$name#g" /etc/init.d/openerp-web-$name >> $INSTALL_LOG_FILE
 sed -i "s#\\[USER\\]#openerp_$name#g" /etc/init.d/openerp-web-$name >> $INSTALL_LOG_FILE

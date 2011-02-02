@@ -383,7 +383,7 @@ function install_openerp_web_client {
 	#~ Copy bin script to /usr/local/bin
 	log_echo "Copy bin script /usr/local/bin"
 	mkdir -p /usr/local/bin/ >> $INSTALL_LOG_FILE
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client-bin-skeleton /usr/local/bin/openerp-web >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client-bin-skeleton /etc/openerp/$branch/web-client/bin-skeleton >> $INSTALL_LOG_FILE
 
 	# OpenERP Web Client init and config skeletons
 	mkdir -p /etc/openerp/$branch/web-client >> $INSTALL_LOG_FILE

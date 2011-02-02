@@ -17,8 +17,8 @@ BASE_PATH=[PATH]
 BRANCH=[BRANCH]
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin
-DAEMON=${BASE_PATH}/bin/openerp-web
 NAME=openerp-web-${SERVERNAME}
+DAEMON=${BASE_PATH}/bin/${NAME}
 DESC="OpenERP Web client"
 USER=[USER]
 PIDDIR=/var/run/openerp
