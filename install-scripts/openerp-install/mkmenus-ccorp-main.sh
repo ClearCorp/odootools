@@ -18,29 +18,33 @@
 #       MA 02110-1301, USA.
 #!/bin/bash
 
+if [[ $1 == "5.0" ]] | [[ $1 == "6.0" ]]; then
+	echo "This server will use $1 branch."
+	branch=$1
+elif
+	# Source installation variables
+	if [ -d /etc/openerp/5.0 ] && [ ! -d /etc/openerp/6.0 ]; then
+		branch="5"
+	elif [ ! -d /etc/openerp/5.0 ] && [ -d /etc/openerp/6.0 ]; then
+		branch="6"
+	else
+		branch=""
+		while [[ ! $branch =~ ^[56]$ ]]; do
+			read -p "You have installed versions 5 and 6, choose the version for this server (5/_6_): " branch
+			if [[ $branch == "" ]]; then
+				branch="6"
+			fi
+			echo ""
+		done
+	fi
 
-# Source installation variables
-if [ -d /etc/openerp/5.0 ] && [ ! -d /etc/openerp/6.0 ]; then
-	branch="5"
-elif [ ! -d /etc/openerp/5.0 ] && [ -d /etc/openerp/6.0 ]; then
-	branch="6"
-else
-	branch=""
-	while [[ ! $branch =~ ^[56]$ ]]; do
-		read -p "You have installed versions 5 and 6, choose the version for this server (5/_6_): " branch
-		if [[ $branch == "" ]]; then
-			branch="6"
-		fi
-		echo ""
-	done
-fi
-
-if [[ $branch =~ ^[5]$ ]]; then
-	echo "This server will use 5.0 branch."
-	branch="5.0"
-else
-	echo "This server will use 6.0 branch."
-	branch="6.0"
+	if [[ $branch =~ ^[5]$ ]]; then
+		echo "This server will use 5.0 branch."
+		branch="5.0"
+	else
+		echo "This server will use 6.0 branch."
+		branch="6.0"
+	fi
 fi
 
 . /etc/openerp/$branch/install.cfg

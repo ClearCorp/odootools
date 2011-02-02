@@ -19,33 +19,38 @@
 #       MA 02110-1301, USA.
 
 
-if [[ $1 == "" ]]; then
-	echo "Usage ccorp-openerp-mkmenus <server-name>"
+if [[ $1 == "" ]] | [[ $2 == "" ]]; then
+	echo "Usage ccorp-openerp-mkmenus <branch> <server-name>"
 	exit 1
 fi
 
-# Source installation variables
-if [ -d /etc/openerp/5.0 ] && [ ! -d /etc/openerp/6.0 ]; then
-	branch="5"
-elif [ ! -d /etc/openerp/5.0 ] && [ -d /etc/openerp/6.0 ]; then
-	branch="6"
-else
-	branch=""
-	while [[ ! $branch =~ ^[56]$ ]]; do
-		read -p "You have installed versions 5 and 6, choose the version for this server (5/_6_): " branch
-		if [[ $branch == "" ]]; then
-			branch="6"
-		fi
-		log_echo ""
-	done
-fi
+if [[ $1 == "5.0" ]] | [[ $1 == "6.0" ]]; then
+	echo "This server will use $1 branch."
+	branch=$1
+elif
+	# Source installation variables
+	if [ -d /etc/openerp/5.0 ] && [ ! -d /etc/openerp/6.0 ]; then
+		branch="5"
+	elif [ ! -d /etc/openerp/5.0 ] && [ -d /etc/openerp/6.0 ]; then
+		branch="6"
+	else
+		branch=""
+		while [[ ! $branch =~ ^[56]$ ]]; do
+			read -p "You have installed versions 5 and 6, choose the version for this server (5/_6_): " branch
+			if [[ $branch == "" ]]; then
+				branch="6"
+			fi
+			echo ""
+		done
+	fi
 
-if [[ $branch =~ ^[5]$ ]]; then
-	log_echo "This server will use 5.0 branch."
-	branch="5.0"
-else
-	log_echo "This server will use 6.0 branch."
-	branch="6.0"
+	if [[ $branch =~ ^[5]$ ]]; then
+		echo "This server will use 5.0 branch."
+		branch="5.0"
+	else
+		echo "This server will use 6.0 branch."
+		branch="6.0"
+	fi
 fi
 
 . /etc/openerp/$branch/install.cfg
@@ -90,25 +95,25 @@ cat << EOF >> /home/$openerp_user/.config/menus/applications.menu
 	<Menu>
 		<Name>Development</Name>
 		<Menu>
-			<Name>openerp-$1</Name>
-			<Directory>openerp-$1.directory</Directory>
+			<Name>openerp-$2</Name>
+			<Directory>openerp-$2.directory</Directory>
 			<Include>
 EOF
 
-cat << EOF >> /home/$openerp_user/.local/share/desktop-directories/openerp-$1.directory
+cat << EOF >> /home/$openerp_user/.local/share/desktop-directories/openerp-$2.directory
 #!/usr/bin/env xdg-open
 
 [Desktop Entry]
 Version=1.0
 Type=Directory
 Icon=$LIBBASH_CCORP_DIR/install-scripts/openerp-install/icons/ccorp-logo.png
-Name=openerp-$1
+Name=openerp-$2
 EOF
 
 for i in "server" "web" "all"; do
 	for j in "stop" "restart"; do
-		echo "				<Filename>openerp-$1-$i-$j.desktop</Filename>" >>  /home/$openerp_user/.config/menus/applications.menu
-		cat << EOF >> /home/$openerp_user/.local/share/applications/openerp-$1-$i-$j.desktop
+		echo "				<Filename>openerp-$2-$i-$j.desktop</Filename>" >>  /home/$openerp_user/.config/menus/applications.menu
+		cat << EOF >> /home/$openerp_user/.local/share/applications/openerp-$2-$i-$j.desktop
 #!/usr/bin/env xdg-open
 
 [Desktop Entry]
@@ -116,8 +121,8 @@ Version=1.0
 Type=Application
 Terminal=true
 Icon=$LIBBASH_CCORP_DIR/install-scripts/openerp-install/icons/$i-$j.png
-Name=$j $i openerp-$1
-Exec=$LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-dev-control.sh $1 $i $j
+Name=$j $i openerp-$2
+Exec=$LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-dev-control.sh $2 $i $j
 EOF
 	done
 done
