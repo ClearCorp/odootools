@@ -483,9 +483,8 @@ function install_phppgadmin {
 function make_menus {
 	#~ Make developer menus
 	if [[ $server_type == "station" ]]; then
-		sudo -u $openerp_user $LIBBASH_CCORP_DIR/install-scripts/openerp-install/mkmenus-ccorp-main.sh
+		su $openerp_user -c $LIBBASH_CCORP_DIR/install-scripts/openerp-install/mkmenus-ccorp-main.sh
 	fi
-	exit 0
 }
 
 function add_log_rotation {
