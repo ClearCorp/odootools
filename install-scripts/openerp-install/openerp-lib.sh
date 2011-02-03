@@ -190,7 +190,7 @@ function download_ccorp_addons {
 	if [ -e ccorp-addons ]; then
 		bzr update ccorp-addons >> $INSTALL_LOG_FILE
 	else
-		bzr checkout --lightweight lp:openerp-ccorp-addons ccorp-addons >> $INSTALL_LOG_FILE
+		bzr checkout --lightweight lp:openerp-ccorp-addons/$branch ccorp-addons >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }
@@ -203,7 +203,7 @@ function download_costa_rica_addons {
 	if [ -e costa-rica ]; then
 		bzr update costa-rica >> $INSTALL_LOG_FILE
 	else
-		bzr checkout --lightweight lp:openerp-costa-rica costa-rica >> $INSTALL_LOG_FILE
+		bzr checkout --lightweight lp:openerp-costa-rica/$branch costa-rica >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }
