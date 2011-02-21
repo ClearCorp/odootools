@@ -161,10 +161,10 @@ function download_openerp_server {
 	log_echo "Downloading openerp-server latest $branch release..."
 	mkdir -p $sources_path >> $INSTALL_LOG_FILE
 	cd $sources_path >> $INSTALL_LOG_FILE
-	if [ -e openerp-server ]; then
-		bzr update openerp-server >> $INSTALL_LOG_FILE
+	if [ -e openobject-server ]; then
+		bzr update openobject-server >> $INSTALL_LOG_FILE
 	else
-		bzr checkout --lightweight http://server01.rs.clearcorp.co.cr/bzr/openerp/openerp-server/$branch openerp-server >> $INSTALL_LOG_FILE
+		bzr checkout --lightweight http://server01.rs.clearcorp.co.cr/bzr/openerp/ccorp-branches/openobject-server/$branch openobject-server >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }
@@ -174,10 +174,10 @@ function download_openerp_addons {
 	log_echo "Downloading openerp addons latest $branch branch..."
 	mkdir -p $sources_path >> $INSTALL_LOG_FILE
 	cd $sources_path >> $INSTALL_LOG_FILE
-	if [ -e addons ]; then
-		bzr update addons >> $INSTALL_LOG_FILE
+	if [ -e openobject-addons ]; then
+		bzr update openobject-addons >> $INSTALL_LOG_FILE
 	else
-		bzr checkout --lightweight lp:openobject-addons/$branch addons >> $INSTALL_LOG_FILE
+		bzr checkout --lightweight http://server01.rs.clearcorp.co.cr/bzr/openerp/ccorp-branches/openobject-addons/$branch openobject-addons >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }
@@ -213,10 +213,10 @@ function download_extra_addons {
 	log_echo "Downloading extra addons..."
 	mkdir -p $sources_path >> $INSTALL_LOG_FILE
 	cd $sources_path >> $INSTALL_LOG_FILE
-	if [ -e extra-addons ]; then
-		bzr update extra-addons >> $INSTALL_LOG_FILE
+	if [ -e openobject-addons-extra ]; then
+		bzr update openobject-addons-extra >> $INSTALL_LOG_FILE
 	else
-		bzr checkout --lightweight lp:openobject-addons/extra-$branch extra-addons >> $INSTALL_LOG_FILE
+		bzr checkout --lightweight http://server01.rs.clearcorp.co.cr/bzr/openerp/ccorp-branches/openobject-addons/extra-$branch openobject-addons-extra >> $INSTALL_LOG_FILE
 	fi
 	log_echo "Removing use_control from extra addons..."
 	rm -r extra-addons/use_control >> $INSTALL_LOG_FILE
@@ -272,7 +272,7 @@ function download_openerp {
 function install_openerp_server {
 	# Install OpenERP server
 	log_echo "Installing OpenERP Server..."
-	cd $sources_path/openerp-server >> $INSTALL_LOG_FILE
+	cd $sources_path/openobject-server >> $INSTALL_LOG_FILE
 	#~ Make skeleton installation
 	log_echo "Make skeleton installation"
 	mkdir -p $install_path >> $INSTALL_LOG_FILE
@@ -323,7 +323,7 @@ function install_openerp_addons {
 	log_echo "Installing OpenERP addons..."
 	mkdir -p $addons_path >> $INSTALL_LOG_FILE
 	cd $sources_path >> $INSTALL_LOG_FILE
-	cp -a addons/* $addons_path >> $INSTALL_LOG_FILE
+	cp -a openobject-addons/* $addons_path >> $INSTALL_LOG_FILE
 }
 
 function install_ccorp_addons {
@@ -341,7 +341,7 @@ function install_costa_rica_addons {
 function install_extra_addons {
 	# Install OpenERP extra addons
 	log_echo "Installing OpenERP extra addons..."
-	cp -a extra-addons/* $addons_path >> $INSTALL_LOG_FILE
+	cp -a openobject-addons-extra/* $addons_path >> $INSTALL_LOG_FILE
 }
 
 function install_magentoerpconnect {
@@ -395,10 +395,10 @@ function download_openerp_web {
 	log_echo "Downloading openerp-web latest $branch branch..."
 	mkdir -p $sources_path >> $INSTALL_LOG_FILE
 	cd $sources_path >> $INSTALL_LOG_FILE
-	if [ -e openerp-web ]; then
-		bzr update openerp-web >> $INSTALL_LOG_FILE
+	if [ -e openobject-client-web ]; then
+		bzr update openobject-client-web >> $INSTALL_LOG_FILE
 	else
-		bzr checkout --lightweight http://server01.rs.clearcorp.co.cr/bzr/openerp-web-ccorp/$branch openerp-web >> $INSTALL_LOG_FILE
+		bzr checkout --lightweight http://server01.rs.clearcorp.co.cr/bzr/openerp/ccorp-branches/openobject-client-web/$branch openobject-client-web >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }
@@ -408,7 +408,7 @@ function install_openerp_web_client {
 
 	# Install OpenERP Web client
 	log_echo "Installing OpenERP Web client..."
-	cp -a openerp-web $install_path_web/openerp-web-$branch-skeleton >> $INSTALL_LOG_FILE
+	cp -a openobject-client-web $install_path_web/openerp-web-$branch-skeleton >> $INSTALL_LOG_FILE
 
 	#~ Copy bin script to /usr/local/bin
 	log_echo "Copy bin script /usr/local/bin"
