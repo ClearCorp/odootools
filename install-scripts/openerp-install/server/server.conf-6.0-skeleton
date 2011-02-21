@@ -56,6 +56,9 @@ login_message = False
 # (default http://services.openerp.com/publisher-warranty/).
 publisher_warranty_url = http://clearcorp.co.cr
 
+# (char) Price accuracy (default 4).
+price_accuracy = 4
+
 # DATABASE
 ########################################################################
 
@@ -94,8 +97,10 @@ import_partial =
 # XML-RPC
 # (bool) Enable the XML-RPC protocol (default True).
 xmlrpc = True
+
 # (int) Specify the TCP port for the XML-RPC protocol (default 8069).
-xmlrpc_port = [XMLPORT]
+xmlrpc_port = 20[PORT]
+
 # (char) Specify the TCP IP address for the XML-RPC protocol
 # (default blank).
 xmlrpc_interface = 
@@ -103,8 +108,10 @@ xmlrpc_interface =
 # NET-RPC
 # (bool) Enable the NET-RPC protocol (default True).
 netrpc = True
+
 # (int) Specify the TCP port for the NET-RPC protocol (default 8070).
-netrpc_port = [NETPORT]
+netrpc_port = 21[PORT]
+
 # (char) Specify the TCP IP address for the NET-RPC protocol
 # (default blank).
 netrpc_interface = 
@@ -112,21 +119,31 @@ netrpc_interface =
 # XML-RPC secure
 # (bool) Enable the XML-RPC secure protocol (default True).
 xmlrpcs = True
+
 # (int) Specify the TCP port for the XML-RPC secure protocol
 # (default 8071).
-xmlrpcs_port = [XMLSPORT]
+xmlrpcs_port = 22[PORT]
+
 # (char) Specify the TCP IP address for the XML-RPC secure protocol
 # (default blank).
 xmlrpcs_interface = 
+
 # (char) Specify the certificate file for the SSL connection
 # (default server.cert).
-#secure_cert_file = /etc/openerp/server.cert
+secure_cert_file = /etc/ssl/certs/ssl-cert-snakeoil.pem
+
 # (char) Specify the private key file for the SSL connection
 # (default server.key).
-#secure_pkey_file = /etc/openerp/server.key
+secure_pkey_file = /etc/ssl/private/ssl-cert-snakeoil.key
+
+# (char) Specify the host for the FTP DMS server (default localhost).
+ftp_server_host = 0.0.0.0
+
+# (int) Specify the TCP port for the FTP DMS server (default 8021).
+ftp_server_port = 24[PORT]
 
 # (int) Specify the TCP port for the Pyro protocol (no default).
-pyroport = [PYROPORT]
+pyroport = 25[PORT]
 
 # LOGGING
 ########################################################################

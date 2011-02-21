@@ -306,6 +306,7 @@ function install_openerp_server {
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/server.conf-$branch-skeleton /etc/openerp/$branch/server/ >> $INSTALL_LOG_FILE
 	if [[ $server_type =~ ^production$ ]]; then
 		sed -i "s#\\[LOGLEVEL\\]#info#g" /etc/openerp/$branch/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
+		sed -i "s#\\[DEBUGMODE\\]#False#g" /etc/openerp/$branch/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
 	else
 		sed -i "s#\\[LOGLEVEL\\]#debug#g" /etc/openerp/$branch/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
 		sed -i "s#\\[DEBUGMODE\\]#True#g" /etc/openerp/$branch/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
