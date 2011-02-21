@@ -316,6 +316,20 @@ function install_openerp_server {
 	mkdir -p $install_path/filestore >> $INSTALL_LOG_FILE
 	#~ Make pid dir
 	mkdir -p /var/run/openerp >> $INSTALL_LOG_FILE
+
+	# Make SSL certificates
+	mkdir -p /etc/openerp/ssl/private
+	mkdir -p /etc/openerp/ssl/signedcerts
+	mkdir -p /etc/openerp/ssl/servers
+	cd /etc/openerp/ssl
+
+	echo '01' > serial  && touch index.txt
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/ca.cnf /etc/openerp/ssl/ca.cnf >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/server.cnf /etc/openerp/ssl/server.cnf-skeleton >> $INSTALL_LOG_FILE
+
+	openssl req -x509 -newkey rsa:2048 -out cacert.pem -outform PEM -days 1825 -config ca.cnf -passout pass:$openerp_admin_passwd
+	openssl x509 -in cacert.pem -out cacert.crt
+
 }
 
 function install_openerp_addons {

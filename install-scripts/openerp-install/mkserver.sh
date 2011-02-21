@@ -185,17 +185,26 @@ sed -i "s#\\[NAME\\]#$name#g" /usr/local/bin/openerp-server-$name
 log_echo "Creating openerp-server configuration file..."
 cp -a /etc/openerp/$branch/server/server.conf-$branch-skeleton /etc/openerp/$branch/server/$name.conf
 sed -i "s#\\[DB_USER\\]#openerp_$name#g" /etc/openerp/$branch/server/$name.conf >> $INSTALL_LOG_FILE
-sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/$branch/server/$name.conf
-sed -i "s#\\[PORT\\]#$port#g" /etc/openerp/$branch/server/$name.conf
-sed -i "s#\\[XMLPORT\\]#20$port#g" /etc/openerp/$branch/server/$name.conf
-sed -i "s#\\[NETPORT\\]#21$port#g" /etc/openerp/$branch/server/$name.conf
-sed -i "s#\\[XMLSPORT\\]#22$port#g" /etc/openerp/$branch/server/$name.conf
-sed -i "s#\\[PYROPORT\\]#24$port#g" /etc/openerp/$branch/server/$name.conf
-sed -i "s#\\[ADMIN_PASSWD\\]#$admin_passwd#g" /etc/openerp/$branch/server/$name.conf
+sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/$branch/server/$name.conf >> $INSTALL_LOG_FILE
+sed -i "s#\\[PORT\\]#$port#g" /etc/openerp/$branch/server/$name.conf >> $INSTALL_LOG_FILE
+sed -i "s#\\[XMLPORT\\]#20$port#g" /etc/openerp/$branch/server/$name.conf >> $INSTALL_LOG_FILE
+sed -i "s#\\[NETPORT\\]#21$port#g" /etc/openerp/$branch/server/$name.conf >> $INSTALL_LOG_FILE
+sed -i "s#\\[XMLSPORT\\]#22$port#g" /etc/openerp/$branch/server/$name.conf >> $INSTALL_LOG_FILE
+sed -i "s#\\[PYROPORT\\]#24$port#g" /etc/openerp/$branch/server/$name.conf >> $INSTALL_LOG_FILE
+sed -i "s#\\[ADMIN_PASSWD\\]#$admin_passwd#g" /etc/openerp/$branch/server/$name.conf >> $INSTALL_LOG_FILE
+
+log_echo "Creating openerp-server ssl files..."
+cp -a /etc/openerp/ssl/server.cnf-skeleton /etc/openerp/ssl/servers/$name.cnf >> $INSTALL_LOG_FILE
+sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/ssl/servers/$name.cnf >> $INSTALL_LOG_FILE
+cd /etc/openerp/ssl/servers
+openssl req -newkey rsa:1024 -keyout tempkey.pem -keyform PEM -out tempreq.pem -outform PEM -config $name.cnf -passout pass:$openerp_admin_passwd
+openssl rsa -passin pass:nosecual < tempkey.pem > server_key.pem
+openssl ca -in tempreq.pem -out server_crt.pem -config ../ca.cnf -passin pass:$openerp_admin_passwd
+rm -f tempkey.pem && rm -f tempreq.pem
 
 log_echo "Creating openerp-server log files..."
-mkdir -p /var/log/openerp/$name
-touch /var/log/openerp/$name/server.log
+mkdir -p /var/log/openerp/$name >> $INSTALL_LOG_FILE
+touch /var/log/openerp/$name/server.log >> $INSTALL_LOG_FILE
 
 
 log_echo "Copying openerp-web files..."
