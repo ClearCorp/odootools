@@ -198,7 +198,7 @@ cp -a /etc/openerp/ssl/server.cnf-skeleton /etc/openerp/ssl/servers/$name.cnf >>
 sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/ssl/servers/$name.cnf >> $INSTALL_LOG_FILE
 cd /etc/openerp/ssl/servers
 openssl req -newkey rsa:1024 -keyout tempkey.pem -keyform PEM -out tempreq.pem -outform PEM -config $name.cnf -passout pass:$openerp_admin_passwd
-openssl rsa -passin pass:nosecual < tempkey.pem > server_key.pem
+openssl rsa -passin pass:$openerp_admin_passwd < tempkey.pem > server_key.pem
 openssl ca -in tempreq.pem -out server_crt.pem -config ../ca.cnf -passin pass:$openerp_admin_passwd
 rm -f tempkey.pem && rm -f tempreq.pem
 

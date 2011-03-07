@@ -86,6 +86,17 @@ deb http://archive.canonical.com/ubuntu $1 partner
 EOF
 }
 
+function setSources_zentyal {
+	if [[ $1 == "lucid" ]]; then
+		# Zentyal repository
+		cat > /etc/apt/sources.list.d/zentyal.list << EOF
+	# zentyal repository
+	deb http://ppa.launchpad.net/zentyal/2.0/ubuntu lucid main
+EOF
+		apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 10E239FF
+	fi
+}
+
 function setSources_webmin {
 	# Webmin repository
 	cat > /etc/apt/sources.list.d/webmin.list << EOF
@@ -95,17 +106,9 @@ EOF
 	wget -q http://www.webmin.com/jcameron-key.asc -O - | apt-key add -
 }
 
-function setSources_bazaar {
-	apt-get -qq update
-	apt-get -yqq install python-software-properties
-	
-	add-apt-repository ppa:bzr/ppa
-	add-apt-repository ppa:bzr-explorer-dev/ppa
-}
-
 function setSources {
 	#Adds add-apt-repository
 	setSources_ubuntu $1
+	setSources_zentyal $1
 	setSources_webmin $1
-	setSources_bazaar $1
 }

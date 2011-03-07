@@ -139,6 +139,10 @@ secure_pkey_file = /etc/ssl/private/ssl-cert-snakeoil.key
 # (char) Specify the host for the FTP DMS server (default localhost).
 ftp_server_host = 0.0.0.0
 
+# (int) Specify the TCP ports for the FTP DMS server passive connections
+# (default 1024:65535).
+ftp_server_passive_ports = 30000:31000
+
 # (int) Specify the TCP port for the FTP DMS server (default 8021).
 ftp_server_port = 24[PORT]
 
