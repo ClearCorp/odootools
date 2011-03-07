@@ -154,8 +154,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 	done
 	echo $new_hostname > /etc/hostname
 	cat > /etc/hosts <<EOF
-127.0.0.1	$new_hostname_full $new_hostname localhost localhost.localdomain
-$ip_addr	$new_hostname_full
+127.0.0.1	localhost.localdomain localhost
+$ip_addr	$new_hostname_full $new_hostname
 EOF
 	chmod 644 /etc/hosts
 	chmod 644 /etc/hostname
