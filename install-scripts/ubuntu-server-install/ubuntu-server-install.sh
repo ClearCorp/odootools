@@ -194,12 +194,15 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 	echo "Setting system time syncronization..."
 	apt-get -y install ntp
 	# Adds 4 north america servers and comment out ntp.ubuntu.com (default)
-	newserver=""
-	newserver=$newserver"server 0.north-america.pool.ntp.org\\n"
-	newserver=$newserver"server 1.north-america.pool.ntp.org\\n"
-	newserver=$newserver"server 2.north-america.pool.ntp.org\\n"
-	newserver=$newserver"server 3.north-america.pool.ntp.org\\n"
-	sed -i "s/\(server .*\)/$newserver#\1/g" /etc/ntp.conf
+	if [[ `cat /etc/ntp.conf | grep -c "^server ntp.ubuntu.com$"` != 0 ]]; then
+		newserver=""
+		newserver=$newserver"#server ntp.ubuntu.com\\n"
+		newserver=$newserver"server 0.north-america.pool.ntp.org\\n"
+		newserver=$newserver"server 1.north-america.pool.ntp.org\\n"
+		newserver=$newserver"server 2.north-america.pool.ntp.org\\n"
+		newserver=$newserver"server 3.north-america.pool.ntp.org\\n"
+		sed -i "s/^server .*$/$newserver/g" /etc/ntp.conf
+	fi
 fi
 echo ""
 
