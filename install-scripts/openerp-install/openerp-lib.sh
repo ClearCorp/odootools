@@ -50,6 +50,17 @@ function openerp_get_dist {
 		install_path_web=$base_path/lib/$python_rel/dist-packages
 		addons_path=$install_path/addons/
 		sources_path=$base_path/src/openerp
+	elif [[ $dist == "natty" ]]; then
+		# Ubuntu 11.04, python 2.6
+		posgresql_rel=8.4
+		posgresql_init=8.4
+		python_rel=python2.6
+		ubuntu_rel=11.04
+		base_path=/usr/local
+		install_path=$base_path/lib/$python_rel/dist-packages
+		install_path_web=$base_path/lib/$python_rel/dist-packages
+		addons_path=$install_path/addons/
+		sources_path=$base_path/src/openerp
 	else
 		# Only Lucid supported for now
 		log_echo "ERROR: This program must be executed on Ubuntu Lucid 10.04 or 10.10 (Desktop or Server)"
