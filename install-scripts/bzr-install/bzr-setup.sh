@@ -78,11 +78,18 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 			fi
 			echo ""
 		done
+
+		mkdir -p /etc/libbash-ccorp
 		if [[ $REPLY =~ ^[Ss]$ ]]; then
-			bzr checkout --lightweight http://server01.rs.clearcorp.co.cr/bzr/libbash-ccorp/stable /usr/local/share/libbash-ccorp
+			branch=stable
 		else
-			bzr checkout --lightweight http://server01.rs.clearcorp.co.cr/bzr/libbash-ccorp/trunk /usr/local/share/libbash-ccorp
+			branch=trunk
 		fi
+		bzr checkout --lightweight http://code.clearcorp.co.cr/bzr/libbash-ccorp/tags/${branch} /usr/local/share/libbash-ccorp
+		cat > /etc/libbash-ccorp/settings.cfg <<EOF
+repo="http://code.clearcorp.co.cr/bzr/libbash-ccorp/tags"
+branch=$branch
+EOF
 	fi
 	cd $dir
 	. bzr-update.sh

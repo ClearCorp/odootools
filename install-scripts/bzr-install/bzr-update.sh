@@ -26,7 +26,20 @@ fi
 #~ Libraries import
 . $LIBBASH_CCORP_DIR/main-lib/checkRoot.sh
 
+# Settings import
+if [[ ! -f /etc/libbash-ccorp/settings.cfg ]]; then
+	mkdir -p /etc/libbash-ccorp
+	cat > /etc/libbash-ccorp/settings.cfg <<EOF
+repo="http://code.clearcorp.co.cr/bzr/libbash-ccorp/tags"
+branch=stable
+EOF
+fi
+. /etc/libbash-ccorp/settings.cfg
+
 function bzrUpdate {
+	# Make sure parent branch is updated
+	echo -n "${repo}/${branch}" > $LIBBASH_CCORP_DIR/.bzr/branch/location
+	
 	bzr update $LIBBASH_CCORP_DIR
 
 	# Check user is root
@@ -65,11 +78,6 @@ function bzrUpdate {
 		rm /usr/local/sbin/ccorp-ubuntu-server-install
 	fi
 	ln -s $LIBBASH_CCORP_DIR/install-scripts/ubuntu-server-install/ubuntu-server-install.sh /usr/local/sbin/ccorp-ubuntu-server-install
-
-	if [ -h /usr/local/sbin/ccorp-bzr-make ]; then
-		rm /usr/local/sbin/ccorp-bzr-make
-	fi
-	ln -s $LIBBASH_CCORP_DIR/install-scripts/bzr-install/bzr-make.sh /usr/local/sbin/ccorp-bzr-make
 
 	if [ -h /usr/local/sbin/ccorp-bzr-update ]; then
 		rm /usr/local/sbin/ccorp-bzr-update

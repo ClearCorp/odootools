@@ -5,9 +5,10 @@
 #				Its function is to prepare a tar archive with the latest
 #				version of bzr-setup and all needed files in it.
 
-bzr update $LIBBASH_CCORP_DIR
+ccorp-bzr-update
+ccorp-bzr-update
 
-cd /var/www
+cd /srv/bzr
 rm bzr-install.tgz
 
 mkdir -p bzr-install/main-lib
