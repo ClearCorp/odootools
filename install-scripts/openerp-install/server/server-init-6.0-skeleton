@@ -33,10 +33,16 @@ CONFIGFILE=/etc/openerp/6.0/server/${SERVERNAME}.conf
 DAEMON_OPTS="--config=$CONFIGFILE"
 
 # Exit if the package is not installed
-[ -x "$DAEMON" ] || exit 0
+if [ ! -x "$DAEMON" ] ; then
+    echo "Daemon file: not execute permitions or file not found"
+    exit 0
+fi
 
 # Exit if the config file doesn't exist
-[ -f "$CONFIGFILE" ] || exit 0
+if [ ! -f "$CONFIGFILE" ] ; then
+    echo "Config file: file not found"
+    exit 0
+fi
 
 # Read configuration variable file if it is present
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME
@@ -58,40 +64,68 @@ if [ ! -d $PIDDIR/$SERVERNAME ]; then
 fi
 
 check_process() {
-	if [[ `ps -A | grep -c $PROCNAME` == 0 ]]; then
-		return 0
-	else
-		i=10
-		while [[ $i > 0 ]]; do
-			if [[ -e $PIDFILE ]]; then
-				return 0
-			else
-				i=$i-1
-			fi
-		done
-	fi
-	return 1
+    PID=0
+    
+    if [[ -e $PIDFILE ]] ; then
+        PID=`cat $PIDFILE`
+    else
+        return 1
+    fi
+    
+    if ps -p $PID > /dev/null ; then 
+        return 0
+    else
+        return 1
+    fi
 }
 
 do_start() {
-	mkdir -p /var/run/openerp/${SERVERNAME}
-	chown -R openerp:openerp /var/run/openerp/${SERVERNAME}
-	chmod g+w /var/run/openerp/${SERVERNAME}
+	mkdir -p ${PIDDIR}/${SERVERNAME}
+	chown -R openerp:openerp ${PIDDIR}/${SERVERNAME}
+	chmod g+w ${PIDDIR}/${SERVERNAME}
 	
+    mkdir -p ${LOGDIR}/${SERVERNAME}
+    chown -R openerp:openerp ${LOGDIR}/${SERVERNAME}
+    chmod g+w ${LOGDIR}/${SERVERNAME}
+    
 	sudo -u $USER start-stop-daemon --start --quiet  --background \
 		--pidfile $PIDFILE --group openerp --name $PROCNAME \
 		--startas $DAEMON -- $DAEMON_OPTS
 
-	check_process
+	i=10
+    while [[ $i > 0 ]]; do
+        if check_process ; then
+            return 0
+        else
+            sleep 1
+            let i=i-1
+        fi
+    done
 	return $?
 }
 
 do_stop() {
 	start-stop-daemon --stop --quiet --oknodo \
-	--retry TERM/5/KILL/3 \
-	--pidfile $PIDFILE --name $PROCNAME
+	--retry TERM/5/KILL/3 --pidfile $PIDFILE
 
 	return $?
+}
+
+do_restart() {
+    do_stop
+    case "$?" in
+        0|1)
+            do_start
+            case "$?" in
+                    0) return 0 ;;
+                    *) return 2 ;; # Failed to start
+            esac
+            ;;
+        *)
+            # Failed to stop
+            return 2
+            ;;
+        esac
 }
 
 case "$1" in
@@ -112,35 +146,28 @@ case "$1" in
 	esac
 	;;
   status)
-       status_of_proc "$DAEMON" "$NAME" && exit 0 || exit $?
-       ;;
+    if check_process ; then
+        echo "$DESC ($NAME) is runing."
+    else
+        echo "$DESC ($NAME) is not runing."
+    fi
+    ;;
   restart|force-reload)
 	#
 	# If the "reload" option is implemented then remove the
 	# 'force-reload' alias
 	#
 	log_daemon_msg "Restarting $DESC" "$NAME"
-	do_stop
-	case "$?" in
-	  0|1)
-		do_start
-		case "$?" in
-			0) log_end_msg 0 ;;
-			1) log_end_msg 1 ;; # Old process is still running
-			*) log_end_msg 1 ;; # Failed to start
-		esac
+        do_restart
+        case "$?" in
+            0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+            2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+        esac
 		;;
-	  *)
-	  	# Failed to stop
-		log_end_msg 1
-		;;
-	esac
-	;;
   *)
-	#echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload}" >&2
-	echo "Usage: $SCRIPTNAME {start|stop|status|restart|force-reload}" >&2
-	exit 3
-	;;
+    echo "Usage: $SCRIPTNAME {start|stop|status|restart|force-reload}" >&2
+    exit 3
+    ;;
 esac
 
 :
