@@ -19,6 +19,9 @@ checkRoot
 echo "Bzr and libbash-ccorp installation script"
 echo ""
 
+dist=""
+getDist dist
+
 # Instals bzr
 REPLY='none'
 while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
@@ -32,9 +35,6 @@ done
 if [[ $REPLY =~ ^[Yy]$ ]]; then
 	echo "Installing bzr..."
 	echo ""
-	dist=""
-	getDist dist
-	setSources_bazaar $dist
 	apt-get -y update
 	apt-get -y install bzr
 fi
