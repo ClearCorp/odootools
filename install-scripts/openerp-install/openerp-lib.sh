@@ -347,39 +347,86 @@ function install_openerp_addons {
 	# Install OpenERP addons
 	log_echo "Installing OpenERP addons..."
 	mkdir -p $addons_path >> $INSTALL_LOG_FILE
-	cd $sources_path >> $INSTALL_LOG_FILE
-	cp -a openobject-addons/* $addons_path >> $INSTALL_LOG_FILE
+	cd $sources_path/openobject-addons >> $INSTALL_LOG_FILE
+	for x in $(ls -d *); do
+		if [[ -d $addons_path/$x ]]; then
+			log_echo "openobject-addons: module $x already present, removing"
+			rm -r $addons_path/$x >> $INSTALL_LOG_FILE
+		else
+			cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
+		fi
+	done
 }
 
 function install_ccorp_addons {
 	# Install OpenERP ccorp-addons
 	log_echo "Installing OpenERP ccorp-addons..."
-	cp -a ccorp-addons/* $addons_path >> $INSTALL_LOG_FILE
+	cd $sources_path/ccorp-addons >> $INSTALL_LOG_FILE
+	for x in $(ls -d *); do
+		if [[ -d $addons_path/$x ]]; then
+			log_echo "ccorp-addons: module $x already present, removing"
+			rm -r $addons_path/$x >> $INSTALL_LOG_FILE
+		else
+			cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
+		fi
+	done
 }
 
 function install_costa_rica_addons {
 	# Install OpenERP costa-rica
 	log_echo "Installing OpenERP costa-rica..."
-	cp -a costa-rica/* $addons_path >> $INSTALL_LOG_FILE
+	cd $sources_path/costa-rica >> $INSTALL_LOG_FILE
+	for x in $(ls -d *); do
+		if [[ -d $addons_path/$x ]]; then
+			log_echo "costa-rica: module $x already present, removing"
+			rm -r $addons_path/$x >> $INSTALL_LOG_FILE
+		else
+			cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
+		fi
+	done
 }
 
 function install_extra_addons {
 	# Install OpenERP extra addons
 	log_echo "Installing OpenERP extra addons..."
-	cp -a openobject-addons-extra/* $addons_path >> $INSTALL_LOG_FILE
+	cd $sources_path/openobject-addons-extra >> $INSTALL_LOG_FILE
+	for x in $(ls -d *); do
+		if [[ -d $addons_path/$x ]]; then
+			log_echo "openobject-addons-extra: module $x already present, removing"
+			rm -r $addons_path/$x >> $INSTALL_LOG_FILE
+		else
+			cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
+		fi
+	done
 }
 
 function install_magentoerpconnect {
 	# Install OpenERP magentoerpconnect
 	log_echo "Installing OpenERP magentoerpconnect..."
-	cp -a magentoerpconnect $addons_path >> $INSTALL_LOG_FILE
+	cd $sources_path/magentoerpconnect >> $INSTALL_LOG_FILE
+	for x in $(ls -d *); do
+		if [[ -d $addons_path/$x ]]; then
+			log_echo "magentoerpconnect: module $x already present, removing"
+			rm -r $addons_path/$x >> $INSTALL_LOG_FILE
+		else
+			cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
+		fi
+	done
 }
 
 function install_nan_tic_addons {
 	# Install nan-tic modules
 	log_echo "Installing nan-tic modules..."
 	rm openobject-client-kde/server-modules/*.sh >> $INSTALL_LOG_FILE
-	cp -a openobject-client-kde/server-modules/* $addons_path >> $INSTALL_LOG_FILE
+	cd $sources_path/openobject-client-kde/server-modules >> $INSTALL_LOG_FILE
+	for x in $(ls -d *); do
+		if [[ -d $addons_path/$x ]]; then
+			log_echo "openobject-client-kde: module $x already present, removing"
+			rm -r $addons_path/$x >> $INSTALL_LOG_FILE
+		else
+			cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
+		fi
+	done
 }
 
 function install_change_perms {
@@ -397,20 +444,20 @@ function install_change_perms {
 function install_openerp {
 	if [[ $branch == "5.0" ]]; then
 		install_openerp_server
-		if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then install_openerp_addons; fi
-		if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then install_ccorp_addons; fi
-		if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then install_costa_rica_addons; fi
-		if [[ $install_extra_addons =~ ^[Yy]$ ]]; then install_extra_addons; fi
-		if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then install_magentoerpconnect; fi
 		if [[ $install_nantic =~ ^[Yy]$ ]]; then install_nan_tic_addons; fi
+		if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then install_magentoerpconnect; fi
+		if [[ $install_extra_addons =~ ^[Yy]$ ]]; then install_extra_addons; fi
+		if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then install_costa_rica_addons; fi
+		if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then install_ccorp_addons; fi
+		if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then install_openerp_addons; fi
 	elif [[ $branch == "6.0" ]]; then
 		install_openerp_server
-		if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then install_openerp_addons; fi
-		if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then install_ccorp_addons; fi
-		if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then install_costa_rica_addons; fi
-		if [[ $install_extra_addons =~ ^[Yy]$ ]]; then install_extra_addons; fi
-		if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then install_magentoerpconnect; fi
 		if [[ $install_nantic =~ ^[Yy]$ ]]; then install_nan_tic_addons; fi
+		if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then install_magentoerpconnect; fi
+		if [[ $install_extra_addons =~ ^[Yy]$ ]]; then install_extra_addons; fi
+		if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then install_costa_rica_addons; fi
+		if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then install_ccorp_addons; fi
+		if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then install_openerp_addons; fi
 	fi
 	install_change_perms
 }
