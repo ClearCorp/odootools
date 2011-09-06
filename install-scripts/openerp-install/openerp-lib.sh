@@ -352,9 +352,8 @@ function install_openerp_addons {
 		if [[ -d $addons_path/$x ]]; then
 			log_echo "openobject-addons: module $x already present, removing"
 			rm -r $addons_path/$x >> $INSTALL_LOG_FILE
-		else
-			cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
 		fi
+		cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
 	done
 }
 
@@ -366,9 +365,8 @@ function install_ccorp_addons {
 		if [[ -d $addons_path/$x ]]; then
 			log_echo "ccorp-addons: module $x already present, removing"
 			rm -r $addons_path/$x >> $INSTALL_LOG_FILE
-		else
-			cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
 		fi
+		cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
 	done
 }
 
@@ -380,9 +378,8 @@ function install_costa_rica_addons {
 		if [[ -d $addons_path/$x ]]; then
 			log_echo "costa-rica: module $x already present, removing"
 			rm -r $addons_path/$x >> $INSTALL_LOG_FILE
-		else
-			cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
 		fi
+		cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
 	done
 }
 
@@ -394,9 +391,8 @@ function install_extra_addons {
 		if [[ -d $addons_path/$x ]]; then
 			log_echo "openobject-addons-extra: module $x already present, removing"
 			rm -r $addons_path/$x >> $INSTALL_LOG_FILE
-		else
-			cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
 		fi
+		cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
 	done
 }
 
@@ -408,9 +404,8 @@ function install_magentoerpconnect {
 		if [[ -d $addons_path/$x ]]; then
 			log_echo "magentoerpconnect: module $x already present, removing"
 			rm -r $addons_path/$x >> $INSTALL_LOG_FILE
-		else
-			cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
 		fi
+		cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
 	done
 }
 
@@ -423,9 +418,8 @@ function install_nan_tic_addons {
 		if [[ -d $addons_path/$x ]]; then
 			log_echo "openobject-client-kde: module $x already present, removing"
 			rm -r $addons_path/$x >> $INSTALL_LOG_FILE
-		else
-			cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
 		fi
+		cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
 	done
 }
 
@@ -481,6 +475,10 @@ function install_openerp_web_client {
 	# Install OpenERP Web client
 	log_echo "Installing OpenERP Web client..."
 	cp -a openobject-client-web $install_path_web/openerp-web-$branch-skeleton >> $INSTALL_LOG_FILE
+
+	# Set web addons permissions
+	log_echo "Set web addons permissions"
+	chmod -R 775 $install_path_web/addons >> $INSTALL_LOG_FILE
 
 	#~ Copy bin script to /usr/local/bin
 	log_echo "Copy bin script /usr/local/bin"
