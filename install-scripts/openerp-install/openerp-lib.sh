@@ -186,7 +186,7 @@ function download_openerp_server {
 	if [ -e openobject-server ]; then
 		bzr update openobject-server >> $INSTALL_LOG_FILE
 	else
-		bzr checkout --lightweight http://code.clearcorp.co.cr/bzr/openobject-server/ccorp/$branch openobject-server >> $INSTALL_LOG_FILE
+		bzr checkout --lightweight http://code.clearcorp.co.cr/bzr/openerp/openobject-server/ccorp/$branch openobject-server >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }
@@ -199,7 +199,7 @@ function download_openerp_addons {
 	if [ -e openobject-addons ]; then
 		bzr update openobject-addons >> $INSTALL_LOG_FILE
 	else
-		bzr checkout --lightweight http://code.clearcorp.co.cr/bzr/openobject-addons/ccorp/$branch openobject-addons >> $INSTALL_LOG_FILE
+		bzr checkout --lightweight http://code.clearcorp.co.cr/bzr/openerp/openobject-addons/ccorp/$branch openobject-addons >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }
@@ -238,7 +238,7 @@ function download_extra_addons {
 	if [ -e openobject-addons-extra ]; then
 		bzr update openobject-addons-extra >> $INSTALL_LOG_FILE
 	else
-		bzr checkout --lightweight http://code.clearcorp.co.cr/bzr/openobject-addons/ccorp/extra-$branch openobject-addons-extra >> $INSTALL_LOG_FILE
+		bzr checkout --lightweight http://code.clearcorp.co.cr/bzr/openerp/openobject-addons/ccorp/extra-$branch openobject-addons-extra >> $INSTALL_LOG_FILE
 	fi
 	log_echo "Removing use_control from extra addons..."
 	rm -r extra-addons/use_control >> $INSTALL_LOG_FILE
@@ -475,7 +475,7 @@ function download_openerp_web {
 	if [ -e openobject-client-web ]; then
 		bzr update openobject-client-web >> $INSTALL_LOG_FILE
 	else
-		bzr checkout --lightweight http://code.clearcorp.co.cr/bzr/openobject-client-web/ccorp/$branch openobject-client-web >> $INSTALL_LOG_FILE
+		bzr checkout --lightweight http://code.clearcorp.co.cr/bzr/openerp/openobject-client-web/ccorp/$branch openobject-client-web >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }

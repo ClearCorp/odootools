@@ -85,9 +85,9 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 		else
 			branch=trunk
 		fi
-		bzr checkout --lightweight http://code.clearcorp.co.cr/bzr/libbash-ccorp/tags/${branch} /usr/local/share/libbash-ccorp
+		bzr checkout --lightweight http://code.clearcorp.co.cr/bzr/bash/libbash-ccorp/tags/${branch} /usr/local/share/libbash-ccorp
 		cat > /etc/libbash-ccorp/settings.cfg <<EOF
-repo="http://code.clearcorp.co.cr/bzr/libbash-ccorp/tags"
+repo="http://code.clearcorp.co.cr/bzr/bash/libbash-ccorp/tags"
 branch=$branch
 EOF
 	fi

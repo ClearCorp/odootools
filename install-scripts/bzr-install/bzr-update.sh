@@ -30,7 +30,7 @@ fi
 if [[ ! -f /etc/libbash-ccorp/settings.cfg ]]; then
 	mkdir -p /etc/libbash-ccorp
 	cat > /etc/libbash-ccorp/settings.cfg <<EOF
-repo="http://code.clearcorp.co.cr/bzr/libbash-ccorp/tags"
+repo="http://code.clearcorp.co.cr/bzr/bash/libbash-ccorp/tags"
 branch=stable
 EOF
 fi
