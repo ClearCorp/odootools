@@ -13,7 +13,7 @@
 ### END INIT INFO
 
 SERVERNAME=[NAME]
-BASE_PATH=[PATH]
+BASE_PATH=/usr/local
 BRANCH=[BRANCH]
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin

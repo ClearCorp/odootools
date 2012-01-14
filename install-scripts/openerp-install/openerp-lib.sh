@@ -282,7 +282,6 @@ function download_openerp {
 function install_openerp_server {
 	# Install OpenERP server
 	log_echo "Installing OpenERP Server..."
-	cd /srv/openerp/$branch >> $INSTALL_LOG_FILE
 
 	#~ Copy bin script skeleton to /etc
 	log_echo "Copy bin script skeleton to /etc"
@@ -353,24 +352,20 @@ function download_openerp_web {
 }
 
 function install_openerp_web_client {
-	cd $sources_path >> $INSTALL_LOG_FILE
-
 	# Install OpenERP Web client
 	log_echo "Installing OpenERP Web client..."
-	cp -a openobject-client-web $install_path_web/openerp-web-$branch-skeleton >> $INSTALL_LOG_FILE
 
-	# Set web addons permissions
-	log_echo "Set web addons permissions"
-	chmod -R 775 $install_path_web/addons >> $INSTALL_LOG_FILE
-
-	#~ Copy bin script to /usr/local/bin
-	log_echo "Copy bin script /usr/local/bin"
+	#~ Copy bin script
+	log_echo "Copy bin script"
 	mkdir -p /etc/openerp/$branch/web-client >> $INSTALL_LOG_FILE
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client-bin-skeleton /etc/openerp/$branch/web-client/bin-skeleton >> $INSTALL_LOG_FILE
+	sed -i "s#\\[BRANCH\\]#$branch#g" /etc/openerp/$branch/web-client/bin-skeleton >> $INSTALL_LOG_FILE
 
 	# OpenERP Web Client init and config skeletons
+	log_echo "Copy init script"
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client-init-skeleton /etc/openerp/$branch/web-client/init-skeleton >> $INSTALL_LOG_FILE
-	sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/$branch/web-client/init-skeleton >> $INSTALL_LOG_FILE
+	sed -i "s#\\[BRANCH\\]#$branch#g" /etc/openerp/$branch/web-client/init-skeleton >> $INSTALL_LOG_FILE
+	log_echo "Copy config"
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client.conf-$branch-skeleton /etc/openerp/$branch/web-client/ >> $INSTALL_LOG_FILE
 
 	#~ Sets server type
@@ -380,6 +375,9 @@ function install_openerp_web_client {
 	else
 		sed -i "s/\[TYPE\]/production/g" /etc/openerp/$branch/web-client/web-client.conf-$branch-skeleton >> $INSTALL_LOG_FILE
 	fi
+	
+	#Change perms
+	install_change_perms
 }
 
 function install_apache {
@@ -398,25 +396,16 @@ function install_apache {
 
 		log_echo "Enabling Apache Modules..."
 		# Apache Modules:
-		a2enmod ssl >> $INSTALL_LOG_FILE
-		a2enmod rewrite >> $INSTALL_LOG_FILE
-		a2enmod suexec >> $INSTALL_LOG_FILE
-		a2enmod include >> $INSTALL_LOG_FILE
-		a2enmod proxy >> $INSTALL_LOG_FILE
-		a2enmod proxy_http >> $INSTALL_LOG_FILE
-		a2enmod proxy_connect >> $INSTALL_LOG_FILE
-		a2enmod proxy_ftp >> $INSTALL_LOG_FILE
-		a2enmod headers >> $INSTALL_LOG_FILE
-		a2ensite default >> $INSTALL_LOG_FILE
-		a2ensite default-ssl >> $INSTALL_LOG_FILE
+		a2enmod ssl rewrite suexec include proxy proxy_http proxy_connect proxy_ftp headers >> $INSTALL_LOG_FILE
+		a2ensite default default-ssl >> $INSTALL_LOG_FILE
 	fi
 
 	log_echo "Configuring site config files..."
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-erp /etc/apache2/sites-available/erp >> $INSTALL_LOG_FILE
 	mkdir -p /etc/openerp/apache2/rewrites >> $INSTALL_LOG_FILE
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-ssl-$branch-skeleton /etc/openerp/apache2/ssl-$branch-skeleton >> $INSTALL_LOG_FILE
-	sed -i "s/ServerAdmin .*$/ServerAdmin support@clearnet.co.cr\n\n\tInclude \/etc\/apache2\/sites-available\/erp/g" /etc/apache2/sites-available/default >> $INSTALL_LOG_FILE
-	sed -i "s/ServerAdmin .*$/ServerAdmin support@clearnet.co.cr\n\n\tInclude \/etc\/openerp\/apache2\/rewrites/g" /etc/apache2/sites-available/default-ssl >> $INSTALL_LOG_FILE
+	sed -i "s/ServerAdmin .*$/ServerAdmin support@clearcorp.co.cr\n\n\tInclude \/etc\/apache2\/sites-available\/erp/g" /etc/apache2/sites-available/default >> $INSTALL_LOG_FILE
+	sed -i "s/ServerAdmin .*$/ServerAdmin support@clearcorp.co.cr\n\n\tInclude \/etc\/openerp\/apache2\/rewrites/g" /etc/apache2/sites-available/default-ssl >> $INSTALL_LOG_FILE
 
 
 	log_echo "Restarting Apache..."

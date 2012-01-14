@@ -12,10 +12,10 @@ pidfile = /var/run/openerp/[NAME]/server.pid
 root_path = 
 
 # (char) Specify the path of the OpenERP server addons (default None).
-addons_path = 
+addons_path = /srv/openerp/[BRANCH]/instances/[NAME]/addons
 
 # (char) Specify the path of the OpenERP server filestore (default None).
-filestore=/srv/openerp/[BRANCH]/instances/[NAME]/filestore
+filestore = /srv/openerp/[BRANCH]/instances/[NAME]/filestore
 
 # (bool) Stop the server after it initializes (default False).
 stop_after_init = False

@@ -162,7 +162,6 @@ log_echo ""
 log_echo "Making instance..."
 cd /srv/openerp/$branch >> $INSTALL_LOG_FILE
 mkdir -p instances/$name/addons >> $INSTALL_LOG_FILE
-mkdir -p instances/$name/web >> $INSTALL_LOG_FILE
 mkdir -p instances/$name/filestore >> $INSTALL_LOG_FILE
 ln -s /srv/openerp/$branch/src/openobject-server instances/$name/server >> $INSTALL_LOG_FILE
 ln -s /srv/openerp/$branch/src/openobject-client-web instances/$name/web >> $INSTALL_LOG_FILE
@@ -210,7 +209,10 @@ log_echo "Creating openerp-server log files..."
 mkdir -p /var/log/openerp/$name >> $INSTALL_LOG_FILE
 touch /var/log/openerp/$name/server.log >> $INSTALL_LOG_FILE
 
-log_echo "Creating openerp-web init script..."
+log_echo "Creating openerp-web bin script..."
+
+
+log_echo "Creating openerp-web bin script..."
 cp -a /etc/openerp/$branch/web-client/bin-skeleton /usr/local/bin/openerp-web-$name >> $INSTALL_LOG_FILE
 sed -i "s#\\[NAME\\]#$name#g" /usr/local/bin/openerp-web-$name >> $INSTALL_LOG_FILE
 
@@ -218,7 +220,6 @@ log_echo "Creating openerp-web init script..."
 cp -a /etc/openerp/$branch/web-client/init-skeleton /etc/init.d/openerp-web-$name >> $INSTALL_LOG_FILE
 sed -i "s#\\[NAME\\]#$name#g" /etc/init.d/openerp-web-$name >> $INSTALL_LOG_FILE
 sed -i "s#\\[USER\\]#openerp_$name#g" /etc/init.d/openerp-web-$name >> $INSTALL_LOG_FILE
-sed -i "s#\\[BRANCH\\]#$branch#g" /etc/init.d/openerp-web-$name >> $INSTALL_LOG_FILE
 #~ Start web client on boot
 if [[ $start_boot =~ ^[Yy]$ ]]; then
 	log_echo "Creating web-client rc rules..."
@@ -240,6 +241,8 @@ fi
 log_echo "Creating openerp-web log files..."
 touch /var/log/openerp/$name/web-client-access.log
 touch /var/log/openerp/$name/web-client-error.log
+chown -R openerp_$name:openerp /var/log/openerp/$name
+chmod 664 /var/log/openerp/$name/*.log
 
 log_echo "Creating apache rewrite file..."
 cp -a /etc/openerp/apache2/ssl-$branch-skeleton /etc/openerp/apache2/rewrites/$name
@@ -261,9 +264,9 @@ if [[ $start_now =~ ^[Yy]$ ]]; then
 fi
 
 #~ Make developer menus
-if [[ $server_type == "station" ]]; then
-	sudo -E -u $openerp_user ccorp-openerp-mkmenus $branch $name
-fi
+#if [[ $server_type == "station" ]]; then
+#	sudo -E -u $openerp_user ccorp-openerp-mkmenus $branch $name
+#fi
 
 #~ Add server to hosts file if station
 
@@ -271,7 +274,6 @@ if [[ $server_type == "station" ]]; then
 	echo "127.0.1.1	$name.localhost" >> /etc/hosts
 fi
 
-install_path="$install_path_web/openerp-server-$name"
 install_change_perms
 
 exit 0
