@@ -197,8 +197,7 @@ log_echo "Creating openerp-server ssl files..."
 cp -a /etc/openerp/ssl/server.cnf-skeleton /etc/openerp/ssl/servers/$name.cnf >> $INSTALL_LOG_FILE
 sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/ssl/servers/$name.cnf >> $INSTALL_LOG_FILE
 cd /etc/openerp/ssl/servers
-openssl req -newkey rsa:1024 -keyout tempkey.pem
- -keyform PEM -out tempreq.pem -outform PEM -config $name.cnf -passout pass:$openerp_admin_passwd
+openssl req -newkey rsa:1024 -keyout tempkey.pem -keyform PEM -out tempreq.pem -outform PEM -config $name.cnf -passout pass:$openerp_admin_passwd
 openssl rsa -passin pass:$openerp_admin_passwd < tempkey.pem > server_key.pem
 openssl ca -batch -in tempreq.pem -out server_crt.pem -config ../ca.cnf -passin pass:$openerp_admin_passwd
 rm -f tempkey.pem && rm -f tempreq.pem
@@ -208,9 +207,6 @@ mv server_key.pem ${name}_key.pem
 log_echo "Creating openerp-server log files..."
 mkdir -p /var/log/openerp/$name >> $INSTALL_LOG_FILE
 touch /var/log/openerp/$name/server.log >> $INSTALL_LOG_FILE
-
-log_echo "Creating openerp-web bin script..."
-
 
 log_echo "Creating openerp-web bin script..."
 cp -a /etc/openerp/$branch/web-client/bin-skeleton /usr/local/bin/openerp-web-$name >> $INSTALL_LOG_FILE
