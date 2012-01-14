@@ -65,7 +65,7 @@ commonName              = OpenERP Root Certificate Authority
 stateOrProvinceName     = SJ
 countryName             = CR
 emailAddress            = openerp@clearcorp.co.cr
-organizationName        = ClearCorp S.A.
+organizationName        = CLEARCORP S.A.
 organizationalUnitName  = OpenERP
 #       
 [ root_ca_extensions ]

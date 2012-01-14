@@ -28,53 +28,34 @@ function log_echo {
 }
 
 function openerp_get_dist {
+	
 	# Sets vars corresponding to the distro
 	if [[ $dist == "lucid" ]]; then
 		# Ubuntu 10.04, python 2.6
 		posgresql_rel=8.4
 		python_rel=python2.6
 		ubuntu_rel=10.04
-		base_path=/usr/local
-		install_path=$base_path/lib/$python_rel/dist-packages
-		install_path_web=$base_path/lib/$python_rel/dist-packages
-		addons_path=$install_path/addons/
-		sources_path=$base_path/src/openerp
 	elif [[ $dist == "maverick" ]]; then
 		# Ubuntu 10.10, python 2.6
 		posgresql_rel=8.4
 		posgresql_init=8.4
 		python_rel=python2.6
 		ubuntu_rel=10.10
-		base_path=/usr/local
-		install_path=$base_path/lib/$python_rel/dist-packages
-		install_path_web=$base_path/lib/$python_rel/dist-packages
-		addons_path=$install_path/addons/
-		sources_path=$base_path/src/openerp
 	elif [[ $dist == "natty" ]]; then
 		# Ubuntu 11.04, python 2.6
 		posgresql_rel=8.4
 		posgresql_init=8.4
 		python_rel=python2.6
 		ubuntu_rel=11.04
-		base_path=/usr/local
-		install_path=$base_path/lib/$python_rel/dist-packages
-		install_path_web=$base_path/lib/$python_rel/dist-packages
-		addons_path=$install_path/addons/
-		sources_path=$base_path/src/openerp
 	elif [[ $dist == "oneiric" ]]; then
 		# Ubuntu 11.10, python 2.7, postgres 9.1
 		posgresql_rel=9.1
 		posgresql_init=9.1
 		python_rel=python2.7
 		ubuntu_rel=11.10
-		base_path=/usr/local
-		install_path=$base_path/lib/$python_rel/dist-packages
-		install_path_web=$base_path/lib/$python_rel/dist-packages
-		addons_path=$install_path/addons/
-		sources_path=$base_path/src/openerp
 	else
 		# Only Lucid supported for now
-		log_echo "ERROR: This program must be executed on Ubuntu Lucid 10.04 or 10.10 (Desktop or Server)"
+		log_echo "ERROR: This program must be executed on Ubuntu 10.04 - 11.10 (Desktop or Server)"
 		exit 1
 	fi
 }
@@ -127,7 +108,7 @@ function install_python_lib {
 	# Excel spreadsheets generation
 	apt-get -qqy install python-xlwt >> $INSTALL_LOG_FILE
 	# For nan-tic modules
-	apt-get -qqy install postgresql-plpython-8.4 python-qt4 python-dbus python-qt4-dbus pyro >> $INSTALL_LOG_FILE
+	apt-get -qqy install postgresql-plpython python-qt4 python-dbus python-qt4-dbus pyro >> $INSTALL_LOG_FILE
 
 	# Install the required python libraries for openerp-web.
 	echo "Installing the required python libraries for openerp-web..."
@@ -181,12 +162,13 @@ function change_postgres_passwd {
 function download_openerp_server {
 	# Download openerp-server latest stable/trunk release.
 	log_echo "Downloading openerp-server latest $branch release..."
-	mkdir -p $sources_path >> $INSTALL_LOG_FILE
-	cd $sources_path >> $INSTALL_LOG_FILE
+	mkdir -p /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
+	cd /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
 	if [ -e openobject-server ]; then
-		bzr update openobject-server >> $INSTALL_LOG_FILE
+		cd openobject-server >> $INSTALL_LOG_FILE
+		bzr pull >> $INSTALL_LOG_FILE
 	else
-		bzr checkout --lightweight http://code.clearcorp.co.cr/bzr/openerp/openobject-server/ccorp/$branch openobject-server >> $INSTALL_LOG_FILE
+		bzr branch lp:~clearcorp/openobject-server/ccorp-$branch openobject-server >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }
@@ -194,12 +176,13 @@ function download_openerp_server {
 function download_openerp_addons {
 	# Download openerp addons latest stable/trunk branch.
 	log_echo "Downloading openerp addons latest $branch branch..."
-	mkdir -p $sources_path >> $INSTALL_LOG_FILE
-	cd $sources_path >> $INSTALL_LOG_FILE
+	mkdir -p /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
+	cd /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
 	if [ -e openobject-addons ]; then
-		bzr update openobject-addons >> $INSTALL_LOG_FILE
+		cd openobject-addons >> $INSTALL_LOG_FILE
+		bzr pull >> $INSTALL_LOG_FILE
 	else
-		bzr checkout --lightweight http://code.clearcorp.co.cr/bzr/openerp/openobject-addons/ccorp/$branch openobject-addons >> $INSTALL_LOG_FILE
+		bzr branch lp:~clearcorp/openobject-addons/ccorp-$branch openobject-addons >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }
@@ -207,12 +190,13 @@ function download_openerp_addons {
 function download_ccorp_addons {
 	# Download openerp ccorp-addons latest stable/trunk branch.
 	log_echo "Downloading openerp ccorp-addons latest $branch branch..."
-	mkdir -p $sources_path >> $INSTALL_LOG_FILE
-	cd $sources_path >> $INSTALL_LOG_FILE
+	mkdir -p /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
+	cd /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
 	if [ -e ccorp-addons ]; then
-		bzr update ccorp-addons >> $INSTALL_LOG_FILE
+		cd ccorp-addons >> $INSTALL_LOG_FILE
+		bzr pull >> $INSTALL_LOG_FILE
 	else
-		bzr checkout --lightweight lp:openerp-ccorp-addons/$branch ccorp-addons >> $INSTALL_LOG_FILE
+		bzr branch lp:openerp-ccorp-addons/$branch ccorp-addons >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }
@@ -220,12 +204,13 @@ function download_ccorp_addons {
 function download_costa_rica_addons {
 	# Download openerp-costa-rica latest stable/trunk branch.
 	log_echo "Downloading openerp-costa-rica latest $branch branch..."
-	mkdir -p $sources_path >> $INSTALL_LOG_FILE
-	cd $sources_path >> $INSTALL_LOG_FILE
+	mkdir -p /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
+	cd /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
 	if [ -e costa-rica ]; then
-		bzr update costa-rica >> $INSTALL_LOG_FILE
+		cd costa-rica-addons >> $INSTALL_LOG_FILE
+		bzr pull >> $INSTALL_LOG_FILE
 	else
-		bzr checkout --lightweight lp:openerp-costa-rica/$branch costa-rica >> $INSTALL_LOG_FILE
+		bzr branch lp:openerp-costa-rica/$branch ccorp-addons >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }
@@ -233,27 +218,29 @@ function download_costa_rica_addons {
 function download_extra_addons {
 	# Download extra addons
 	log_echo "Downloading extra addons..."
-	mkdir -p $sources_path >> $INSTALL_LOG_FILE
-	cd $sources_path >> $INSTALL_LOG_FILE
+	mkdir -p /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
+	cd /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
 	if [ -e openobject-addons-extra ]; then
-		bzr update openobject-addons-extra >> $INSTALL_LOG_FILE
+		cd openobject-addons-extra >> $INSTALL_LOG_FILE
+		bzr pull >> $INSTALL_LOG_FILE
 	else
-		bzr checkout --lightweight http://code.clearcorp.co.cr/bzr/openerp/openobject-addons/ccorp/extra-$branch openobject-addons-extra >> $INSTALL_LOG_FILE
+		bzr branch lp:~clearcorp/openobject-addons/ccorp-extra-$branch openobject-addons-extra >> $INSTALL_LOG_FILE
 	fi
 	log_echo "Removing use_control from extra addons..."
-	rm -r extra-addons/use_control >> $INSTALL_LOG_FILE
+	rm -r /srv/openerp/$branch/src/openobject-addons-extra/use_control >> $INSTALL_LOG_FILE
 	log_echo ""
 }
 
 function download_magentoerpconnect {
 	# Download magentoerpconnect
 	log_echo "Downloading magentoerpconnect..."
-	mkdir -p $sources_path >> $INSTALL_LOG_FILE
-	cd $sources_path >> $INSTALL_LOG_FILE
+	mkdir -p /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
+	cd /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
 	if [ -e magentoerpconnect ]; then
-		bzr update magentoerpconnect >> $INSTALL_LOG_FILE
+		cd magentoerpconnect >> $INSTALL_LOG_FILE
+		bzr pull >> $INSTALL_LOG_FILE
 	else
-		bzr checkout --lightweight lp:magentoerpconnect magentoerpconnect >> $INSTALL_LOG_FILE
+		bzr branch lp:magentoerpconnect magentoerpconnect >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }
@@ -261,12 +248,13 @@ function download_magentoerpconnect {
 function download_nan_tic_addons {
 	# Download nan-tic modules
 	log_echo "Downloading nan-tic modules..."
-	mkdir -p $sources_path >> $INSTALL_LOG_FILE
-	cd $sources_path >> $INSTALL_LOG_FILE
+	mkdir -p /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
+	cd /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
 	if [ -e openobject-client-kde ]; then
-		bzr update openobject-client-kde >> $INSTALL_LOG_FILE
+		cd openobject-client-kde >> $INSTALL_LOG_FILE
+		bzr pull >> $INSTALL_LOG_FILE
 	else
-		bzr checkout --lightweight lp:~openobject-client-kde/openobject-client-kde/$branch openobject-client-kde >> $INSTALL_LOG_FILE
+		bzr branch lp:openobject-client-kde/5.0 openobject-client-kde >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }
@@ -294,38 +282,19 @@ function download_openerp {
 function install_openerp_server {
 	# Install OpenERP server
 	log_echo "Installing OpenERP Server..."
-	cd $sources_path/openobject-server >> $INSTALL_LOG_FILE
-	#~ Make skeleton installation
-	log_echo "Make skeleton installation"
-	mkdir -p $install_path >> $INSTALL_LOG_FILE
-	cp -a bin/* $install_path/ >> $INSTALL_LOG_FILE
-	# Patch openerp-server.py to change process names
-	log_echo "Patch openerp-server.py to change process names"
-	patch -p1 -i $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/openerp-server.py-$branch.patch $install_path/openerp-server.py >> $INSTALL_LOG_FILE
-	#~ Copy documentation
-	log_echo "Copy documentation"
-	mkdir -p $base_path/share/doc/openerp-server >> $INSTALL_LOG_FILE
-	cp -a doc/* $base_path/share/doc/openerp-server/ >> $INSTALL_LOG_FILE
-	#~ Install man pages
-	log_echo "Install man pages"
-	mkdir -p $base_path/share/man/man1 >> $INSTALL_LOG_FILE
-	mkdir -p $base_path/share/man/man5 >> $INSTALL_LOG_FILE
-	cp -a man/*.1 $base_path/share/man/man1/ >> $INSTALL_LOG_FILE
-	cp -a man/*.5 $base_path/share/man/man5/ >> $INSTALL_LOG_FILE
-	# Copy pixmaps
-	if [[ $branch == "6.0" ]]; then
-		cp -a pixmaps $install_path/ >> $INSTALL_LOG_FILE
-	fi
+	cd /srv/openerp/$branch >> $INSTALL_LOG_FILE
 
 	#~ Copy bin script skeleton to /etc
 	log_echo "Copy bin script skeleton to /etc"
 	mkdir -p /etc/openerp/$branch/server/ >> $INSTALL_LOG_FILE
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/server-bin-skeleton /etc/openerp/$branch/server/bin-skeleton >> $INSTALL_LOG_FILE
+	sed -i "s#\\[BRANCH\\]#$branch#g" /etc/openerp/$branch/server/bin-skeleton >> $INSTALL_LOG_FILE
 	# OpenERP Server init
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/server-init-$branch-skeleton /etc/openerp/$branch/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
-	sed -i "s#\\[PATH\\]#$base_path#g" /etc/openerp/$branch/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
+	sed -i "s#\\[PATH\\]#/usr/local#g" /etc/openerp/$branch/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
 	# OpenERP Server config skeletons
 	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/server.conf-$branch-skeleton /etc/openerp/$branch/server/ >> $INSTALL_LOG_FILE
+	sed -i "s#\\[BRANCH\\]#$branch#g" /etc/openerp/$branch/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
 	if [[ $server_type =~ ^production$ ]]; then
 		sed -i "s#\\[LOGLEVEL\\]#info#g" /etc/openerp/$branch/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
 		sed -i "s#\\[DEBUGMODE\\]#False#g" /etc/openerp/$branch/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
@@ -333,9 +302,7 @@ function install_openerp_server {
 		sed -i "s#\\[LOGLEVEL\\]#debug#g" /etc/openerp/$branch/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
 		sed -i "s#\\[DEBUGMODE\\]#True#g" /etc/openerp/$branch/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
 	fi
-
-	# Make filestore dir
-	mkdir -p $install_path/filestore >> $INSTALL_LOG_FILE
+	
 	#~ Make pid dir
 	mkdir -p /var/run/openerp >> $INSTALL_LOG_FILE
 
@@ -354,128 +321,33 @@ function install_openerp_server {
 
 }
 
-function install_openerp_addons {
-	# Install OpenERP addons
-	log_echo "Installing OpenERP addons..."
-	mkdir -p $addons_path >> $INSTALL_LOG_FILE
-	cd $sources_path/openobject-addons >> $INSTALL_LOG_FILE
-	for x in $(ls -d *); do
-		if [[ -d $addons_path/$x ]]; then
-			log_echo "openobject-addons: module $x already present, removing"
-			rm -r $addons_path/$x >> $INSTALL_LOG_FILE
-		fi
-		cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
-	done
-}
-
-function install_ccorp_addons {
-	# Install OpenERP ccorp-addons
-	log_echo "Installing OpenERP ccorp-addons..."
-	cd $sources_path/ccorp-addons >> $INSTALL_LOG_FILE
-	for x in $(ls -d *); do
-		if [[ -d $addons_path/$x ]]; then
-			log_echo "ccorp-addons: module $x already present, removing"
-			rm -r $addons_path/$x >> $INSTALL_LOG_FILE
-		fi
-		cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
-	done
-}
-
-function install_costa_rica_addons {
-	# Install OpenERP costa-rica
-	log_echo "Installing OpenERP costa-rica..."
-	cd $sources_path/costa-rica >> $INSTALL_LOG_FILE
-	for x in $(ls -d *); do
-		if [[ -d $addons_path/$x ]]; then
-			log_echo "costa-rica: module $x already present, removing"
-			rm -r $addons_path/$x >> $INSTALL_LOG_FILE
-		fi
-		cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
-	done
-}
-
-function install_extra_addons {
-	# Install OpenERP extra addons
-	log_echo "Installing OpenERP extra addons..."
-	cd $sources_path/openobject-addons-extra >> $INSTALL_LOG_FILE
-	for x in $(ls -d *); do
-		if [[ -d $addons_path/$x ]]; then
-			log_echo "openobject-addons-extra: module $x already present, removing"
-			rm -r $addons_path/$x >> $INSTALL_LOG_FILE
-		fi
-		cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
-	done
-}
-
-function install_magentoerpconnect {
-	# Install OpenERP magentoerpconnect
-	log_echo "Installing OpenERP magentoerpconnect..."
-	cd $sources_path/magentoerpconnect >> $INSTALL_LOG_FILE
-	for x in $(ls -d *); do
-		if [[ -d $addons_path/$x ]]; then
-			log_echo "magentoerpconnect: module $x already present, removing"
-			rm -r $addons_path/$x >> $INSTALL_LOG_FILE
-		fi
-		cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
-	done
-}
-
-function install_nan_tic_addons {
-	# Install nan-tic modules
-	log_echo "Installing nan-tic modules..."
-	rm openobject-client-kde/server-modules/*.sh >> $INSTALL_LOG_FILE
-	cd $sources_path/openobject-client-kde/server-modules >> $INSTALL_LOG_FILE
-	for x in $(ls -d *); do
-		if [[ -d $addons_path/$x ]]; then
-			log_echo "openobject-client-kde: module $x already present, removing"
-			rm -r $addons_path/$x >> $INSTALL_LOG_FILE
-		fi
-		cp -a $x $addons_path/ >> $INSTALL_LOG_FILE
-	done
-}
-
 function install_change_perms {
 	# Change permissions
-	chown -R $openerp_user:openerp $install_path_web/openerp* >> $INSTALL_LOG_FILE
+	chown -R $openerp_user:openerp /srv/openerp >> $INSTALL_LOG_FILE
 	chown -R $openerp_user:openerp /var/log/openerp >> $INSTALL_LOG_FILE
 	chown -R $openerp_user:openerp /var/run/openerp >> $INSTALL_LOG_FILE
 	chown -R $openerp_user:openerp /etc/openerp >> $INSTALL_LOG_FILE
-	chmod -R g+w $install_path >> $INSTALL_LOG_FILE
+	chmod -R g+w /srv/openerp >> $INSTALL_LOG_FILE
 	chmod -R g+w /var/log/openerp >> $INSTALL_LOG_FILE
 	chmod -R g+w /var/run/openerp >> $INSTALL_LOG_FILE
-	chmod +x $addons_path >> $INSTALL_LOG_FILE
+	chmod +x /srv/openerp/$branch/instances/*/addons >> $INSTALL_LOG_FILE
 }
 
 function install_openerp {
-	if [[ $branch == "5.0" ]]; then
-		install_openerp_server
-		if [[ $install_nantic =~ ^[Yy]$ ]]; then install_nan_tic_addons; fi
-		if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then install_magentoerpconnect; fi
-		if [[ $install_extra_addons =~ ^[Yy]$ ]]; then install_extra_addons; fi
-		if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then install_costa_rica_addons; fi
-		if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then install_ccorp_addons; fi
-		if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then install_openerp_addons; fi
-	elif [[ $branch == "6.0" ]]; then
-		install_openerp_server
-		if [[ $install_nantic =~ ^[Yy]$ ]]; then install_nan_tic_addons; fi
-		if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then install_magentoerpconnect; fi
-		if [[ $install_extra_addons =~ ^[Yy]$ ]]; then install_extra_addons; fi
-		if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then install_costa_rica_addons; fi
-		if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then install_ccorp_addons; fi
-		if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then install_openerp_addons; fi
-	fi
+	install_openerp_server
 	install_change_perms
 }
 
 function download_openerp_web {
 	# Download openerp-web latest stable/trunk branch.
 	log_echo "Downloading openerp-web latest $branch branch..."
-	mkdir -p $sources_path >> $INSTALL_LOG_FILE
-	cd $sources_path >> $INSTALL_LOG_FILE
+	mkdir -p /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
+	cd /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
 	if [ -e openobject-client-web ]; then
-		bzr update openobject-client-web >> $INSTALL_LOG_FILE
+		cd openobject-client-web >> $INSTALL_LOG_FILE
+		bzr pull >> $INSTALL_LOG_FILE
 	else
-		bzr checkout --lightweight http://code.clearcorp.co.cr/bzr/openerp/openobject-client-web/ccorp/$branch openobject-client-web >> $INSTALL_LOG_FILE
+		bzr branch lp:~clearcorp/openobject-client-web/ccorp-$branch openobject-client-web >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }
@@ -560,6 +432,80 @@ function install_phppgadmin {
 	sed -i "s/#\?[[:space:]]*\(allow from all.*\)/allow from all/g" /etc/phppgadmin/apache.conf >> $INSTALL_LOG_FILE
 	sed -i "s/#\?[[:space:]]*\(allow from all.*\)/allow from all/g" /etc/phppgadmin/apache.conf >> $INSTALL_LOG_FILE
 	/etc/init.d/apache2 restart >> $INSTALL_LOG_FILE
+}
+
+function mkserver_openerp_addons {
+	# Install OpenERP addons
+	log_echo "Installing OpenERP addons..."
+	cd /srv/openerp/$branch/src/openobject-addons >> $INSTALL_LOG_FILE
+	for x in $(ls -d *); do
+		if [[ -d /srv/openerp/$branch/instances/$name/addons/$x ]]; then
+			log_echo "openobject-addons: module $x already present, removing"
+			rm -r /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
+		fi
+		ln -s /srv/openerp/$branch/src/openobject-addons/$x /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
+	done
+}
+
+function mkserver_ccorp_addons {
+	# Install ccorp addons
+	log_echo "Installing ccorp addons..."
+	cd /srv/openerp/$branch/src/ccorp-addons >> $INSTALL_LOG_FILE
+	for x in $(ls -d *); do
+		if [[ -d /srv/openerp/$branch/instances/$name/addons/$x ]]; then
+			log_echo "ccorp-addons: module $x already present, removing"
+			rm -r /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
+		fi
+		ln -s /srv/openerp/$branch/src/ccorp-addons/$x /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
+	done
+}
+
+function mkserver_costa_rica_addons {
+	# Install OpenERP costa-rica
+	log_echo "Installing OpenERP costa-rica..."
+	cd /srv/openerp/$branch/src/costa-rica-addons >> $INSTALL_LOG_FILE
+	for x in $(ls -d *); do
+		if [[ -d /srv/openerp/$branch/instances/$name/addons/$x ]]; then
+			log_echo "costa-rica-addons: module $x already present, removing"
+			rm -r /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
+		fi
+		ln -s /srv/openerp/$branch/src/costa-rica-addons/$x /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
+	done
+}
+
+function mkserver_extra_addons {
+	# Install OpenERP extra addons
+	log_echo "Installing OpenERP extra addons..."
+	cd /srv/openerp/$branch/src/openobject-addons-extra >> $INSTALL_LOG_FILE
+	for x in $(ls -d *); do
+		if [[ -d /srv/openerp/$branch/instances/$name/addons/$x ]]; then
+			log_echo "openobject-addons-extra: module $x already present, removing"
+			rm -r /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
+		fi
+		ln -s /srv/openerp/$branch/src/openobject-addons-extra/$x /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
+	done
+}
+
+function mkserver_nan_tic_addons {
+	# Install nan-tic modules
+	log_echo "Installing nan-tic modules..."
+	cd /srv/openerp/$branch/src/nan-tic-addons >> $INSTALL_LOG_FILE
+	for x in $(ls -d *); do
+		if [[ -d /srv/openerp/$branch/instances/$name/addons/$x ]]; then
+			log_echo "nan-tic-addons: module $x already present, removing"
+			rm -r /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
+		fi
+		ln -s /srv/openerp/$branch/src/nan-tic-addons/$x /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
+	done
+}
+
+function mkserver_install_addons {
+	if [[ $install_nantic =~ ^[Yy]$ ]]; then install_nan_tic_addons; fi
+	if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then install_magentoerpconnect; fi
+	if [[ $install_extra_addons =~ ^[Yy]$ ]]; then install_extra_addons; fi
+	if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then install_costa_rica_addons; fi
+	if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then install_ccorp_addons; fi
+	if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then install_openerp_addons; fi
 }
 
 function make_menus {

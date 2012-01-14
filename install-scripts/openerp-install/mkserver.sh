@@ -87,8 +87,6 @@ else
 fi
 
 . /etc/openerp/$branch/install.cfg
-install_path=$install_path/openerp-server-$branch-skeleton
-addons_path=$install_path/addons/
 
 name=""
 while [[ $name == "" ]]; do
@@ -161,11 +159,14 @@ adduser --system --home /var/run/openerp/$name --no-create-home --ingroup opener
 /usr/bin/sudo -u postgres psql template1 -U postgres -c "alter user openerp_$name with password '$admin_passwd'" >> $INSTALL_LOG_FILE
 log_echo ""
 
-log_echo "Copying openerp-server files..."
-cp -a /usr/local/lib/python2.6/dist-packages/openerp-server-$branch-skeleton /usr/local/lib/python2.6/dist-packages/openerp-server-$name >> $INSTALL_LOG_FILE
-
-log_echo "Setting openerp server process name..."
-sed -i "s#\\[NAME\\]#$name#g" /usr/local/lib/python2.6/dist-packages/openerp-server-$name/openerp-server.py >> $INSTALL_LOG_FILE
+log_echo "Making instance..."
+cd /srv/openerp/$branch >> $INSTALL_LOG_FILE
+mkdir -p instances/$name/addons >> $INSTALL_LOG_FILE
+mkdir -p instances/$name/web >> $INSTALL_LOG_FILE
+mkdir -p instances/$name/filestore >> $INSTALL_LOG_FILE
+ln -s /srv/openerp/$branch/src/openobject-server instances/$name/server >> $INSTALL_LOG_FILE
+ln -s /srv/openerp/$branch/src/openobject-client-web instances/$name/web >> $INSTALL_LOG_FILE
+mkserver_install_addons >> $INSTALL_LOG_FILE
 
 log_echo "Creating openerp-server init script..."
 cp -a /etc/openerp/$branch/server/init-$branch-skeleton /etc/init.d/openerp-server-$name >> $INSTALL_LOG_FILE
@@ -197,18 +198,17 @@ log_echo "Creating openerp-server ssl files..."
 cp -a /etc/openerp/ssl/server.cnf-skeleton /etc/openerp/ssl/servers/$name.cnf >> $INSTALL_LOG_FILE
 sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/ssl/servers/$name.cnf >> $INSTALL_LOG_FILE
 cd /etc/openerp/ssl/servers
-openssl req -newkey rsa:1024 -keyout tempkey.pem -keyform PEM -out tempreq.pem -outform PEM -config $name.cnf -passout pass:$openerp_admin_passwd
+openssl req -newkey rsa:1024 -keyout tempkey.pem
+ -keyform PEM -out tempreq.pem -outform PEM -config $name.cnf -passout pass:$openerp_admin_passwd
 openssl rsa -passin pass:$openerp_admin_passwd < tempkey.pem > server_key.pem
-openssl ca -in tempreq.pem -out server_crt.pem -config ../ca.cnf -passin pass:$openerp_admin_passwd
+openssl ca -batch -in tempreq.pem -out server_crt.pem -config ../ca.cnf -passin pass:$openerp_admin_passwd
 rm -f tempkey.pem && rm -f tempreq.pem
+mv server_crt.pem ${name}_crt.pem
+mv server_key.pem ${name}_key.pem
 
 log_echo "Creating openerp-server log files..."
 mkdir -p /var/log/openerp/$name >> $INSTALL_LOG_FILE
 touch /var/log/openerp/$name/server.log >> $INSTALL_LOG_FILE
-
-
-log_echo "Copying openerp-web files..."
-cp -a /usr/local/lib/python2.6/dist-packages/openerp-web-$branch-skeleton /usr/local/lib/python2.6/dist-packages/openerp-web-$name >> $INSTALL_LOG_FILE
 
 log_echo "Creating openerp-web init script..."
 cp -a /etc/openerp/$branch/web-client/bin-skeleton /usr/local/bin/openerp-web-$name >> $INSTALL_LOG_FILE

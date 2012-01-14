@@ -55,9 +55,6 @@ VERBOSE="yes"
 # Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
 . /lib/lsb/init-functions
 
-PROCNAME=openerp_$SERVERNAME
-PROCNAME=${PROCNAME:0:15}
-
 if [ ! -d $PIDDIR/$SERVERNAME ]; then
 	mkdir -p $PIDDIR/$SERVERNAME
 	chown -R openerp:openerp $PIDDIR
@@ -89,7 +86,7 @@ do_start() {
     chmod g+w ${LOGDIR}/${SERVERNAME}
     
 	sudo -u $USER start-stop-daemon --start --quiet  --background \
-		--pidfile $PIDFILE --group openerp --name $PROCNAME \
+		--pidfile $PIDFILE --group openerp \
 		--startas $DAEMON -- $DAEMON_OPTS
 
 	i=10
