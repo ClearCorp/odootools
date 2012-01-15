@@ -285,13 +285,13 @@ function install_openerp_server {
 	#~ Copy bin script skeleton to /etc
 	log_echo "Copy bin script skeleton to /etc"
 	mkdir -p /etc/openerp/$branch/server/ >> $INSTALL_LOG_FILE
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/server-bin-skeleton /etc/openerp/$branch/server/bin-skeleton >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/openerp-scripts/server/server-bin-skeleton /etc/openerp/$branch/server/bin-skeleton >> $INSTALL_LOG_FILE
 	sed -i "s#\\[BRANCH\\]#$branch#g" /etc/openerp/$branch/server/bin-skeleton >> $INSTALL_LOG_FILE
 	# OpenERP Server init
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/server-init-$branch-skeleton /etc/openerp/$branch/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/openerp-scripts/server/server-init-$branch-skeleton /etc/openerp/$branch/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
 	sed -i "s#\\[PATH\\]#/usr/local#g" /etc/openerp/$branch/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
 	# OpenERP Server config skeletons
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/server.conf-$branch-skeleton /etc/openerp/$branch/server/ >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/openerp-scripts/server/server.conf-$branch-skeleton /etc/openerp/$branch/server/ >> $INSTALL_LOG_FILE
 	sed -i "s#\\[BRANCH\\]#$branch#g" /etc/openerp/$branch/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
 	if [[ $server_type =~ ^production$ ]]; then
 		sed -i "s#\\[LOGLEVEL\\]#info#g" /etc/openerp/$branch/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
@@ -311,8 +311,8 @@ function install_openerp_server {
 	cd /etc/openerp/ssl
 
 	echo '01' > serial  && touch index.txt
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/ca.cnf /etc/openerp/ssl/ca.cnf >> $INSTALL_LOG_FILE
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/server/server.cnf /etc/openerp/ssl/server.cnf-skeleton >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/openerp-scripts/server/ca.cnf /etc/openerp/ssl/ca.cnf >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/openerp-scripts/server/server.cnf /etc/openerp/ssl/server.cnf-skeleton >> $INSTALL_LOG_FILE
 
 	openssl req -x509 -newkey rsa:2048 -out cacert.pem -outform PEM -days 1825 -config ca.cnf -passout pass:$openerp_admin_passwd
 	openssl x509 -in cacert.pem -out cacert.crt
@@ -359,15 +359,15 @@ function install_openerp_web_client {
 	#~ Copy bin script
 	log_echo "Copy bin script"
 	mkdir -p /etc/openerp/$branch/web-client >> $INSTALL_LOG_FILE
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client-bin-skeleton /etc/openerp/$branch/web-client/bin-skeleton >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/openerp-scripts/web-client/web-client-bin-skeleton /etc/openerp/$branch/web-client/bin-skeleton >> $INSTALL_LOG_FILE
 	sed -i "s#\\[BRANCH\\]#$branch#g" /etc/openerp/$branch/web-client/bin-skeleton >> $INSTALL_LOG_FILE
 
 	# OpenERP Web Client init and config skeletons
 	log_echo "Copy init script"
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client-init-skeleton /etc/openerp/$branch/web-client/init-skeleton >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/openerp-scripts/web-client/web-client-init-skeleton /etc/openerp/$branch/web-client/init-skeleton >> $INSTALL_LOG_FILE
 	sed -i "s#\\[BRANCH\\]#$branch#g" /etc/openerp/$branch/web-client/init-skeleton >> $INSTALL_LOG_FILE
 	log_echo "Copy config"
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/web-client/web-client.conf-$branch-skeleton /etc/openerp/$branch/web-client/ >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/openerp-scripts/web-client/web-client.conf-$branch-skeleton /etc/openerp/$branch/web-client/ >> $INSTALL_LOG_FILE
 
 	#~ Sets server type
 	if [[ "$server_type" =~ ^development|station$ ]]; then
@@ -402,9 +402,9 @@ function install_apache {
 	fi
 
 	log_echo "Configuring site config files..."
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-erp /etc/apache2/sites-available/erp >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/openerp-scripts/apache-erp /etc/apache2/sites-available/erp >> $INSTALL_LOG_FILE
 	mkdir -p /etc/openerp/apache2/rewrites >> $INSTALL_LOG_FILE
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/apache-ssl-$branch-skeleton /etc/openerp/apache2/ssl-$branch-skeleton >> $INSTALL_LOG_FILE
+	cp $LIBBASH_CCORP_DIR/openerp-scripts/apache-ssl-$branch-skeleton /etc/openerp/apache2/ssl-$branch-skeleton >> $INSTALL_LOG_FILE
 	sed -i "s/ServerAdmin .*$/ServerAdmin support@clearcorp.co.cr\n\n\tInclude \/etc\/apache2\/sites-available\/erp/g" /etc/apache2/sites-available/default >> $INSTALL_LOG_FILE
 	sed -i "s/ServerAdmin .*$/ServerAdmin support@clearcorp.co.cr\n\n\tInclude \/etc\/openerp\/apache2\/rewrites/g" /etc/apache2/sites-available/default-ssl >> $INSTALL_LOG_FILE
 
@@ -501,11 +501,11 @@ function mkserver_install_addons {
 function make_menus {
 	#~ Make developer menus
 	if [[ $server_type == "station" ]]; then
-		su $openerp_user -c $LIBBASH_CCORP_DIR/install-scripts/openerp-install/mkmenus-ccorp-main.sh
+		su $openerp_user -c $LIBBASH_CCORP_DIR/openerp-scripts/mkmenus-ccorp-main.sh
 	fi
 }
 
 function add_log_rotation {
 	rm /etc/logrotate.d/openerp*
-	cp $LIBBASH_CCORP_DIR/install-scripts/openerp-install/scripts/openerp.logrotate /etc/logrotate.d/
+	cp $LIBBASH_CCORP_DIR/openerp-scripts/scripts/openerp.logrotate /etc/logrotate.d/
 }

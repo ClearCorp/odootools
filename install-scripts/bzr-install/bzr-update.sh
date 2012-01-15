@@ -47,37 +47,37 @@ function bzrUpdate {
 	if [ -h /usr/local/sbin/ccorp-openerp-install ]; then
 		rm /usr/local/sbin/ccorp-openerp-install
 	fi
-	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-install.sh /usr/local/sbin/ccorp-openerp-install
+	ln -s $LIBBASH_CCORP_DIR/openerp-scripts/openerp-install.sh /usr/local/sbin/ccorp-openerp-install
 	
 	if [ -h /usr/local/sbin/ccorp-openerp-uninstall ]; then
 		rm /usr/local/sbin/ccorp-openerp-uninstall
 	fi
-	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-uninstall.sh /usr/local/sbin/ccorp-openerp-uninstall
+	ln -s $LIBBASH_CCORP_DIR/openerp-scripts/openerp-uninstall.sh /usr/local/sbin/ccorp-openerp-uninstall
 	
 	if [ -h /usr/local/sbin/ccorp-openerp-update ]; then
 		rm /usr/local/sbin/ccorp-openerp-update
 	fi
-	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-update.sh /usr/local/sbin/ccorp-openerp-update
+	ln -s $LIBBASH_CCORP_DIR/openerp-scripts/openerp-update.sh /usr/local/sbin/ccorp-openerp-update
 
 	if [ -h /usr/local/sbin/ccorp-openerp-mkserver ]; then
 		rm /usr/local/sbin/ccorp-openerp-mkserver
 	fi
-	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/mkserver.sh /usr/local/sbin/ccorp-openerp-mkserver
+	ln -s $LIBBASH_CCORP_DIR/openerp-scripts/mkserver.sh /usr/local/sbin/ccorp-openerp-mkserver
 
 	if [ -h /usr/local/sbin/ccorp-openerp-rmserver ]; then
 		rm /usr/local/sbin/ccorp-openerp-rmserver
 	fi
-	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/rmserver.sh /usr/local/sbin/ccorp-openerp-rmserver
+	ln -s $LIBBASH_CCORP_DIR/openerp-scripts/rmserver.sh /usr/local/sbin/ccorp-openerp-rmserver
 
 	if [ -h /usr/local/sbin/ccorp-openerp-mkmenus ]; then
 		rm /usr/local/sbin/ccorp-openerp-mkmenus
 	fi
-	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/mkmenus.sh /usr/local/sbin/ccorp-openerp-mkmenus
+	ln -s $LIBBASH_CCORP_DIR/openerp-scripts/mkmenus.sh /usr/local/sbin/ccorp-openerp-mkmenus
 
 	if [ -h /usr/local/sbin/ccorp-openerp-cp-db ]; then
 		rm /usr/local/sbin/ccorp-openerp-cp-db
 	fi
-	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-install/test-db/openerp-test-db.sh /usr/local/sbin/ccorp-openerp-cp-db
+	ln -s $LIBBASH_CCORP_DIR/openerp-scripts/test-db/openerp-test-db.sh /usr/local/sbin/ccorp-openerp-cp-db
 
 	if [ -h /usr/local/sbin/ccorp-ubuntu-server-install ]; then
 		rm /usr/local/sbin/ccorp-ubuntu-server-install

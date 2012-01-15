@@ -95,7 +95,7 @@ cat << EOF >> /home/$openerp_user/.local/share/desktop-directories/openerp-main-
 [Desktop Entry]
 Version=1.0
 Type=Directory
-Icon=$LIBBASH_CCORP_DIR/install-scripts/openerp-install/icons/ccorp-logo.png
+Icon=$LIBBASH_CCORP_DIR/openerp-scripts/icons/ccorp-logo.png
 Name=openerp-main-controls
 EOF
 
@@ -109,9 +109,9 @@ for i in "all" "apache" "postgresql"; do
 Version=1.0
 Type=Application
 Terminal=true
-Icon=$LIBBASH_CCORP_DIR/install-scripts/openerp-install/icons/$i-$j.png
+Icon=$LIBBASH_CCORP_DIR/openerp-scripts/icons/$i-$j.png
 Name=$j $i
-Exec=$LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-dev-control.sh $i $j
+Exec=$LIBBASH_CCORP_DIR/openerp-scripts/openerp-dev-control.sh $i $j
 EOF
 	done
 done

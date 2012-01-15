@@ -26,7 +26,7 @@ fi
 #~ Libraries import
 . $LIBBASH_CCORP_DIR/main-lib/checkRoot.sh
 . $LIBBASH_CCORP_DIR/main-lib/getDist.sh
-. $LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-lib.sh
+. $LIBBASH_CCORP_DIR/openerp-scripts/openerp-lib.sh
 
 # Check user is root
 checkRoot

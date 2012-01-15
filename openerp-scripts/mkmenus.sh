@@ -106,7 +106,7 @@ cat << EOF >> /home/$openerp_user/.local/share/desktop-directories/openerp-$2.di
 [Desktop Entry]
 Version=1.0
 Type=Directory
-Icon=$LIBBASH_CCORP_DIR/install-scripts/openerp-install/icons/ccorp-logo.png
+Icon=$LIBBASH_CCORP_DIR/openerp-scripts/icons/ccorp-logo.png
 Name=openerp-$2
 EOF
 
@@ -120,9 +120,9 @@ for i in "server" "web" "all"; do
 Version=1.0
 Type=Application
 Terminal=true
-Icon=$LIBBASH_CCORP_DIR/install-scripts/openerp-install/icons/$i-$j.png
+Icon=$LIBBASH_CCORP_DIR/openerp-scripts/icons/$i-$j.png
 Name=$j $i openerp-$2
-Exec=$LIBBASH_CCORP_DIR/install-scripts/openerp-install/openerp-dev-control.sh $2 $i $j
+Exec=$LIBBASH_CCORP_DIR/openerp-scripts/openerp-dev-control.sh $2 $i $j
 EOF
 	done
 done
