@@ -1,6 +1,0 @@
-# List the logical volumes that wil be backed up in the format shown below
-# volumegroup/logicalvolume(tab)size
-# DON'T put any slash in the beggining or the end of the logical volume declaration
-vgvirt/home	3G
-vgvirt/root	3G
-vgvirt/var	3G
