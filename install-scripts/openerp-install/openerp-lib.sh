@@ -38,19 +38,17 @@ function openerp_get_dist {
 	elif [[ $dist == "maverick" ]]; then
 		# Ubuntu 10.10, python 2.6
 		posgresql_rel=8.4
-		posgresql_init=8.4
+		posgresql_init="-8.4"
 		python_rel=python2.6
 		ubuntu_rel=10.10
 	elif [[ $dist == "natty" ]]; then
 		# Ubuntu 11.04, python 2.6
 		posgresql_rel=8.4
-		posgresql_init=8.4
 		python_rel=python2.6
 		ubuntu_rel=11.04
 	elif [[ $dist == "oneiric" ]]; then
 		# Ubuntu 11.10, python 2.7, postgres 9.1
 		posgresql_rel=9.1
-		posgresql_init=9.1
 		python_rel=python2.7
 		ubuntu_rel=11.10
 	else
@@ -142,7 +140,7 @@ function install_postgresql {
 function update_pg_hba {
 	# Update pg_hba.conf
 	sed -i 's/\(local[[:space:]]*all[[:space:]]*all[[:space:]]*\)\(ident[[:space:]]*sameuser\)/\1md5/g' /etc/postgresql/$posgresql_rel/main/pg_hba.conf >> $INSTALL_LOG_FILE
-	/etc/init.d/postgresql-$posgresql_rel restart >> $INSTALL_LOG_FILE
+	/etc/init.d/postgresql$posgresql_init restart >> $INSTALL_LOG_FILE
 	log_echo ""
 }
 
@@ -210,7 +208,7 @@ function download_costa_rica_addons {
 		cd costa-rica-addons >> $INSTALL_LOG_FILE
 		bzr pull >> $INSTALL_LOG_FILE
 	else
-		bzr branch lp:openerp-costa-rica/$branch ccorp-addons >> $INSTALL_LOG_FILE
+		bzr branch lp:openerp-costa-rica/$branch costa-rica-addons >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }
@@ -260,6 +258,7 @@ function download_nan_tic_addons {
 }
 
 function download_openerp {
+	bzr init-repo /srv/openerp
 	if [[ $branch == "5.0" ]]; then
 		download_openerp_server
 		if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then download_openerp_addons; fi
@@ -329,7 +328,9 @@ function install_change_perms {
 	chmod -R g+w /srv/openerp >> $INSTALL_LOG_FILE
 	chmod -R g+w /var/log/openerp >> $INSTALL_LOG_FILE
 	chmod -R g+w /var/run/openerp >> $INSTALL_LOG_FILE
-	chmod +x /srv/openerp/$branch/instances/*/addons >> $INSTALL_LOG_FILE
+	for x in $(ls -d /srv/openerp/$branch/instances/*/addons); do
+		chmod +x $x >> $INSTALL_LOG_FILE;
+	done
 }
 
 function install_openerp {
@@ -388,7 +389,7 @@ function install_apache {
 		apt-get -qqy install apache2 >> $INSTALL_LOG_FILE
 
 		log_echo "Making SSL certificate for Apache...";
-		make-ssl-cert generate-default-snakeoil --force-overwrite >> $INSTALL_LOG_FILE
+		make-ssl-cert generate-default-snakeoil >> $INSTALL_LOG_FILE
 		# Snakeoil certificate files:
 		# /usr/share/ssl-cert/ssleay.cnf
 		# /etc/ssl/certs/ssl-cert-snakeoil.pem
@@ -489,12 +490,12 @@ function mkserver_nan_tic_addons {
 }
 
 function mkserver_install_addons {
-	if [[ $install_nantic =~ ^[Yy]$ ]]; then install_nan_tic_addons; fi
-	if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then install_magentoerpconnect; fi
-	if [[ $install_extra_addons =~ ^[Yy]$ ]]; then install_extra_addons; fi
-	if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then install_costa_rica_addons; fi
-	if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then install_ccorp_addons; fi
-	if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then install_openerp_addons; fi
+	if [[ $install_nantic =~ ^[Yy]$ ]]; then mkserver_nan_tic_addons; fi
+	if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then mkserver_magentoerpconnect; fi
+	if [[ $install_extra_addons =~ ^[Yy]$ ]]; then mkserver_extra_addons; fi
+	if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then mkserver_costa_rica_addons; fi
+	if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then mkserver_ccorp_addons; fi
+	if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then mkserver_openerp_addons; fi
 }
 
 function make_menus {

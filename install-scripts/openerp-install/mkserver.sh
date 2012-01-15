@@ -97,23 +97,21 @@ while [[ $name == "" ]]; do
 done
 
 #~ Set the openerp port
-if [[ ! -f /etc/openerp/ports ]]; then
-	mkdir -p /etc/openerp
-	touch /etc/openerp/ports
-fi
 port=""
 test="^[0-9]{2}$"
+mkdir -p /etc/openerp/ports
 while [[ $port == "" ]]; do
 	read -p "Enter the OpenERP server port (2 digits only): " port
 	if [[ ! $port =~ $test ]]; then
 		log_echo "The port has to contain exactly 2 digits."
 		port=""
-	elif [[ `grep -c $port /etc/openerp/ports` != 0 ]]; then
-		log_echo "The port $port is already in use (/etc/openerp/ports)."
+	elif [[ $(ls -l /etc/openerp/ports/$port_*) != 0 ]]; then
+		tmp=$(ls /etc/openerp/ports/$port_* | xargs -n1 basename)
+		log_echo "The port $port is already in use by the server $(tmp:3) (/etc/openerp/ports)."
 		port=""
 	fi
 done
-echo $port >> /etc/openerp/ports
+touch /etc/openerp/ports/${port}_${name}
 log_echo "Selected port is: $port"
 
 #~ Start the server now
@@ -197,9 +195,10 @@ log_echo "Creating openerp-server ssl files..."
 cp -a /etc/openerp/ssl/server.cnf-skeleton /etc/openerp/ssl/servers/$name.cnf >> $INSTALL_LOG_FILE
 sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/ssl/servers/$name.cnf >> $INSTALL_LOG_FILE
 cd /etc/openerp/ssl/servers
-openssl req -newkey rsa:1024 -keyout tempkey.pem -keyform PEM -out tempreq.pem -outform PEM -config $name.cnf -passout pass:$openerp_admin_passwd
-openssl rsa -passin pass:$openerp_admin_passwd < tempkey.pem > server_key.pem
-openssl ca -batch -in tempreq.pem -out server_crt.pem -config ../ca.cnf -passin pass:$openerp_admin_passwd
+openssl req -newkey rsa:1024 -keyout tempkey.pem -keyform PEM -out tempreq.pem -outform PEM -config $name.cnf -passout pass:$admin_passwd
+openssl rsa -passin pass:$admin_passwd < tempkey.pem > server_key.pem
+echo 20$port > /etc/openerp/ssl/serial
+openssl ca -batch -in tempreq.pem -out server_crt.pem -config ../ca.cnf -passin pass:$admin_passwd
 rm -f tempkey.pem && rm -f tempreq.pem
 mv server_crt.pem ${name}_crt.pem
 mv server_key.pem ${name}_key.pem
@@ -252,7 +251,7 @@ mkdir -p /var/run/openerp/$name
 #~ Start server now
 if [[ $start_now =~ ^[Yy]$ ]]; then
 	log_echo "Starting openerp server and web client..."
-	service postgresql-8.4 start
+	service postgresql$postgresql_init start
 	service apache2 restart
 	service openerp-server-$name start
 	service openerp-web-$name start

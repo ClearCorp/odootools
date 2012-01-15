@@ -2,7 +2,7 @@
 server.environment = "[TYPE]"
 
 # Some server parameters that you may want to tweak
-server.socket_host = "0.0.0.0"
+server.socket_host = "localhost"
 server.socket_port = [PORT]
 
 # Sets the number of threads the server uses

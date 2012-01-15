@@ -262,6 +262,15 @@ while [[ ! $install_apache =~ ^[YyNn]$ ]]; do
 	log_echo ""
 done
 
+# Update system
+while [[ ! $do_update_system =~ ^[YyNn]$ ]]; do
+	read -p "Would you like to update the system (Y/n)? " -n 1 do_update_system
+	if [[ $do_update_system == "" ]]; then
+		do_update_system="y"
+	fi
+	log_echo ""
+done
+
 #Writting config file
 #--------------------
 mkdir -p /etc/openerp/$branch
@@ -283,7 +292,7 @@ log_echo "----------------------"
 #Add openerp user
 add_openerp_user
 # Update the system.
-update_system
+if [[ $do_update_system =~ ^[Yy]$ ]]; then update_system; fi
 # Install the required python libraries for openerp-server.
 install_python_lib
 # Install bazaar.
@@ -325,8 +334,8 @@ install_apache
 #~ Install phppgadmin
 install_phppgadmin
 
-#~ Make developer menus
-make_menus
+##~ Make developer menus
+#make_menus
 
 # Add log file rotation
 add_log_rotation

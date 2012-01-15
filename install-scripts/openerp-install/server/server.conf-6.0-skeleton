@@ -106,7 +106,7 @@ xmlrpc_port = 20[PORT]
 
 # (char) Specify the TCP IP address for the XML-RPC protocol
 # (default blank).
-xmlrpc_interface = 
+xmlrpc_interface = localhost
 
 # NET-RPC
 # (bool) Enable the NET-RPC protocol (default True).
@@ -117,7 +117,7 @@ netrpc_port = 21[PORT]
 
 # (char) Specify the TCP IP address for the NET-RPC protocol
 # (default blank).
-netrpc_interface = 
+netrpc_interface = localhost
 
 # XML-RPC secure
 # (bool) Enable the XML-RPC secure protocol (default True).
@@ -133,11 +133,11 @@ xmlrpcs_interface =
 
 # (char) Specify the certificate file for the SSL connection
 # (default server.cert).
-secure_cert_file = /etc/ssl/certs/ssl-cert-snakeoil.pem
+secure_cert_file = /etc/openerp/ssl/servers/[NAME]_crt.pem
 
 # (char) Specify the private key file for the SSL connection
 # (default server.key).
-secure_pkey_file = /etc/ssl/private/ssl-cert-snakeoil.key
+secure_cert_file = /etc/openerp/ssl/servers/[NAME]_key.pem
 
 # (char) Specify the host for the FTP DMS server (default localhost).
 ftp_server_host = 0.0.0.0
