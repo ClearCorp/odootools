@@ -110,8 +110,8 @@ log_echo "Stopping openerp server and web..."
 log_echo "Removing openerp init scripts..."
 rm /etc/init.d/openerp-server-$name >> $INSTALL_LOG_FILE
 rm /etc/init.d/openerp-web-$name >> $INSTALL_LOG_FILE
-update-rc.d openerp-server-$name disable >> $INSTALL_LOG_FILE
-update-rc.d openerp-web-$name disable >> $INSTALL_LOG_FILE
+update-rc.d openerp-server-$name remove >> $INSTALL_LOG_FILE
+update-rc.d openerp-web-$name remove >> $INSTALL_LOG_FILE
 
 # Delete openerp postgres user
 log_echo "Deleting user..."
