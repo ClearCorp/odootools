@@ -148,7 +148,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 		echo ""
 	done
 	while [[ $ip_addr == "" ]]; do
-		echo "What is your IP address (list: `ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'`): "
+		echo "What is your IP address (list: `ifconfig  | grep 'inet:\|inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'`): "
 		read -p "WARNING: IP address not verified, WRITE IT CAREFULLY!!: " ip_addr
 		echo ""
 	done
