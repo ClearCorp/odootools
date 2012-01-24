@@ -1,12 +1,12 @@
 #!/bin/bash
-# bzr-make.sh
+# ccorp-openerp-scripts-make.sh
 
 # Description:	This script must be located at /var/www/
 #				Its function is to prepare a tar archive with the latest
-#				version of bzr-setup and all needed files in it.
+#				version of ccorp-openerp-scripts-setup and all needed files in it.
 
-ccorp-bzr-update
-ccorp-bzr-update
+ccorp-openerp-scripts-update
+ccorp-openerp-scripts-update
 
 #Gets the dir source
 SOURCE="${BASH_SOURCE[0]}"
@@ -22,11 +22,11 @@ cp $DIR/main-lib/checkRoot.sh bin/main-lib/checkRoot.sh
 cp $DIR/main-lib/getDist.sh bin/main-lib/getDist.sh
 cp $DIR/main-lib/setSources.sh bin/main-lib/setSources.sh
 
-mkdir -p bin/install-scripts/bzr-install
-cp $DIR/install-scripts/bzr-install/bzr-setup.sh bin/install-scripts/bzr-install/bzr-setup.sh
-cp $DIR/install-scripts/bzr-install/bzr-update.sh bin/install-scripts/bzr-install/bzr-update.sh
+mkdir -p bin/install-scripts/ccorp-openerp-scripts-install
+cp $DIR/install-scripts/ccorp-openerp-scripts-install/ccorp-openerp-scripts-setup.sh bin/install-scripts/ccorp-openerp-scripts-install/ccorp-openerp-scripts-setup.sh
+cp $DIR/install-scripts/ccorp-openerp-scripts-install/ccorp-openerp-scripts-update.sh bin/install-scripts/ccorp-openerp-scripts-install/ccorp-openerp-scripts-update.sh
 
-cp $DIR/install-scripts/bzr-install/setup.sh bin/setup.sh
+cp $DIR/install-scripts/ccorp-openerp-scripts-install/setup.sh bin/setup.sh
 chmod +x bin/setup.sh
 
 cp -a bin openerp-ccorp-scripts

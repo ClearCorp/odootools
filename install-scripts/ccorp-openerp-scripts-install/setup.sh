@@ -2,7 +2,7 @@
 # setup.sh
 
 # Description:	This script must be located at the root of the bin dir
-#				Its function is call bzr-setup.sh correctly once the
+#				Its function is call ccorp-openerp-scripts-setup.sh correctly once the
 #				user extracts the installer.
 
 #Gets the dir source
@@ -13,5 +13,5 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 #Go to script dir
 cd $DIR
 
-cd install-scripts/bzr-install
-./bzr-setup.sh
+cd install-scripts/ccorp-openerp-scripts-install
+./ccorp-openerp-scripts-setup.sh

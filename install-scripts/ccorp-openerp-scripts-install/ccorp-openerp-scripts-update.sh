@@ -1,4 +1,4 @@
-#       bzr-update.sh
+#       ccorp-openerp-scripts-update.sh
 #       
 #       Copyright 2010 ClearCorp S.A. <info@clearcorp.co.cr>
 #       

@@ -1,10 +1,10 @@
 #!/bin/bash
-#bzr-setup.sh
+#ccorp-openerp-scripts-setup.sh
 # Description: Setup bzr and gets a branch of openerp-ccorp-scripts
-# WARNING:	Update the bzr checkout at /var/www/bzr-setup on
+# WARNING:	Update the bzr checkout at /var/www/ccorp-openerp-scripts-setup on
 #			server01.rs.clearcorp.co.cr when you update this file.
-#			In order to do this, run /var/www/bzr-make.sh
-#			If you make structure changes update bzr-make.sh
+#			In order to do this, run /var/www/ccorp-openerp-scripts-make.sh
+#			If you make structure changes update ccorp-openerp-scripts-make.sh
 
 OPENERP_CCORP_DIR="/usr/local/share/openerp-ccorp-scripts"
 
@@ -88,7 +88,7 @@ branch=$branch
 EOF
 	fi
 	cd $dir
-	. bzr-update.sh
+	. ccorp-openerp-scripts-update.sh
 	echo "If this is the first time you are running this script, please run 'export OPENERP_CCORP_DIR=/usr/local/share/openerp-ccorp-scripts'"
 fi
 echo ""
