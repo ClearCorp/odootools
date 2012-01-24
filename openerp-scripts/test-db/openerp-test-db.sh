@@ -18,13 +18,13 @@
 #       MA 02110-1301, USA.
 #!/bin/bash
 
-if [[ ! -d $LIBBASH_CCORP_DIR ]]; then
-	echo "libbash-ccorp not installed."
+if [[ ! -d $OPENERP_CCORP_DIR ]]; then
+	echo "openerp-ccorp-scripts not installed."
 	exit 1
 fi
 
 #~ Libraries import
-. $LIBBASH_CCORP_DIR/main-lib/checkRoot.sh
+. $OPENERP_CCORP_DIR/main-lib/checkRoot.sh
 # Check user is root
 checkRoot
 

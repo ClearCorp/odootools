@@ -8,30 +8,27 @@
 ccorp-bzr-update
 ccorp-bzr-update
 
-cd /srv/bzr
-rm bzr-install.tgz
+#Gets the dir source
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ] ; do SOURCE="$(readlink "$SOURCE")"; done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-mkdir -p bzr-install/main-lib
-cp $LIBBASH_CCORP_DIR/main-lib/checkRoot.sh bzr-install/main-lib/checkRoot.sh
-cp $LIBBASH_CCORP_DIR/main-lib/getDist.sh bzr-install/main-lib/getDist.sh
-cp $LIBBASH_CCORP_DIR/main-lib/setSources.sh bzr-install/main-lib/setSources.sh
+cd $DIR
+rm -r bin
+mkdir bin
 
-mkdir -p bzr-install/install-scripts/bzr-install
-cp $LIBBASH_CCORP_DIR/install-scripts/bzr-install/bzr-setup.sh bzr-install/install-scripts/bzr-install/bzr-setup.sh
-cp $LIBBASH_CCORP_DIR/install-scripts/bzr-install/bzr-update.sh bzr-install/install-scripts/bzr-install/bzr-update.sh
+mkdir -p bin/main-lib
+cp $OPENERP_CCORP_DIR/main-lib/checkRoot.sh bin/main-lib/checkRoot.sh
+cp $OPENERP_CCORP_DIR/main-lib/getDist.sh bin/main-lib/getDist.sh
+cp $OPENERP_CCORP_DIR/main-lib/setSources.sh bin/main-lib/setSources.sh
 
-cat > bzr-install/setup.sh << EOF
-#!/bin/bash
-#setup.sh
+mkdir -p bin/install-scripts/bzr-install
+cp $OPENERP_CCORP_DIR/install-scripts/bzr-install/bzr-setup.sh bin/install-scripts/bzr-install/bzr-setup.sh
+cp $OPENERP_CCORP_DIR/install-scripts/bzr-install/bzr-update.sh bin/install-scripts/bzr-install/bzr-update.sh
 
-#Go to script dir
-cd \`dirname \$0\`
+cp $OPENERP_CCORP_DIR/install-scripts/bzr-install/setup.sh bin/setup.sh
+chmod +x bin/setup.sh
 
-cd install-scripts/bzr-install
-./bzr-setup.sh
-EOF
-
-chmod +x bzr-install/setup.sh
-
-tar cvzf bzr-install.tgz bzr-install
-rm -r bzr-install
+cp -a bin openerp-ccorp-scripts
+tar cvzf openerp-ccorp-scripts.tgz openerp-ccorp-scripts
+rm -r openerp-ccorp-scripts

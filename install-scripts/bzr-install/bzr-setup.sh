@@ -1,12 +1,12 @@
 #!/bin/bash
 #bzr-setup.sh
-# Description: Setup bzr and gets a branch of libbash-ccorp
+# Description: Setup bzr and gets a branch of openerp-ccorp-scripts
 # WARNING:	Update the bzr checkout at /var/www/bzr-setup on
 #			server01.rs.clearcorp.co.cr when you update this file.
 #			In order to do this, run /var/www/bzr-make.sh
 #			If you make structure changes update bzr-make.sh
 
-LIBBASH_CCORP_DIR="/usr/local/share/libbash-ccorp"
+OPENERP_CCORP_DIR="/usr/local/share/openerp-ccorp-scripts"
 
 # Libraries import
 . ../../main-lib/checkRoot.sh
@@ -16,7 +16,7 @@ LIBBASH_CCORP_DIR="/usr/local/share/libbash-ccorp"
 # Check user is root
 checkRoot
 
-echo "Bzr and libbash-ccorp installation script"
+echo "Bzr and openerp-ccorp-scripts installation script"
 echo ""
 
 dist=""
@@ -43,7 +43,7 @@ echo ""
 # Setup bzr repository
 REPLY='none'
 while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to install libbash-ccorp (Y/n)? " -n 1
+	read -p "Do you want to install openerp-ccorp-scripts (Y/n)? " -n 1
 	if [[ $REPLY == "" ]]; then
 		REPLY="y"
 	fi
@@ -51,48 +51,44 @@ while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
 done
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-	echo "Installing libbash-ccorp..."
+	echo "Installing openerp-ccorp-scripts..."
 	echo ""
-	if [ $(cat /etc/environment | grep -c LIBBASH_CCORP_DIR) == 0 ]; then
-		echo 'LIBBASH_CCORP_DIR="/usr/local/share/libbash-ccorp"' >> /etc/environment
+	if [ $(cat /etc/environment | grep -c OPENERP_CCORP_DIR) == 0 ]; then
+		echo 'OPENERP_CCORP_DIR="/usr/local/share/openerp-ccorp-scripts"' >> /etc/environment
 	else
-		sed -i "s#LIBBASH_CCORP_DIR.*#LIBBASH_CCORP_DIR=\"/usr/local/share/libbash-ccorp\"#g" /etc/environment
+		sed -i "s#OPENERP_CCORP_DIR.*#OPENERP_CCORP_DIR=\"/usr/local/share/openerp-ccorp-scripts\"#g" /etc/environment
 	fi
 	dir=$(pwd)
-	if [ -d /usr/local/share/libbash-ccorp ]; then
-		echo "bzr repository: /usr/local/share/libbash-ccorp already exists."
+	if [ -d /usr/local/share/openerp-ccorp-scripts ]; then
+		echo "bzr repository: /usr/local/share/openerp-ccorp-scripts already exists."
 		echo "Updating..."
-		cd /usr/local/share/libbash-ccorp
-		bzr update
+		cd /usr/local/share/openerp-ccorp-scripts
+		bzr pull
 	else
-		#Make libbash-ccorp dir
-		mkdir /usr/local/share/libbash-ccorp
-		cd /usr/local/share/libbash-ccorp
-		
 		#Chose the branch to install
 		REPLY='none'
 		while [[ ! $REPLY =~ ^[SsTt]$ ]]; do
-			read -p "Do you want to install libbash-ccorp stable or trunk (S/t)? " -n 1
+			read -p "Do you want to install openerp-ccorp-scripts stable or trunk (S/t)? " -n 1
 			if [[ $REPLY == "" ]]; then
 				REPLY="s"
 			fi
 			echo ""
 		done
 
-		mkdir -p /etc/libbash-ccorp
+		mkdir -p /etc/openerp-ccorp-scripts
 		if [[ $REPLY =~ ^[Ss]$ ]]; then
 			branch=stable
 		else
 			branch=trunk
 		fi
-		bzr checkout --lightweight http://code.clearcorp.co.cr/bzr/bash/libbash-ccorp/tags/${branch} /usr/local/share/libbash-ccorp
-		cat > /etc/libbash-ccorp/settings.cfg <<EOF
-repo="http://code.clearcorp.co.cr/bzr/bash/libbash-ccorp/tags"
+		bzr branch lp:openerp-ccorp-scripts/${branch} /usr/local/share/openerp-ccorp-scripts
+		cat > /etc/openerp-ccorp-scripts/settings.cfg <<EOF
+repo="lp:openerp-ccorp-scripts"
 branch=$branch
 EOF
 	fi
 	cd $dir
 	. bzr-update.sh
-	echo "If this is the first time you are running this script, please run 'export LIBBASH_CCORP_DIR=/usr/local/share/libbash-ccorp'"
+	echo "If this is the first time you are running this script, please run 'export OPENERP_CCORP_DIR=/usr/local/share/openerp-ccorp-scripts'"
 fi
 echo ""

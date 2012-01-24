@@ -3,7 +3,7 @@
 touch /var/log/openerp/cp-db.log
 chown openerp:openerp /var/log/openerp/cp-db.log
 
-export LIBBASH_CCORP_DIR=/usr/local/share/libbash-ccorp
+export OPENERP_CCORP_DIR="/usr/local/share/openerp-ccorp-scripts"
 
 cd / #Avoids the could not change directory to "/root" error
 

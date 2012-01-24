@@ -1,15 +1,15 @@
 #!/bin/bash
 
-if [[ ! -d $LIBBASH_CCORP_DIR ]]; then
-	echo "libbash-ccorp not installed."
+if [[ ! -d $OPENERP_CCORP_DIR ]]; then
+	echo "openerp-ccorp-scripts not installed."
 	exit 1
 fi
 
 #import functions
-. $LIBBASH_CCORP_DIR/main-lib/checkRoot.sh
-. $LIBBASH_CCORP_DIR/main-lib/setSources.sh
-. $LIBBASH_CCORP_DIR/main-lib/regenSSHKeys.sh
-. $LIBBASH_CCORP_DIR/main-lib/getDist.sh
+. $OPENERP_CCORP_DIR/main-lib/checkRoot.sh
+. $OPENERP_CCORP_DIR/main-lib/setSources.sh
+. $OPENERP_CCORP_DIR/main-lib/regenSSHKeys.sh
+. $OPENERP_CCORP_DIR/main-lib/getDist.sh
 
 # Check user is root
 checkRoot

@@ -18,15 +18,15 @@
 #       MA 02110-1301, USA.
 #!/bin/bash
 
-if [[ ! -d $LIBBASH_CCORP_DIR ]]; then
-	echo "libbash-ccorp not installed."
+if [[ ! -d $OPENERP_CCORP_DIR ]]; then
+	echo "openerp-ccorp-scripts not installed."
 	exit 1
 fi
 
 #~ Libraries import
-. $LIBBASH_CCORP_DIR/main-lib/checkRoot.sh
-. $LIBBASH_CCORP_DIR/main-lib/getDist.sh
-. $LIBBASH_CCORP_DIR/openerp-scripts/openerp-lib.sh
+. $OPENERP_CCORP_DIR/main-lib/checkRoot.sh
+. $OPENERP_CCORP_DIR/main-lib/getDist.sh
+. $OPENERP_CCORP_DIR/openerp-scripts/openerp-lib.sh
 
 # Check user is root
 checkRoot
@@ -105,8 +105,8 @@ while [[ $port == "" ]]; do
 	if [[ ! $port =~ $test ]]; then
 		log_echo "The port has to contain exactly 2 digits."
 		port=""
-	elif [[ $(ls -l /etc/openerp/ports/$port_*) != 0 ]]; then
-		tmp=$(ls /etc/openerp/ports/$port_* | xargs -n1 basename)
+	elif [[ $(ls -1 /etc/openerp/ports/${port}_* | wc -l) != 0 ]]; then
+		tmp=$(ls /etc/openerp/ports/${port}_* | xargs -n1 basename)
 		log_echo "The port $port is already in use by the server $(tmp:3) (/etc/openerp/ports)."
 		port=""
 	fi

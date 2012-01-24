@@ -18,91 +18,35 @@
 #       MA 02110-1301, USA.
 #!/bin/bash
 
-if [[ ! -d $LIBBASH_CCORP_DIR ]]; then
-	echo "libbash-ccorp not installed."
+if [[ ! -d $OPENERP_CCORP_DIR ]]; then
+	echo "openerp-ccorp-scripts not installed."
 	exit 1
 fi
 
 #~ Libraries import
-. $LIBBASH_CCORP_DIR/main-lib/checkRoot.sh
+. $OPENERP_CCORP_DIR/main-lib/checkRoot.sh
 
 # Settings import
-if [[ ! -f /etc/libbash-ccorp/settings.cfg ]]; then
-	mkdir -p /etc/libbash-ccorp
-	cat > /etc/libbash-ccorp/settings.cfg <<EOF
-repo="http://code.clearcorp.co.cr/bzr/bash/libbash-ccorp/tags"
+if [[ ! -f /etc/openerp-ccorp-scripts/settings.cfg ]]; then
+	mkdir -p /etc/openerp-ccorp-scripts
+	cat > /etc/openerp-ccorp-scripts/settings.cfg <<EOF
+repo="lp:openerp-ccorp-scripts"
 branch=stable
 EOF
 fi
-. /etc/libbash-ccorp/settings.cfg
+. /etc/openerp-ccorp-scripts/settings.cfg
 
 function bzrUpdate {
 	# Make sure parent branch is updated
-	echo -n "${repo}/${branch}" > $LIBBASH_CCORP_DIR/.bzr/branch/location
-	
-	bzr update $LIBBASH_CCORP_DIR
+	cd $OPENERP_CCORP_DIR
+	bzr pull ${repo}/${branch}
 
 	# Check user is root
 	checkRoot
-	if [ -h /usr/local/sbin/ccorp-openerp-install ]; then
-		rm /usr/local/sbin/ccorp-openerp-install
-	fi
-	ln -s $LIBBASH_CCORP_DIR/openerp-scripts/openerp-install.sh /usr/local/sbin/ccorp-openerp-install
-	
-	if [ -h /usr/local/sbin/ccorp-openerp-uninstall ]; then
-		rm /usr/local/sbin/ccorp-openerp-uninstall
-	fi
-	ln -s $LIBBASH_CCORP_DIR/openerp-scripts/openerp-uninstall.sh /usr/local/sbin/ccorp-openerp-uninstall
-	
-	if [ -h /usr/local/sbin/ccorp-openerp-update ]; then
-		rm /usr/local/sbin/ccorp-openerp-update
-	fi
-	ln -s $LIBBASH_CCORP_DIR/openerp-scripts/openerp-update.sh /usr/local/sbin/ccorp-openerp-update
-
-	if [ -h /usr/local/sbin/ccorp-openerp-mkserver ]; then
-		rm /usr/local/sbin/ccorp-openerp-mkserver
-	fi
-	ln -s $LIBBASH_CCORP_DIR/openerp-scripts/mkserver.sh /usr/local/sbin/ccorp-openerp-mkserver
-
-	if [ -h /usr/local/sbin/ccorp-openerp-rmserver ]; then
-		rm /usr/local/sbin/ccorp-openerp-rmserver
-	fi
-	ln -s $LIBBASH_CCORP_DIR/openerp-scripts/rmserver.sh /usr/local/sbin/ccorp-openerp-rmserver
-
-	if [ -h /usr/local/sbin/ccorp-openerp-mkmenus ]; then
-		rm /usr/local/sbin/ccorp-openerp-mkmenus
-	fi
-	ln -s $LIBBASH_CCORP_DIR/openerp-scripts/mkmenus.sh /usr/local/sbin/ccorp-openerp-mkmenus
-
-	if [ -h /usr/local/sbin/ccorp-openerp-cp-db ]; then
-		rm /usr/local/sbin/ccorp-openerp-cp-db
-	fi
-	ln -s $LIBBASH_CCORP_DIR/openerp-scripts/test-db/openerp-test-db.sh /usr/local/sbin/ccorp-openerp-cp-db
-
-	if [ -h /usr/local/sbin/ccorp-ubuntu-server-install ]; then
-		rm /usr/local/sbin/ccorp-ubuntu-server-install
-	fi
-	ln -s $LIBBASH_CCORP_DIR/install-scripts/ubuntu-server-install/ubuntu-server-install.sh /usr/local/sbin/ccorp-ubuntu-server-install
-
-	if [ -h /usr/local/sbin/ccorp-bzr-update ]; then
-		rm /usr/local/sbin/ccorp-bzr-update
-	fi
-	ln -s $LIBBASH_CCORP_DIR/install-scripts/bzr-install/bzr-update.sh /usr/local/sbin/ccorp-bzr-update
-
-	if [ -h /usr/local/sbin/ccorp-users-server-install ]; then
-		rm /usr/local/sbin/ccorp-users-server-install
-	fi
-	ln -s $LIBBASH_CCORP_DIR/install-scripts/users-server-install/users-server-install.sh /usr/local/sbin/ccorp-users-server-install
-
-	if [ -h /usr/local/sbin/ccorp-koo-install ]; then
-		rm /usr/local/sbin/ccorp-koo-install
-	fi
-	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-dev-station/koo-install.sh /usr/local/sbin/ccorp-koo-install
-
-	if [ -h /usr/local/sbin/ccorp-install-fonts ]; then
-		rm /usr/local/sbin/ccorp-install-fonts
-	fi
-	ln -s $LIBBASH_CCORP_DIR/install-scripts/openerp-dev-station/install-fonts.sh /usr/local/sbin/ccorp-install-fonts
+	for x in $(ls -1 $OPENERP_CCORP_DIR/bin-links); do
+		rm -r /usr/local/sbin/$x
+		ln -s $OPENERP_CCORP_DIR/bin-links/$x /usr/local/sbin/$x
+	done
 	
 	return 0
 }

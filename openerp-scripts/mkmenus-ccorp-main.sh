@@ -54,8 +54,8 @@ if [[ `id -u` != `id -u $openerp_user` ]]; then
 	exit 1
 fi
 
-if [[ ! -d $LIBBASH_CCORP_DIR ]]; then
-	echo "libbash-ccorp not installed."
+if [[ ! -d $OPENERP_CCORP_DIR ]]; then
+	echo "openerp-ccorp-scripts not installed."
 	exit 1
 fi
 
@@ -95,7 +95,7 @@ cat << EOF >> /home/$openerp_user/.local/share/desktop-directories/openerp-main-
 [Desktop Entry]
 Version=1.0
 Type=Directory
-Icon=$LIBBASH_CCORP_DIR/openerp-scripts/icons/ccorp-logo.png
+Icon=$OPENERP_CCORP_DIR/openerp-scripts/icons/ccorp-logo.png
 Name=openerp-main-controls
 EOF
 
@@ -109,9 +109,9 @@ for i in "all" "apache" "postgresql"; do
 Version=1.0
 Type=Application
 Terminal=true
-Icon=$LIBBASH_CCORP_DIR/openerp-scripts/icons/$i-$j.png
+Icon=$OPENERP_CCORP_DIR/openerp-scripts/icons/$i-$j.png
 Name=$j $i
-Exec=$LIBBASH_CCORP_DIR/openerp-scripts/openerp-dev-control.sh $i $j
+Exec=$OPENERP_CCORP_DIR/openerp-scripts/openerp-dev-control.sh $i $j
 EOF
 	done
 done
