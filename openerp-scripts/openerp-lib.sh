@@ -157,124 +157,61 @@ function change_postgres_passwd {
 	log_echo ""
 }
 
-function download_openerp_server {
-	# Download openerp-server latest stable/trunk release.
-	log_echo "Downloading openerp-server latest $branch release..."
+function download_openerp_branch {
+	# $1: sources branch
+	# $2: launchpad project
+	# $3: launchpad branch
+	# Download branch latest release.
+	log_echo "Downloading $1 latest $branch release..."
 	mkdir -p /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
 	cd /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
-	if [ -e openobject-server ]; then
-		cd openobject-server >> $INSTALL_LOG_FILE
+	if [ -e $1 ]; then
+		cd $1 >> $INSTALL_LOG_FILE
 		bzr pull >> $INSTALL_LOG_FILE
 	else
-		bzr branch lp:~clearcorp/openobject-server/ccorp-$branch openobject-server >> $INSTALL_LOG_FILE
+		mkdir -p /tmp/openerp-ccorp-scripts >> $INSTALL_LOG_FILE
+		cd /tmp/openerp-ccorp-scripts >> $INSTALL_LOG_FILE
+		wget http://www.wuala.com/carlos.vasquez/openerp-src-bin/$branch/$1.tgz >> $INSTALL_LOG_FILE
+		tar xzf $1.tgz >> $INSTALL_LOG_FILE
+		bzr branch $branch/$1 /srv/openerp/$branch/src/$1 >> $INSTALL_LOG_FILE
+		echo "parent_location = lp:~clearcorp/$2/$3" > /srv/openerp/$branch/src/$1/.bzr/branch/branch.conf
 	fi
 	log_echo ""
 }
 
-function download_openerp_addons {
-	# Download openerp addons latest stable/trunk branch.
-	log_echo "Downloading openerp addons latest $branch branch..."
+function download_other_branch {
+	# $1: sources branch
+	# $2: launchpad project
+	# $3: launchpad branch
+	# Download branch latest release.
+	log_echo "Downloading $1 latest $branch release..."
 	mkdir -p /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
 	cd /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
-	if [ -e openobject-addons ]; then
-		cd openobject-addons >> $INSTALL_LOG_FILE
+	if [ -e $1 ]; then
+		cd $1 >> $INSTALL_LOG_FILE
 		bzr pull >> $INSTALL_LOG_FILE
 	else
-		bzr branch lp:~clearcorp/openobject-addons/ccorp-$branch openobject-addons >> $INSTALL_LOG_FILE
-	fi
-	log_echo ""
-}
-
-function download_ccorp_addons {
-	# Download openerp ccorp-addons latest stable/trunk branch.
-	log_echo "Downloading openerp ccorp-addons latest $branch branch..."
-	mkdir -p /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
-	cd /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
-	if [ -e ccorp-addons ]; then
-		cd ccorp-addons >> $INSTALL_LOG_FILE
-		bzr pull >> $INSTALL_LOG_FILE
-	else
-		bzr branch lp:openerp-ccorp-addons/$branch ccorp-addons >> $INSTALL_LOG_FILE
-	fi
-	log_echo ""
-}
-
-function download_costa_rica_addons {
-	# Download openerp-costa-rica latest stable/trunk branch.
-	log_echo "Downloading openerp-costa-rica latest $branch branch..."
-	mkdir -p /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
-	cd /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
-	if [ -e costa-rica ]; then
-		cd costa-rica-addons >> $INSTALL_LOG_FILE
-		bzr pull >> $INSTALL_LOG_FILE
-	else
-		bzr branch lp:openerp-costa-rica/$branch costa-rica-addons >> $INSTALL_LOG_FILE
-	fi
-	log_echo ""
-}
-
-function download_extra_addons {
-	# Download extra addons
-	log_echo "Downloading extra addons..."
-	mkdir -p /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
-	cd /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
-	if [ -e openobject-addons-extra ]; then
-		cd openobject-addons-extra >> $INSTALL_LOG_FILE
-		bzr pull >> $INSTALL_LOG_FILE
-	else
-		bzr branch lp:~clearcorp/openobject-addons/ccorp-extra-$branch openobject-addons-extra >> $INSTALL_LOG_FILE
-	fi
-	log_echo "Removing use_control from extra addons..."
-	rm -r /srv/openerp/$branch/src/openobject-addons-extra/use_control >> $INSTALL_LOG_FILE
-	log_echo ""
-}
-
-function download_magentoerpconnect {
-	# Download magentoerpconnect
-	log_echo "Downloading magentoerpconnect..."
-	mkdir -p /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
-	cd /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
-	if [ -e magentoerpconnect ]; then
-		cd magentoerpconnect >> $INSTALL_LOG_FILE
-		bzr pull >> $INSTALL_LOG_FILE
-	else
-		bzr branch lp:magentoerpconnect magentoerpconnect >> $INSTALL_LOG_FILE
-	fi
-	log_echo ""
-}
-
-function download_nan_tic_addons {
-	# Download nan-tic modules
-	log_echo "Downloading nan-tic modules..."
-	mkdir -p /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
-	cd /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
-	if [ -e openobject-client-kde ]; then
-		cd openobject-client-kde >> $INSTALL_LOG_FILE
-		bzr pull >> $INSTALL_LOG_FILE
-	else
-		bzr branch lp:openobject-client-kde/5.0 openobject-client-kde >> $INSTALL_LOG_FILE
+		bzr branch lp:$2/$3 $1 >> $INSTALL_LOG_FILE
 	fi
 	log_echo ""
 }
 
 function download_openerp {
 	bzr init-repo /srv/openerp
-	if [[ $branch == "5.0" ]]; then
-		download_openerp_server
-		if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then download_openerp_addons; fi
-		if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then download_ccorp_addons; fi
-		if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then download_costa_rica_addons; fi
-		if [[ $install_extra_addons =~ ^[Yy]$ ]]; then download_extra_addons; fi
-		if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then download_magentoerpconnect; fi
-		if [[ $install_nantic =~ ^[Yy]$ ]]; then download_nan_tic_addons; fi
-	elif [[ $branch == "6.0" ]]; then
-		download_openerp_server
-		if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then download_openerp_addons; fi
-		if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then download_ccorp_addons; fi
-		if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then download_costa_rica_addons; fi
-		if [[ $install_extra_addons =~ ^[Yy]$ ]]; then download_extra_addons; fi
-		if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then download_magentoerpconnect; fi
-		if [[ $install_nantic =~ ^[Yy]$ ]]; then download_nan_tic_addons; fi
+	if [[ $branch == "5.0" ]] || [[ $branch == "6.0" ]] || [[ $branch == "trunk" ]]; then
+		download_openerp_branch openobject-server openobject-server ccorp-$branch
+		if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then
+			download_openerp_branch openobject-addons openobject-addons ccorp-$branch
+		fi
+		if [[ $install_extra_addons =~ ^[Yy]$ ]]; then
+			download_openerp_branch openobject-addons-extra openobject-addons ccorp-extra-$branch
+		fi
+		if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then
+			download_other_branch openerp-ccorp-addons openerp-ccorp-addons $branch
+		fi
+		if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then
+			download_other_branch openerp-costa-rica openerp-costa-rica $branch
+		fi
 	fi
 }
 
@@ -339,17 +276,11 @@ function install_openerp {
 }
 
 function download_openerp_web {
-	# Download openerp-web latest stable/trunk branch.
-	log_echo "Downloading openerp-web latest $branch branch..."
-	mkdir -p /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
-	cd /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
-	if [ -e openobject-client-web ]; then
-		cd openobject-client-web >> $INSTALL_LOG_FILE
-		bzr pull >> $INSTALL_LOG_FILE
-	else
-		bzr branch lp:~clearcorp/openobject-client-web/ccorp-$branch openobject-client-web >> $INSTALL_LOG_FILE
+	if [[ $branch == "5.0" ]] || [[ $branch == "6.0" ]]; then
+		download_openerp_branch openobject-client-web openobject-client-web ccorp-$branch
+	elif [[ $branch == "trunk" ]]; then
+		download_openerp_branch openerp-web openerp-web ccorp-$branch
 	fi
-	log_echo ""
 }
 
 function install_openerp_web_client {
