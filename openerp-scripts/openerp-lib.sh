@@ -169,12 +169,16 @@ function download_openerp_branch {
 		cd $1 >> $INSTALL_LOG_FILE
 		bzr pull >> $INSTALL_LOG_FILE
 	else
-		mkdir -p /tmp/openerp-ccorp-scripts >> $INSTALL_LOG_FILE
-		cd /tmp/openerp-ccorp-scripts >> $INSTALL_LOG_FILE
+		mkdir -p /usr/local/src/openerp/$branch >> $INSTALL_LOG_FILE
+		cd /usr/local/src/openerp/$branch >> $INSTALL_LOG_FILE
 		wget http://www.wuala.com/carlos.vasquez/openerp-src-bin/$branch/$1.tgz >> $INSTALL_LOG_FILE
-		tar xzf $1.tgz >> $INSTALL_LOG_FILE
+		cd .. >> $INSTALL_LOG_FILE
+		tar xzf $branch/$1.tgz >> $INSTALL_LOG_FILE
 		bzr branch $branch/$1 /srv/openerp/$branch/src/$1 >> $INSTALL_LOG_FILE
+		rm -r $branch/$1 >> $INSTALL_LOG_FILE
 		echo "parent_location = lp:~clearcorp/$2/$3" > /srv/openerp/$branch/src/$1/.bzr/branch/branch.conf
+		cd /srv/openerp/$branch/src/$1 >> $INSTALL_LOG_FILE
+		bzr pull
 	fi
 	log_echo ""
 }
