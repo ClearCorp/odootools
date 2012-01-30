@@ -99,28 +99,102 @@ function update_system {
 }
 
 function install_python_lib {
-	# Install the required python libraries for openerp-server.
-	echo "Installing the required python libraries for openerp-server..."
-	# From doc.openerp.com
-	apt-get -qqy install python python-psycopg2 python-reportlab python-egenix-mxdatetime python-tz python-pychart python-pydot python-lxml python-vobject python-imaging python-yaml python-mako >> $INSTALL_LOG_FILE
-	# Excel spreadsheets generation
-	apt-get -qqy install python-xlwt >> $INSTALL_LOG_FILE
-	# For nan-tic modules
-	apt-get -qqy install postgresql-plpython python-qt4 python-dbus python-qt4-dbus pyro >> $INSTALL_LOG_FILE
+	# Install the required packages and python libraries for openerp.
+	echo "Installing the required packages and python libraries for openerp..."
+	
+	# Package array
+	declare -a packages
+	
+	# Packages need by the installer
+	packages += (python-setuptools)
 
-	# Install the required python libraries for openerp-web.
-	echo "Installing the required python libraries for openerp-web..."
-	apt-get -qqy install python python-cherrypy3 python-mako python-pybabel python-formencode python-simplejson python-pyparsing >> $INSTALL_LOG_FILE
+	# Packages for all server versions
+	# Dependencies
+	packages += (python-lxml)
+	packages += (python-psycopg2)
+	packages += (python-pychart)
+	packages += (python-pydot)
+	packages += (python-reportlab)
+	packages += (python-tz)
+	packages += (python-vobject)
+	# Recomended
+	packages += (graphviz)
+	packages += (ghostscript)
+	packages += (python-imaging)
+	packages += (python-libxslt1)	#Excel spreadsheets
+	packages += (python-matplotlib)
+	packages += (python-openssl)	#Extra for ssl ports
+	packages += (python-xlwt)		#Excel spreadsheets
 
-	# Install the required python libraries for process name change.
-	echo "Installing the required python libraries for process name change..."
-	apt-get -qqy install python-dev build-essential python-setuptools >> $INSTALL_LOG_FILE
-	easy_install -U setproctitle >> $INSTALL_LOG_FILE
+	# Packages for 5.0 server
+	if [[ $branch ~= "5.0" ]]; then
+		#Dependencies
+		packages += (python-egenix-mxdatetime)
+		
+		#Recommended
+		packages += (python-pyparsing)
+	fi
 
-	# Install the required python libraries for webdav
-	echo "Installing the required python libraries for webdav..."
-	easy_install -U pywebdav >> $INSTALL_LOG_FILE
-	log_echo ""
+	# Packages for 6.0 and 6.1 servers
+	if [[ $branch ~= "6.0" ]] || [[ $branch ~= "trunk" ]]; then
+		# Dependencies
+		packages += (python-dateutil)
+		packages += (python-feedparser)
+		packages += (python-mako)
+		packages += (python-pyparsing)
+		packages += (python-yaml)
+
+		# Recomended
+		packages += (python-webdav)		#For document-webdav
+	fi
+
+	# Packages for 6.1 server
+	if [[ $branch ~= "trunk" ]]; then
+		# Dependencies
+		packages += (python-werkzeug)
+		packages += (python-zsi)
+	
+		# Recomended
+		packages += (python-gdata)		#Google data parser
+		packages += (python-ldap)
+		packages += (python-openid)
+		packages += (python-vatnumber)
+	fi
+
+	# Packages for all web client versions
+	# Dependencies
+	packages += (python-formencode)
+	packages += (python-pybabel)
+	packages += (python-simplejson)
+	packages += (python-pyparsing)
+
+	# Packages for 5.0 web client
+	if [[ $branch ~= "5.0" ]]; then
+		#Recommended
+		packages += (libjs-mochikit)
+		packages += (libjs-mootools)
+		packages += (python-beaker)
+		packages += (tinymce)
+	fi
+
+	# Packages for 5.0 and 6.0 servers
+	if [[ $branch ~= "5.0" ]] || [[ $branch ~= "6.0" ]]; then
+		# Dependencies
+		packages += (python-cherrypy3)
+	fi
+
+	# Packages for 6.1 server
+	if [[ $branch ~= "trunk" ]]; then
+		# Dependencies
+		packages += (python-werkzeug)
+	
+		# Recomended
+		packages += (python-mock)		# For testing
+		packages += (python-unittest2)	# For testing
+	fi
+	
+	# Install packages
+	apt-get -q install ${packages[*]} >> $INSTALL_LOG_FILE
 }
 
 function install_bzr {
