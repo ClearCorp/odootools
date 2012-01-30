@@ -93,8 +93,8 @@ function add_openerp_user {
 
 function update_system {
 	log_echo "Updating the system..."
-	apt-get -q update >> $INSTALL_LOG_FILE
-	apt-get -q upgrade >> $INSTALL_LOG_FILE
+	apt-get -qy update >> $INSTALL_LOG_FILE
+	apt-get -qy upgrade >> $INSTALL_LOG_FILE
 	log_echo ""
 }
 
@@ -194,20 +194,20 @@ function install_python_lib {
 	fi
 	
 	# Install packages
-	apt-get -q install ${packages[*]} >> $INSTALL_LOG_FILE
+	apt-get -qy install ${packages[*]} >> $INSTALL_LOG_FILE
 }
 
 function install_bzr {
 	# Install bazaar.
 	log_echo "Installing bazaar..."
-	apt-get -qqy install bzr >> $INSTALL_LOG_FILE
+	apt-get -qy install bzr >> $INSTALL_LOG_FILE
 	log_echo ""
 }
 
 function install_postgresql {
 	# Install postgresql
 	log_echo "Installing postgresql..."
-	apt-get -qqy install postgresql >> $INSTALL_LOG_FILE
+	apt-get -qy install postgresql >> $INSTALL_LOG_FILE
 	log_echo ""
 }
 
