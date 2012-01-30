@@ -121,10 +121,13 @@ function install_python_lib {
 	packages+=(graphviz)
 	packages+=(ghostscript)
 	packages+=(python-imaging)
-	packages+=(python-libxslt1) #Excel spreadsheets
+		#Excel spreadsheets
+	packages+=(python-libxslt1)
 	packages+=(python-matplotlib)
-	packages+=(python-openssl)  #Extra for ssl ports
-	packages+=(python-xlwt)     #Excel spreadsheets
+		#Extra for ssl ports
+	packages+=(python-openssl)
+		#Excel spreadsheets
+	packages+=(python-xlwt)
 
 	# Packages for 5.0 server
 	if [[ $branch ~= "5.0" ]]; then
@@ -145,7 +148,8 @@ function install_python_lib {
 		packages+=(python-yaml)
 
 		# Recomended
-		packages+=(python-webdav)       #For document-webdav
+			#For document-webdav
+		packages+=(python-webdav)
 	fi
 
 	# Packages for 6.1 server
@@ -155,7 +159,8 @@ function install_python_lib {
 		packages+=(python-zsi)
 	
 		# Recomended
-		packages+=(python-gdata)        #Google data parser
+			#Google data parser
+		packages+=(python-gdata)
 		packages+=(python-ldap)
 		packages+=(python-openid)
 		packages+=(python-vatnumber)
@@ -189,8 +194,10 @@ function install_python_lib {
 		packages+=(python-werkzeug)
 	
 		# Recomended
-		packages+=(python-mock)         # For testing
-		packages+=(python-unittest2)    # For testing
+			#For testing
+		packages+=(python-mock)
+			#For testing
+		packages+=(python-unittest2)
 	fi
 	
 	# Install packages
