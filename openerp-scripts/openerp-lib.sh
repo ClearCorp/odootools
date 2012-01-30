@@ -93,8 +93,8 @@ function add_openerp_user {
 
 function update_system {
 	log_echo "Updating the system..."
-	apt-get -qq update >> $INSTALL_LOG_FILE
-	apt-get -qqy upgrade >> $INSTALL_LOG_FILE
+	apt-get -q update >> $INSTALL_LOG_FILE
+	apt-get -q upgrade >> $INSTALL_LOG_FILE
 	log_echo ""
 }
 
