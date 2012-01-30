@@ -130,7 +130,7 @@ function install_python_lib {
 	packages+=(python-xlwt)
 
 	# Packages for 5.0 server
-	if [[ $branch ~= "5.0" ]]; then
+	if [[ $branch =~ "5.0" ]]; then
 		#Dependencies
 		packages+=(python-egenix-mxdatetime)
 		
@@ -139,7 +139,7 @@ function install_python_lib {
 	fi
 
 	# Packages for 6.0 and 6.1 servers
-	if [[ $branch ~= "6.0" ]] || [[ $branch ~= "trunk" ]]; then
+	if [[ $branch =~ "6.0" ]] || [[ $branch =~ "trunk" ]]; then
 		# Dependencies
 		packages+=(python-dateutil)
 		packages+=(python-feedparser)
@@ -153,7 +153,7 @@ function install_python_lib {
 	fi
 
 	# Packages for 6.1 server
-	if [[ $branch ~= "trunk" ]]; then
+	if [[ $branch =~ "trunk" ]]; then
 		# Dependencies
 		packages+=(python-werkzeug)
 		packages+=(python-zsi)
@@ -174,7 +174,7 @@ function install_python_lib {
 	packages+=(python-pyparsing)
 
 	# Packages for 5.0 web client
-	if [[ $branch ~= "5.0" ]]; then
+	if [[ $branch =~ "5.0" ]]; then
 		#Recommended
 		packages+=(libjs-mochikit)
 		packages+=(libjs-mootools)
@@ -183,13 +183,13 @@ function install_python_lib {
 	fi
 
 	# Packages for 5.0 and 6.0 servers
-	if [[ $branch ~= "5.0" ]] || [[ $branch ~= "6.0" ]]; then
+	if [[ $branch =~ "5.0" ]] || [[ $branch =~ "6.0" ]]; then
 		# Dependencies
 		packages+=(python-cherrypy3)
 	fi
 
 	# Packages for 6.1 server
-	if [[ $branch ~= "trunk" ]]; then
+	if [[ $branch =~ "trunk" ]]; then
 		# Dependencies
 		packages+=(python-werkzeug)
 	
