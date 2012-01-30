@@ -106,91 +106,91 @@ function install_python_lib {
 	declare -a packages
 	
 	# Packages need by the installer
-	packages += (python-setuptools)
+	packages+=(python-setuptools)
 
 	# Packages for all server versions
 	# Dependencies
-	packages += (python-lxml)
-	packages += (python-psycopg2)
-	packages += (python-pychart)
-	packages += (python-pydot)
-	packages += (python-reportlab)
-	packages += (python-tz)
-	packages += (python-vobject)
+	packages+=(python-lxml)
+	packages+=(python-psycopg2)
+	packages+=(python-pychart)
+	packages+=(python-pydot)
+	packages+=(python-reportlab)
+	packages+=(python-tz)
+	packages+=(python-vobject)
 	# Recomended
-	packages += (graphviz)
-	packages += (ghostscript)
-	packages += (python-imaging)
-	packages += (python-libxslt1)	#Excel spreadsheets
-	packages += (python-matplotlib)
-	packages += (python-openssl)	#Extra for ssl ports
-	packages += (python-xlwt)		#Excel spreadsheets
+	packages+=(graphviz)
+	packages+=(ghostscript)
+	packages+=(python-imaging)
+	packages+=(python-libxslt1)	#Excel spreadsheets
+	packages+=(python-matplotlib)
+	packages+=(python-openssl)	#Extra for ssl ports
+	packages+=(python-xlwt)		#Excel spreadsheets
 
 	# Packages for 5.0 server
 	if [[ $branch ~= "5.0" ]]; then
 		#Dependencies
-		packages += (python-egenix-mxdatetime)
+		packages+=(python-egenix-mxdatetime)
 		
 		#Recommended
-		packages += (python-pyparsing)
+		packages+=(python-pyparsing)
 	fi
 
 	# Packages for 6.0 and 6.1 servers
 	if [[ $branch ~= "6.0" ]] || [[ $branch ~= "trunk" ]]; then
 		# Dependencies
-		packages += (python-dateutil)
-		packages += (python-feedparser)
-		packages += (python-mako)
-		packages += (python-pyparsing)
-		packages += (python-yaml)
+		packages+=(python-dateutil)
+		packages+=(python-feedparser)
+		packages+=(python-mako)
+		packages+=(python-pyparsing)
+		packages+=(python-yaml)
 
 		# Recomended
-		packages += (python-webdav)		#For document-webdav
+		packages+=(python-webdav)		#For document-webdav
 	fi
 
 	# Packages for 6.1 server
 	if [[ $branch ~= "trunk" ]]; then
 		# Dependencies
-		packages += (python-werkzeug)
-		packages += (python-zsi)
+		packages+=(python-werkzeug)
+		packages+=(python-zsi)
 	
 		# Recomended
-		packages += (python-gdata)		#Google data parser
-		packages += (python-ldap)
-		packages += (python-openid)
-		packages += (python-vatnumber)
+		packages+=(python-gdata)		#Google data parser
+		packages+=(python-ldap)
+		packages+=(python-openid)
+		packages+=(python-vatnumber)
 	fi
 
 	# Packages for all web client versions
 	# Dependencies
-	packages += (python-formencode)
-	packages += (python-pybabel)
-	packages += (python-simplejson)
-	packages += (python-pyparsing)
+	packages+=(python-formencode)
+	packages+=(python-pybabel)
+	packages+=(python-simplejson)
+	packages+=(python-pyparsing)
 
 	# Packages for 5.0 web client
 	if [[ $branch ~= "5.0" ]]; then
 		#Recommended
-		packages += (libjs-mochikit)
-		packages += (libjs-mootools)
-		packages += (python-beaker)
-		packages += (tinymce)
+		packages+=(libjs-mochikit)
+		packages+=(libjs-mootools)
+		packages+=(python-beaker)
+		packages+=(tinymce)
 	fi
 
 	# Packages for 5.0 and 6.0 servers
 	if [[ $branch ~= "5.0" ]] || [[ $branch ~= "6.0" ]]; then
 		# Dependencies
-		packages += (python-cherrypy3)
+		packages+=(python-cherrypy3)
 	fi
 
 	# Packages for 6.1 server
 	if [[ $branch ~= "trunk" ]]; then
 		# Dependencies
-		packages += (python-werkzeug)
+		packages+=(python-werkzeug)
 	
 		# Recomended
-		packages += (python-mock)		# For testing
-		packages += (python-unittest2)	# For testing
+		packages+=(python-mock)		# For testing
+		packages+=(python-unittest2)	# For testing
 	fi
 	
 	# Install packages
