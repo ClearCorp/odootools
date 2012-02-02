@@ -39,9 +39,13 @@ tools.nestedvars.on = True
 tools.csrf.on = True
 
 # OpenERP Server
+# server host (name or IP address)
 openerp.server.host = 'localhost'
+# server port
 openerp.server.port = '[SERVER_PORT]'
+# server protocol (socket for rpc, http for xml, https for xml secure)
 openerp.server.protocol = 'socket'
+# server timeout for long operations
 openerp.server.timeout = 450
 
 # Web client settings

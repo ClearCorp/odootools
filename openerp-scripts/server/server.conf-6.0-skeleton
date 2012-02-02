@@ -137,7 +137,7 @@ secure_cert_file = /etc/openerp/ssl/servers/[NAME]_crt.pem
 
 # (char) Specify the private key file for the SSL connection
 # (default server.key).
-secure_cert_file = /etc/openerp/ssl/servers/[NAME]_key.pem
+secure_pkey_file = /etc/openerp/ssl/servers/[NAME]_key.pem
 
 # (char) Specify the host for the FTP DMS server (default localhost).
 ftp_server_host = 0.0.0.0
