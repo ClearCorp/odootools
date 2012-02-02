@@ -5,9 +5,6 @@
 #				Its function is to prepare a tar archive with the latest
 #				version of ccorp-openerp-scripts-setup and all needed files in it.
 
-ccorp-openerp-scripts-update
-ccorp-openerp-scripts-update
-
 #Gets the dir source
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ] ; do SOURCE="$(readlink "$SOURCE")"; done
