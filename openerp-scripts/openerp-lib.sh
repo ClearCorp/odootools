@@ -435,78 +435,41 @@ function install_phppgadmin {
 	/etc/init.d/apache2 restart >> $INSTALL_LOG_FILE
 }
 
-function mkserver_openerp_addons {
-	# Install OpenERP addons
-	log_echo "Installing OpenERP addons..."
-	cd /srv/openerp/$branch/src/openobject-addons >> $INSTALL_LOG_FILE
+function mkserver_addons_mk_links {
+	# Create symbolic links for addons
+	# $1: project (src branch)
+	log_echo "Creating symbolic links for $1..."
+	cd /srv/openerp/$branch/src/$1 >> $INSTALL_LOG_FILE
 	for x in $(ls -d *); do
 		if [[ -d /srv/openerp/$branch/instances/$name/addons/$x ]]; then
-			log_echo "openobject-addons: module $x already present, removing"
-			rm -r /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
+			log_echo "$1: module $x already present, skipping"
+		else
+			ln -s /srv/openerp/$branch/src/$1/$x /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
 		fi
-		ln -s /srv/openerp/$branch/src/openobject-addons/$x /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
 	done
 }
 
-function mkserver_ccorp_addons {
-	# Install ccorp addons
-	log_echo "Installing ccorp addons..."
-	cd /srv/openerp/$branch/src/ccorp-addons >> $INSTALL_LOG_FILE
+function mkserver_addons_rm_links {
+	# Remove symbolic links for addons
+	log_echo "Removing symbolic links for $name..."
+	cd /srv/openerp/$branch/instances/$name/addons >> $INSTALL_LOG_FILE
 	for x in $(ls -d *); do
-		if [[ -d /srv/openerp/$branch/instances/$name/addons/$x ]]; then
-			log_echo "ccorp-addons: module $x already present, removing"
-			rm -r /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
+		if [[ -h /srv/openerp/$branch/instances/$name/addons/$x ]]; then
+			log_echo "$x is a symbolic linked addon, removing"
+			rm $x >> $INSTALL_LOG_FILE
+		else
+			log_echo "$x is not a symbolic linked addon, skipping"
 		fi
-		ln -s /srv/openerp/$branch/src/ccorp-addons/$x /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
-	done
-}
-
-function mkserver_costa_rica_addons {
-	# Install OpenERP costa-rica
-	log_echo "Installing OpenERP costa-rica..."
-	cd /srv/openerp/$branch/src/costa-rica-addons >> $INSTALL_LOG_FILE
-	for x in $(ls -d *); do
-		if [[ -d /srv/openerp/$branch/instances/$name/addons/$x ]]; then
-			log_echo "costa-rica-addons: module $x already present, removing"
-			rm -r /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
-		fi
-		ln -s /srv/openerp/$branch/src/costa-rica-addons/$x /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
-	done
-}
-
-function mkserver_extra_addons {
-	# Install OpenERP extra addons
-	log_echo "Installing OpenERP extra addons..."
-	cd /srv/openerp/$branch/src/openobject-addons-extra >> $INSTALL_LOG_FILE
-	for x in $(ls -d *); do
-		if [[ -d /srv/openerp/$branch/instances/$name/addons/$x ]]; then
-			log_echo "openobject-addons-extra: module $x already present, removing"
-			rm -r /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
-		fi
-		ln -s /srv/openerp/$branch/src/openobject-addons-extra/$x /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
-	done
-}
-
-function mkserver_nan_tic_addons {
-	# Install nan-tic modules
-	log_echo "Installing nan-tic modules..."
-	cd /srv/openerp/$branch/src/nan-tic-addons >> $INSTALL_LOG_FILE
-	for x in $(ls -d *); do
-		if [[ -d /srv/openerp/$branch/instances/$name/addons/$x ]]; then
-			log_echo "nan-tic-addons: module $x already present, removing"
-			rm -r /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
-		fi
-		ln -s /srv/openerp/$branch/src/nan-tic-addons/$x /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
 	done
 }
 
 function mkserver_install_addons {
-	if [[ $install_nantic =~ ^[Yy]$ ]]; then mkserver_nan_tic_addons; fi
-	if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then mkserver_magentoerpconnect; fi
-	if [[ $install_extra_addons =~ ^[Yy]$ ]]; then mkserver_extra_addons; fi
-	if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then mkserver_costa_rica_addons; fi
-	if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then mkserver_ccorp_addons; fi
-	if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then mkserver_openerp_addons; fi
+	if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then mkserver_addons_mk_links openobject-addons; fi
+	if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then mkserver_addons_mk_links openerp-ccorp-addons; fi
+	if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then mkserver_addons_mk_links openerp-costa-rica; fi
+	if [[ $install_extra_addons =~ ^[Yy]$ ]]; then mkserver_addons_mk_links openobject-addons-extra; fi
+	if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then mkserver_addons_mk_links magentoerpconnect; fi
+	if [[ $install_nantic =~ ^[Yy]$ ]]; then mkserver_addons_mk_links nantic; fi
 }
 
 function make_menus {
