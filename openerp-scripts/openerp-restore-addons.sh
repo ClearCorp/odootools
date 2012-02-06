@@ -93,7 +93,7 @@ while [[ $name == "" ]]; do
 	read -p "Enter the OpenERP server name: " name
 	if [[ $name == "" ]]; then
 		log_echo "The name cannot be blank."
-	elif [[ ! -d /srv/openerp/instances/$name ]]; then
+	elif [[ ! -d /srv/openerp/$branch/instances/$name ]]; then
 		log_echo "There isn't any instance named $name"
 		name=""
 	fi
