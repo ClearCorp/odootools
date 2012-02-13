@@ -279,12 +279,12 @@ function download_other_branch {
 function download_openerp {
 	bzr init-repo /srv/openerp
 	if [[ $branch == "5.0" ]] || [[ $branch == "6.0" ]] || [[ $branch == "trunk" ]]; then
-		download_openerp_branch openobject-server openobject-server ccorp-$branch
+		download_openerp_branch openobject-server openobject-server $branch-ccorp
 		if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then
-			download_openerp_branch openobject-addons openobject-addons ccorp-$branch
+			download_openerp_branch openobject-addons openobject-addons $branch-ccorp
 		fi
 		if [[ $install_extra_addons =~ ^[Yy]$ ]]; then
-			download_openerp_branch openobject-addons-extra openobject-addons ccorp-extra-$branch
+			download_openerp_branch openobject-addons-extra openobject-addons extra-$branch-ccorp
 		fi
 		if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then
 			download_other_branch openerp-ccorp-addons openerp-ccorp-addons $branch
@@ -357,9 +357,9 @@ function install_openerp {
 
 function download_openerp_web {
 	if [[ $branch == "5.0" ]] || [[ $branch == "6.0" ]]; then
-		download_openerp_branch openobject-client-web openobject-client-web ccorp-$branch
+		download_openerp_branch openobject-client-web openobject-client-web $branch-ccorp
 	elif [[ $branch == "trunk" ]]; then
-		download_openerp_branch openerp-web openerp-web ccorp-$branch
+		download_openerp_branch openerp-web openerp-web $branch-ccorp
 	fi
 }
 
