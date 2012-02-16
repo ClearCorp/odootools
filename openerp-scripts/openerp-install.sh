@@ -108,19 +108,22 @@ else
 fi
 
 #Choose the branch to install
-while [[ ! $branch =~ ^[56]$ ]]; do
-	read -p "Which branch do you want to install (5/_6_)? " -n 1 branch
+while [[ ! $branch == "5" ]] || [[ ! $branch == "6" ]] || [[ ! $branch == "6.1" ]]; do
+	read -p "Which branch do you want to install (5/_6_/6.1)? " -n 1 branch
 	if [[ $branch == "" ]]; then
 		branch="6"
 	fi
 	log_echo ""
 done
-if [[ $branch =~ ^[5]$ ]]; then
+if [[ $branch == "5" ]]; then
 	log_echo "This installation will use 5.0 branch."
 	branch="5.0"
-else
+elif [[ $branch == "6" ]]; then
 	log_echo "This installation will use 6.0 branch."
 	branch="6.0"
+else
+	log_echo "This installation will use 6.1 branch."
+	branch="trunk"
 fi
 echo ""
 
