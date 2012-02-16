@@ -110,6 +110,7 @@ fi
 #Choose the branch to install
 while [[ ! $branch =~ ^5\.0$ ]] || [[ ! $branch =~ ^6\.0$ ]] || [[ ! $branch =~ ^6\.1$ ]]; do
 	read -p "Which branch do you want to install (5.0 / _6.0_ / 6.1)? " branch
+	echo $branch
 	if [[ $branch == "" ]]; then
 		branch="6.0"
 	fi
