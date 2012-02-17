@@ -108,7 +108,7 @@ else
 fi
 
 #Choose the branch to install
-while [[ ! $branch =~ ^5\.0$ ]] || [[ ! $branch =~ ^6\.0$ ]] || [[ ! $branch =~ ^6\.1$ ]]; do
+while [[ ! $branch =~ ^5\.0$ ]] && [[ ! $branch =~ ^6\.0$ ]] && [[ ! $branch =~ ^6\.1$ ]]; do
 	read -p "Which branch do you want to install (5.0 / _6.0_ / 6.1)? " branch
 	echo $branch
 	if [[ $branch == "" ]]; then
@@ -116,17 +116,17 @@ while [[ ! $branch =~ ^5\.0$ ]] || [[ ! $branch =~ ^6\.0$ ]] || [[ ! $branch =~ 
 	fi
 	log_echo ""
 done
+
+log_echo "This installation will use 5.0 branch."
+
 if [[ $branch = "5.0" ]]; then
-	log_echo "This installation will use 5.0 branch."
 	branch="5.0"
 elif [[ $branch = "6.0" ]]; then
-	log_echo "This installation will use 6.0 branch."
 	branch="6.0"
 else
-	log_echo "This installation will use 6.1 branch."
 	branch="trunk"
 fi
-echo ""
+log_echo ""
 
 #Install openerp_addons
 while [[ ! $install_openerp_addons =~ ^[YyNn]$ ]]; do
