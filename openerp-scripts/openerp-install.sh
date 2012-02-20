@@ -117,7 +117,7 @@ while [[ ! $branch =~ ^5\.0$ ]] && [[ ! $branch =~ ^6\.0$ ]] && [[ ! $branch =~ 
 	log_echo ""
 done
 
-log_echo "This installation will use 5.0 branch."
+log_echo "This installation will use $branch branch."
 
 if [[ $branch = "5.0" ]]; then
 	branch="5.0"
