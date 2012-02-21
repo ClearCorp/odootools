@@ -63,28 +63,54 @@ log_echo "--------------------------"
 log_echo ""
 
 # Source installation variables
-if [ -d /etc/openerp/5.0 ] && [ ! -d /etc/openerp/6.0 ]; then
-	branch="5"
-elif [ ! -d /etc/openerp/5.0 ] && [ -d /etc/openerp/6.0 ]; then
-	branch="6"
-else
-	branch=""
-	while [[ ! $branch =~ ^[56]$ ]]; do
-		read -p "You have installed versions 5 and 6, choose the version for this server (5/_6_): " branch
-		if [[ $branch == "" ]]; then
-			branch="6"
-		fi
-		log_echo ""
-	done
+installed_5_0 = false
+installed_6_0 = false
+installed_6_1 = false
+installed_count = 0
+installed_branch = ""
+
+if [ -d /etc/openerp/5.0 ]; then
+    installed_5_0 = true
+    installed_count=$count+1
+    installed_branch = "5.0"
+fi
+if [ -d /etc/openerp/6.0 ]; then
+    installed_6_0 = true
+    installed_count=$count+1
+    installed_branch = "6.0"
+fi
+if [ -d /etc/openerp/trunk ]; then
+    installed_trunk = true
+    installed_count=$count+1
+    installed_branch = "6.1"
 fi
 
-if [[ $branch =~ ^[5]$ ]]; then
-	log_echo "This server will use 5.0 branch."
-	branch="5.0"
+if [ $installed_count = 0 ]; then
+    log_echo "No OpenERP installed."
+    exit 1
+elif [ $installed_count = 1 ]; then
+    branch=$installed_branch
 else
-	log_echo "This server will use 6.0 branch."
-	branch="6.0"
+	branch=""
+    while [[ ! $branch =~ ^5\.0$ ]] && [[ ! $branch =~ ^6\.0$ ]] && [[ ! $branch =~ ^6\.1$ ]]; do
+        read -p "You have installed several versions, choose the version for this server (5.0 / _6.0_ / 6.1)? " branch
+        if [[ $branch == "" ]]; then
+            branch="6.0"
+        fi
+        log_echo ""
+    done
 fi
+
+log_echo "This server will use $branch branch."
+
+if [[ $branch = "5.0" ]]; then
+	branch="5.0"
+elif [[ $branch = "6.0" ]]; then
+	branch="6.0"
+else
+	branch="trunk"
+fi
+log_echo ""
 
 . /etc/openerp/$branch/install.cfg
 
@@ -162,7 +188,11 @@ cd /srv/openerp/$branch >> $INSTALL_LOG_FILE
 mkdir -p instances/$name/addons >> $INSTALL_LOG_FILE
 mkdir -p instances/$name/filestore >> $INSTALL_LOG_FILE
 ln -s /srv/openerp/$branch/src/openobject-server instances/$name/server >> $INSTALL_LOG_FILE
-ln -s /srv/openerp/$branch/src/openobject-client-web instances/$name/web >> $INSTALL_LOG_FILE
+if [[ $branch == "trunk" ]]; then
+    ln -s /srv/openerp/$branch/src/openerp-web instances/$name/web >> $INSTALL_LOG_FILE
+else
+    ln -s /srv/openerp/$branch/src/openobject-client-web instances/$name/web >> $INSTALL_LOG_FILE
+fi
 mkserver_install_addons >> $INSTALL_LOG_FILE
 
 log_echo "Creating openerp-server init script..."

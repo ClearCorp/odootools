@@ -440,13 +440,24 @@ function mkserver_addons_mk_links {
 	# $1: project (src branch)
 	log_echo "Creating symbolic links for $1..."
 	cd /srv/openerp/$branch/src/$1 >> $INSTALL_LOG_FILE
-	for x in $(ls -d *); do
-		if [[ -d /srv/openerp/$branch/instances/$name/addons/$x ]]; then
-			log_echo "$1: module $x already present, skipping"
-		else
-			ln -s /srv/openerp/$branch/src/$1/$x /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
-		fi
-	done
+    if [[ $branch == "trunk" ]]; then
+        mkdir /srv/openerp/$branch/instances/$name/addons/$1
+        for x in $(ls -d *); do
+            if [[ -d /srv/openerp/$branch/instances/$name/addons/$1/$x ]]; then
+                log_echo "$1: module $x already present, skipping"
+            else
+                ln -s /srv/openerp/$branch/src/$1/$x /srv/openerp/$branch/instances/$name/addons/$1/$x >> $INSTALL_LOG_FILE
+            fi
+        done
+    else
+        for x in $(ls -d *); do
+            if [[ -d /srv/openerp/$branch/instances/$name/addons/$x ]]; then
+                log_echo "$1: module $x already present, skipping"
+            else
+                ln -s /srv/openerp/$branch/src/$1/$x /srv/openerp/$branch/instances/$name/addons/$x >> $INSTALL_LOG_FILE
+            fi
+        done
+    fi
 }
 
 function mkserver_addons_rm_links {
