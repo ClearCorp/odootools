@@ -63,26 +63,26 @@ log_echo "--------------------------"
 log_echo ""
 
 # Source installation variables
-installed_5_0 = false
-installed_6_0 = false
-installed_6_1 = false
-installed_count = 0
-installed_branch = ""
+installed_5_0=false
+installed_6_0=false
+installed_6_1=false
+installed_count=0
+installed_branch=""
 
 if [ -d /etc/openerp/5.0 ]; then
-    installed_5_0 = true
+    installed_5_0=true
     installed_count=$count+1
-    installed_branch = "5.0"
+    installed_branch="5.0"
 fi
 if [ -d /etc/openerp/6.0 ]; then
-    installed_6_0 = true
+    installed_6_0=true
     installed_count=$count+1
-    installed_branch = "6.0"
+    installed_branch="6.0"
 fi
 if [ -d /etc/openerp/trunk ]; then
-    installed_trunk = true
+    installed_trunk=true
     installed_count=$count+1
-    installed_branch = "6.1"
+    installed_branch="6.1"
 fi
 
 if [ $installed_count = 0 ]; then
