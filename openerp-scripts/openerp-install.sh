@@ -123,6 +123,8 @@ if [[ $branch = "5.0" ]]; then
 	branch="5.0"
 elif [[ $branch = "6.0" ]]; then
 	branch="6.0"
+elif [[ $branch = "6.1" ]]; then
+	branch="6.1"
 else
 	branch="trunk"
 fi

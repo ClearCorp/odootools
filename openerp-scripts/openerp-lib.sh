@@ -136,7 +136,7 @@ function install_python_lib {
 	fi
 
 	# Packages for 6.0 and 6.1 servers
-	if [[ $branch =~ "6.0" ]] || [[ $branch =~ "trunk" ]]; then
+	if [[ $branch =~ "6.0" ]] || [[ $branch =~ "6.1" ]] || [[ $branch =~ "trunk" ]]; then
 		# Dependencies
 		packages+=(python-dateutil)
 		packages+=(python-feedparser)
@@ -149,7 +149,7 @@ function install_python_lib {
 	fi
 
 	# Packages for 6.1 server
-	if [[ $branch =~ "trunk" ]]; then
+	if [[ $branch =~ "6.1" ]] || [[ $branch =~ "trunk" ]]; then
 		# Dependencies
 		packages+=(python-werkzeug)
 		packages+=(python-zsi)
@@ -184,7 +184,7 @@ function install_python_lib {
 	fi
 
 	# Packages for 6.1 server
-	if [[ $branch =~ "trunk" ]]; then
+	if [[ $branch =~ "6.1" ]] || [[ $branch =~ "trunk" ]]; then
 		# Dependencies
 		packages+=(python-werkzeug)
 	
@@ -278,7 +278,7 @@ function download_other_branch {
 
 function download_openerp {
 	bzr init-repo /srv/openerp
-	if [[ $branch == "5.0" ]] || [[ $branch == "6.0" ]] || [[ $branch == "trunk" ]]; then
+	if [[ $branch == "5.0" ]] || [[ $branch == "6.0" ]] || [[ $branch == "6.1" ]] || [[ $branch == "trunk" ]]; then
 		download_openerp_branch openobject-server openobject-server $branch-ccorp
 		if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then
 			download_openerp_branch openobject-addons openobject-addons $branch-ccorp
@@ -358,7 +358,7 @@ function install_openerp {
 function download_openerp_web {
 	if [[ $branch == "5.0" ]] || [[ $branch == "6.0" ]]; then
 		download_openerp_branch openobject-client-web openobject-client-web $branch-ccorp
-	elif [[ $branch == "trunk" ]]; then
+	elif [[ $branch == "6.1" ]] || [[ $branch == "6.0" ]]; then
 		download_openerp_branch openerp-web openerp-web $branch-ccorp
 	fi
 }
@@ -440,7 +440,7 @@ function mkserver_addons_mk_links {
 	# $1: project (src branch)
 	log_echo "Creating symbolic links for $1..."
 	cd /srv/openerp/$branch/src/$1 >> $INSTALL_LOG_FILE
-    if [[ $branch == "trunk" ]]; then
+    if [[ $branch == "6.1" ]] || [[ $branch == "trunk" ]]; then
         mkdir /srv/openerp/$branch/instances/$name/addons/$1
         for x in $(ls -d *); do
             if [[ -d /srv/openerp/$branch/instances/$name/addons/$1/$x ]]; then

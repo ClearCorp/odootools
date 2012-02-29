@@ -79,10 +79,15 @@ if [ -d /etc/openerp/6.0 ]; then
     installed_count=$count+1
     installed_branch="6.0"
 fi
+if [ -d /etc/openerp/6.1 ]; then
+    installed_6.1=true
+    installed_count=$count+1
+    installed_branch="6.1"
+fi
 if [ -d /etc/openerp/trunk ]; then
     installed_trunk=true
     installed_count=$count+1
-    installed_branch="6.1"
+    installed_branch="trunk"
 fi
 
 if [ $installed_count = 0 ]; then
@@ -92,10 +97,10 @@ elif [ $installed_count = 1 ]; then
     branch=$installed_branch
 else
 	branch=""
-    while [[ ! $branch =~ ^5\.0$ ]] && [[ ! $branch =~ ^6\.0$ ]] && [[ ! $branch =~ ^6\.1$ ]]; do
-        read -p "You have installed several versions, choose the version for this server (5.0 / _6.0_ / 6.1)? " branch
+    while [[ ! $branch =~ ^5\.0$ ]] && [[ ! $branch =~ ^6\.0$ ]] && [[ ! $branch =~ ^6\.1$ ]] && [[ ! $branch =~ ^trunk$ ]]; do
+        read -p "You have installed several versions, choose the version for this server (5.0 / 6.0 / _6.1_ / trunk)? " branch
         if [[ $branch == "" ]]; then
-            branch="6.0"
+            branch="6.1"
         fi
         log_echo ""
     done
@@ -107,6 +112,8 @@ if [[ $branch = "5.0" ]]; then
 	branch="5.0"
 elif [[ $branch = "6.0" ]]; then
 	branch="6.0"
+elif [[ $branch = "6.1" ]]; then
+	branch="6.1"
 else
 	branch="trunk"
 fi
@@ -188,7 +195,7 @@ cd /srv/openerp/$branch >> $INSTALL_LOG_FILE
 mkdir -p instances/$name/addons >> $INSTALL_LOG_FILE
 mkdir -p instances/$name/filestore >> $INSTALL_LOG_FILE
 ln -s /srv/openerp/$branch/src/openobject-server instances/$name/server >> $INSTALL_LOG_FILE
-if [[ $branch == "trunk" ]]; then
+if [[ $branch == "6.1" ]] || [[ $branch == "trunk" ]]; then
     ln -s /srv/openerp/$branch/src/openerp-web instances/$name/web >> $INSTALL_LOG_FILE
 else
     ln -s /srv/openerp/$branch/src/openobject-client-web instances/$name/web >> $INSTALL_LOG_FILE
