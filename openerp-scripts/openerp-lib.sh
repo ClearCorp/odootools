@@ -358,7 +358,7 @@ function install_openerp {
 function download_openerp_web {
 	if [[ $branch == "5.0" ]] || [[ $branch == "6.0" ]]; then
 		download_openerp_branch openobject-client-web openobject-client-web $branch-ccorp
-	elif [[ $branch == "6.1" ]] || [[ $branch == "6.0" ]]; then
+	elif [[ $branch == "6.1" ]] || [[ $branch == "trunk" ]]; then
 		download_openerp_branch openerp-web openerp-web $branch-ccorp
 	fi
 }

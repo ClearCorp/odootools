@@ -80,7 +80,7 @@ if [ -d /etc/openerp/6.0 ]; then
     installed_branch="6.0"
 fi
 if [ -d /etc/openerp/6.1 ]; then
-    installed_6.1=true
+    installed_6_1=true
     installed_count=$count+1
     installed_branch="6.1"
 fi
