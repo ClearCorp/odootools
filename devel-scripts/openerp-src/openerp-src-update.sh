@@ -15,8 +15,8 @@ function update_project {
     echo "--------------------------------------------------------------"
     echo ""
 	
-	ORI_DIR=$BASE_DIR/$1/main/$3
-	DES_DIR=$BASE_DIR/openerp-src/src/$2/$4
+	ORI_DIR=$OPENERP_REPO_BASE/$1/main/$3
+	DES_DIR=$OPENERP_REPO_BASE/openerp-src/src/$2/$4
 	
     echo "Updating branch $2/$4"
     echo "cd $DES_DIR"
@@ -33,9 +33,9 @@ function compress_project {
 	echo ""
 	echo "COMPRESS $1/$2"
 	
-	cd $BASE_DIR/openerp-src/src
-	rm $BASE_DIR/openerp-src/bin/$1/$2.tgz
-	tar czf $BASE_DIR/openerp-src/bin/$1/$2.tgz $1/$2/
+	cd $OPENERP_REPO_BASE/openerp-src/src
+	rm $OPENERP_REPO_BASE/openerp-src/bin/$1/$2.tgz
+	tar czf $OPENERP_REPO_BASE/openerp-src/bin/$1/$2.tgz $1/$2/
 }
 
 update_project	openobject-server	5.0		5.0-ccorp	openobject-server
