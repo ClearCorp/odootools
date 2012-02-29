@@ -246,7 +246,7 @@ function download_openerp_branch {
 		mkdir -p /usr/local/src/openerp/$branch >> $INSTALL_LOG_FILE
 		cd /usr/local/src/openerp/$branch >> $INSTALL_LOG_FILE
 		if [[ ! -f $1.tgz ]]; then
-			wget http://content.wuala.com/contents/carlos.vasquez/openerp-src-bin/$branch/$1.tgz >> $INSTALL_LOG_FILE
+			wget http://code.clearcorp.co.cr/bzr/openerp/openerp-src/bin/$branch/$1.tgz >> $INSTALL_LOG_FILE
 		fi
 		cd .. >> $INSTALL_LOG_FILE
 		tar xzf $branch/$1.tgz >> $INSTALL_LOG_FILE
