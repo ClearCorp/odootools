@@ -4,7 +4,7 @@ if [[ $OPENERP_REPO_BASE == "" ]]; then
     OPENERP_REPO_BASE="~/Development/openerp"
 fi
 
-$REPO_DIR=$OPENERP_REPO_BASE/openerp-src/src
+REPO_DIR=$OPENERP_REPO_BASE/openerp-src/src
 
 echo "parent_location = lp:~clearcorp/openobject-server/5.0-ccorp" > $REPO_DIR/5.0/openobject-server/.bzr/branch/branch.conf
 echo "parent_location = lp:~clearcorp/openobject-server/6.0-ccorp" > $REPO_DIR/6.0/openobject-server/.bzr/branch/branch.conf
