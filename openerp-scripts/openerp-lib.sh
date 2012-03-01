@@ -307,6 +307,7 @@ function install_openerp_server {
 	# OpenERP Server init
 	cp $OPENERP_CCORP_DIR/openerp-scripts/server/server-init-$branch-skeleton /etc/openerp/$branch/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
 	sed -i "s#\\[PATH\\]#/usr/local#g" /etc/openerp/$branch/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
+	
 	# OpenERP Server config skeletons
 	cp $OPENERP_CCORP_DIR/openerp-scripts/server/server.conf-$branch-skeleton /etc/openerp/$branch/server/ >> $INSTALL_LOG_FILE
 	sed -i "s#\\[BRANCH\\]#$branch#g" /etc/openerp/$branch/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
@@ -481,6 +482,28 @@ function mkserver_install_addons {
 	if [[ $install_extra_addons =~ ^[Yy]$ ]]; then mkserver_addons_mk_links openobject-addons-extra; fi
 	if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then mkserver_addons_mk_links magentoerpconnect; fi
 	if [[ $install_nantic =~ ^[Yy]$ ]]; then mkserver_addons_mk_links nantic; fi
+}
+
+function mkserver_addons_config {
+	# Create config line for addons
+	log_echo "Creating config addons settings line..."
+    if [[ $branch == "6.1" ]] || [[ $branch == "trunk" ]]; then
+        cd /srv/openerp/$branch/instances/$name/addons >> $INSTALL_LOG_FILE
+		if [[ $addons_config == "" ]]; then
+			addons_config="/srv/openerp/$branch/instances/$name/web/addons"
+		else
+			addons_config="$addons_config,/srv/openerp/$branch/instances/$name/web/addons"
+		fi
+        for x in $(ls -d *); do
+            addons_config="$addons_config,/srv/openerp/$branch/instances/$name/addons/$x"
+        done
+    else
+		if [[ $addons_config == "" ]]; then
+			addons_config="/srv/openerp/$branch/instances/$name/addons"
+		else
+			addons_config="$addons_config,/srv/openerp/$branch/instances/$name/addons"
+		fi
+    fi
 }
 
 function make_menus {

@@ -202,6 +202,7 @@ else
 fi
 mkserver_install_addons >> $INSTALL_LOG_FILE
 
+
 log_echo "Creating openerp-server init script..."
 cp -a /etc/openerp/$branch/server/init-$branch-skeleton /etc/init.d/openerp-server-$name >> $INSTALL_LOG_FILE
 sed -i "s#\\[NAME\\]#$name#g" /etc/init.d/openerp-server-$name >> $INSTALL_LOG_FILE
@@ -227,6 +228,10 @@ sed -i "s#\\[NETPORT\\]#21$port#g" /etc/openerp/$branch/server/$name.conf >> $IN
 sed -i "s#\\[XMLSPORT\\]#22$port#g" /etc/openerp/$branch/server/$name.conf >> $INSTALL_LOG_FILE
 sed -i "s#\\[PYROPORT\\]#24$port#g" /etc/openerp/$branch/server/$name.conf >> $INSTALL_LOG_FILE
 sed -i "s#\\[ADMIN_PASSWD\\]#$admin_passwd#g" /etc/openerp/$branch/server/$name.conf >> $INSTALL_LOG_FILE
+addons_config=""
+mkserver_addons_config
+sed -i "s#\\[ADDONS\\]#$addons_config#g" /etc/openerp/$branch/server/$name.conf >> $INSTALL_LOG_FILE
+
 
 log_echo "Creating openerp-server ssl files..."
 cp -a /etc/openerp/ssl/server.cnf-skeleton /etc/openerp/ssl/servers/$name.cnf >> $INSTALL_LOG_FILE

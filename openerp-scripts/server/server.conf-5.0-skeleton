@@ -61,6 +61,8 @@ db_user = [DB_USER]
 # This is the password that allows database operations:
 admin_passwd = [ADMIN_PASSWD]
 
+addons_path = /srv/openerp/[BRANCH]/instances/[NAME]/addons
+
 
 #~ without_demo = True
 #~ netrpc = True
@@ -68,7 +70,6 @@ admin_passwd = [ADMIN_PASSWD]
 #~ root_path = None
 #~ soap = False
 #~ demo = {}
-#~ addons_path = None
 #~ reportgz = False
 
 #~ translate_in:	File used to translate Open ERP to your language
