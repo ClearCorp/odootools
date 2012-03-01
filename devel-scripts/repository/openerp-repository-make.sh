@@ -56,11 +56,20 @@ function branch_project {
         echo "Branch creation: $1/$branch"
         
         echo "Branch $LP_OERP"
-        echo "bzr branch $LP_OERP $REPO_DIR/main/$branch"
-        bzr branch $LP_OERP $REPO_DIR/main/$branch
+        if [ -d $REPO_DIR/main/$branch/.bzr ]; then
+            echo "$REPO_DIR/main/$branch already exists, delete before running the script to recreate"
+        else
+            echo "bzr branch $LP_OERP $REPO_DIR/main/$branch"
+            bzr branch $LP_OERP $REPO_DIR/main/$branch
+        fi
+        
         echo "Branch $LP_CCORP"
-        echo "bzr branch $LP_CCORP $REPO_DIR/main/${branch}-ccorp"
-        bzr branch $LP_CCORP $REPO_DIR/main/${branch}-ccorp
+        if [ -d $REPO_DIR/main/${branch}-ccorp/.bzr ]; then
+            echo "$REPO_DIR/main/${branch}-ccorp already exists, delete before running the script to recreate"
+        else
+            echo "bzr branch $LP_CCORP $REPO_DIR/main/${branch}-ccorp"
+            bzr branch $LP_CCORP $REPO_DIR/main/${branch}-ccorp
+        fi
 
         echo "Updating parent locations"
         echo "parent_location = $LP_OERP" > $REPO_DIR/main/$branch/.bzr/branch/branch.conf
