@@ -284,7 +284,13 @@ chmod 664 /var/log/openerp/$name/*.log
 log_echo "Creating apache rewrite file..."
 cp -a /etc/openerp/apache2/ssl-$branch-skeleton /etc/openerp/apache2/rewrites/$name
 sed -i "s#\\[NAME\\]#$name#g" /etc/openerp/apache2/rewrites/$name
-sed -i "s#\\[PORT\\]#23$port#g" /etc/openerp/apache2/rewrites/$name
+
+if [[ $branch == "6.1" ]] || [[ $branch == "trunk" ]]; then
+    sed -i "s#\\[PORT\\]#20$port#g" /etc/openerp/apache2/rewrites/$name >> $INSTALL_LOG_FILE
+else
+    sed -i "s#\\[PORT\\]#23$port#g" /etc/openerp/apache2/rewrites/$name >> $INSTALL_LOG_FILE
+fi
+
 service apache2 reload >> $INSTALL_LOG_FILE
 
 log_echo "Creating pid dir..."
