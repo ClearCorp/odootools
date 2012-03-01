@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ $OPENERP_REPO_BASE == "" ]]; then
-    OPENERP_REPO_BASE="~/Development/openerp"
+    OPENERP_REPO_BASE=~/Development/openerp
 fi
 
 REPO_DIR=$OPENERP_REPO_BASE/openerp-src/src
