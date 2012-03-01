@@ -1,8 +1,10 @@
 #!/bin/bash
 
 if [[ $OPENERP_REPO_BASE == "" ]]; then
-    OPENERP_REPO_BASE="~/Development/openerp"
+    OPENERP_REPO_BASE=~/Development/openerp
 fi
+
+OPENERP_REPO_BASE=$(readlink -m $OPENERP_REPO_BASE)
 
 #WARNING: do not activate push unless you know exactly what you are doing.
 if [ $OPENERP_REPO_PUSH -ne 1 ]; then

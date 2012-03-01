@@ -4,6 +4,8 @@ if [[ $OPENERP_REPO_BASE == "" ]]; then
     OPENERP_REPO_BASE=~/Development/openerp
 fi
 
+OPENERP_REPO_BASE=$(readlink -m $OPENERP_REPO_BASE)
+
 function update_project {
 	# $1: Project name
 	# $2: Version
