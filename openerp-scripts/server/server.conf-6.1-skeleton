@@ -1,0 +1,321 @@
+# /etc/openerp-server.conf(5) - configuration file for openerp-server(1)
+
+[options]
+
+# GENERAL
+########################################################################
+
+# (char) The file where the server pid will be stored (default False).
+pidfile = /var/run/openerp/[NAME]/server.pid
+
+# (char) Specify the path of the OpenERP server (default None).
+#root_path = 
+
+# (char) Specify additional addons paths (separated by commas)
+# (default None).
+addons_path = [ADDONS]
+
+# (char) Comma-separated list of server-wide modules (default web).
+#server_wide_modules = web
+
+# (char) Specify the path of the OpenERP server filestore (default None).
+filestore = /srv/openerp/[BRANCH]/instances/[NAME]/filestore
+
+# (bool) Stop the server after it initializes (default False).
+#stop_after_init = False
+
+# (list) Init a module (use “all” for all modules) (default {}).
+#init = {}
+
+# (list) Update a module (use “all” for all modules) (default {}).
+#update = {}
+
+# (list) Load demo data for a module (use "all" for all modules)
+# (default {}).
+#demo = {}
+
+# (bool) Disable loading demo data for modules to be installed
+# (comma-separated, use "all" for all modules). Requires 'demo' and
+# 'init' (default False).
+#without_demo = False
+
+# (bool) Save reports in gzip format (default False).
+#reportgz = False
+
+# (char) Specify reference timezone for the server
+# (e.g.  Europe/Brussels) (default False).
+#timezone = False
+
+# (char) Set the CSV field separator (default ',').
+#csv_internal_sep = ','
+
+# (char) Login message (default False).
+#login_message = False
+
+# (char) Publisher warranty
+# (default http://services.openerp.com/publisher-warranty/).
+publisher_warranty_url = http://clearcorp.co.cr
+
+# (char) Price accuracy (default 4).
+#price_accuracy = 4
+
+# DATABASE
+########################################################################
+
+# (char) Specify the database name (default False).
+# Please uncomment the following line *after* you have created the
+# database. It activates the auto module check on startup.
+#db_name = False
+
+# (char) Specify the database user name (default False).
+#db_user = False
+
+# (char) Specify the database password for db_user (default False).
+#db_password = False
+
+# (char) Specify the database host (default False).
+#db_host = False
+
+# (char) Specify the database port (default False).
+#db_port = False
+
+# (int) Specify the the maximum number of physical connections to
+# posgresql (default 64).
+#db_maxconn = 64
+
+# (char) specify a custom database template to create a new database
+# (default template0)
+#db_template = template0
+
+# (char) Specify the PostgreSQL executable path (default None).
+#pg_path = None
+
+# (regexp) Filter listed database (default .*).
+#dbfilter = .*
+
+# (char) Use this for big data importation, if it crashes you will be
+# able to continue at the current state. Provide a filename to store
+# intermediate importation states (default blank).
+#import_partial = 
+
+# PORTS
+########################################################################
+
+# XML-RPC
+# (bool) Enable the XML-RPC protocol (default True).
+xmlrpc = True
+
+# (int) Specify the TCP port for the XML-RPC protocol (default 8069).
+xmlrpc_port = 20[PORT]
+
+# (char) Specify the TCP IP address for the XML-RPC protocol
+# (default blank).
+xmlrpc_interface = localhost
+
+# (bool) Enable correct behavior when behind a reverse proxy
+# (default False).
+proxy_mode = True
+
+# NET-RPC
+# (bool) Enable the NET-RPC protocol (default True).
+netrpc = True
+
+# (int) Specify the TCP port for the NET-RPC protocol (default 8070).
+netrpc_port = 21[PORT]
+
+# (char) Specify the TCP IP address for the NET-RPC protocol
+# (default blank).
+netrpc_interface = localhost
+
+# XML-RPC secure
+# NOT USED SINCE 6.1
+# (bool) Enable the XML-RPC secure protocol (default True).
+#xmlrpcs = True
+
+# (int) Specify the TCP port for the XML-RPC secure protocol
+# (default 8071).
+#xmlrpcs_port = 22[PORT]
+
+# (char) Specify the TCP IP address for the XML-RPC secure protocol
+# (default blank).
+#xmlrpcs_interface = 
+
+# (char) Specify the certificate file for the SSL connection
+# (default server.cert).
+#secure_cert_file = /etc/openerp/ssl/servers/[NAME]_crt.pem
+
+# (char) Specify the private key file for the SSL connection
+# (default server.key).
+#secure_pkey_file = /etc/openerp/ssl/servers/[NAME]_key.pem
+
+# (char) Specify the host for the FTP DMS server (default localhost).
+ftp_server_host = 0.0.0.0
+
+# (int) Specify the TCP ports for the FTP DMS server passive connections
+# (default 1024:65535).
+ftp_server_passive_ports = 30000:31000
+
+# (int) Specify the TCP port for the FTP DMS server (default 8021).
+ftp_server_port = 24[PORT]
+
+# (int) Specify the TCP port for the Pyro protocol (no default).
+pyroport = 25[PORT]
+
+# LOGGING
+########################################################################
+
+# (char) The file where the server log will be stored (default None).
+logfile = /var/log/openerp/[NAME]/server.log
+
+# (bool) Rotate the log file (default True).
+#logrotate = True
+
+# (list) Setup a handler at LEVEL for a given PREFIX. An empty PREFIX
+# indicates the root logger. This option can be repeated.
+# Example: "openerp.orm:DEBUG" or "werkzeug:CRITICAL" (default: ":INFO")
+# Common handlers: openerp.netsvc.rpc.request:DEBUG
+# openerp.netsvc.rpc.response:DEBUG
+# openerp.addons.web.common.http:DEBUG
+# openerp.sql_db:DEBUG
+#log_handler = [':INFO']
+
+# (bool) Enable debug mode (default False).
+#debug_mode = False
+
+# (bool) Send the log to the syslog server (default False).
+#syslog = False
+
+# Testing Configuration
+########################################################################
+
+# (char) Launch a YML test file (default False).
+#test_file = False
+
+# (char) If set, will save sample of all reports in this directory
+# (default False).
+#test_report_directory = False
+
+# (bool) Disable loading test files (default False).
+#test_disable = False
+
+# (bool) Commit database changes performed by tests (default False).
+#test_commit = False
+
+# (char) Specify the level at which a failed assertion will stop the
+# server. Accepted values: info, debug_rpc, warn, test, critical,
+# debug_sql, error, debug, debug_rpc_answer, notset (default error).
+#assert_exit_level = error
+
+# Email SMTP server
+########################################################################
+
+# (char) Specify the SMTP email address for sending email
+# (default False).
+#email_from = False
+
+# (char) Specify the SMTP server for sending email (default localhost).
+#smtp_server = localhost
+
+# (char) Specify the SMTP port (default 25).
+#smtp_port = 25
+
+# (char) Specify the SMTP user for sending email (default False).
+#smtp_user = False
+
+# (char) Specify the SMTP password for sending email (default False).
+#smtp_password = False
+
+# (bool) Specify the SMTP server support SSL or not (default False).
+#smtp_ssl = False
+
+# i18n
+########################################################################
+
+# (char) Use this language as the language of the server. This must be
+# specified as an ISO country code, as specified by the W3C
+# (default None).
+#language = None
+
+# (list) Specifies the languages for the translations you want to be
+# loaded (default None).
+#load_language = None
+
+# (char) Import a CSV or a PO file with translations and exit.
+# Options: language and db_name are required (default blank).
+#translate_in = 
+
+# (char) Export all sentences to be translated to a CSV file, a PO file
+# or a TGZ archive and exit. Options: language and db_name are required.
+# (default blank).
+#translate_out = 
+
+# (list) Specify modules to export. Use in combination with
+# translate_out (default ['all']).
+#translate_modules = ['all']
+
+# (bool) Overwrite existing translation files (default False).
+#overwrite_existing_translations = False
+
+# Static HTTP service
+########################################################################
+
+# (bool) Enable static HTTP service for serving plain HTML files
+# (default False).
+#static_http_enable = False
+
+# (char) Specify the directory containing your static HTML files
+# (e.g '/var/www/') (default None).
+#static_http_document_root = None
+
+# (char) Specify the URL root prefix where you want web browsers to
+# access your static HTML files (e.g '/') (default None).
+#static_http_url_prefix = None
+
+# Security
+########################################################################
+
+# (bool) Enable the ability to return the list of databases
+# (default True).
+#list_db = True
+
+# (char) This is the password that allows database operations
+# (default admin).
+admin_passwd = [ADMIN_PASSWD]
+
+# Performance
+########################################################################
+
+# (int) Set the timeout for the cache system (default 100000).
+#cache_timeout = 100000
+
+# (int) Force a limit on the maximum number of records kept in the
+# virtual osv_memory tables. The default is False, which means no
+# count-based limit. (default False).
+#osv_memory_count_limit = False
+
+# (float) Force a limit on the maximum age of records kept in the virtual
+# osv_memory tables. This is a decimal value expressed in hours, and the
+# default is 1 hour (default 1.0)
+#osv_memory_age_limit = 1.0
+
+# (int) Maximum number of threads processing concurrently cron jobs.
+# (default 4)
+#max_cron_threads = 4
+
+# (int) Maximum allowed virtual memory per Gunicorn process. When the
+# limit is reached, any memory allocation will fail.
+# (default 768 * 1024 * 1024)
+#virtual_memory_limit = 768 * 1024 * 1024
+
+# (int) Maximum allowed virtual memory per Gunicorn process. When the
+# limit is reached, the worker will be reset after the current request.
+# (default 640 * 1024 * 1024)
+#virtual_memory_reset = 640 * 1024 * 1024
+
+# (int) Maximum allowed CPU time per Gunicorn process. When the limit is
+# reached, an exception is raised. (default 60)
+#cpu_time_limit = 60
+
+# (bool) Use the unaccent function provided by the database when
+# available. (default False)
+#unaccent = False
