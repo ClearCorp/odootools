@@ -7,7 +7,7 @@ fi
 OPENERP_REPO_BASE=$(readlink -m $OPENERP_REPO_BASE)
 
 #WARNING: do not activate push unless you know exactly what you are doing.
-if [ $OPENERP_REPO_PUSH -ne 1 ]; then
+if [[ $OPENERP_REPO_PUSH != 1 ]]; then
     OPENERP_REPO_PUSH=0
 fi
 
