@@ -30,7 +30,7 @@ fi
 if [[ ! -f /etc/openerp-ccorp-scripts/settings.cfg ]]; then
 	mkdir -p /etc/openerp-ccorp-scripts
 	cat > /etc/openerp-ccorp-scripts/settings.cfg <<EOF
-repo="lp:openerp-ccorp-scripts"
+repo="http://bazaar.launchpad.net/openerp-ccorp-scripts"
 branch=stable
 EOF
 fi

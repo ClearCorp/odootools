@@ -120,7 +120,7 @@ cd $sources_path
 
 # Download nan-tic modules
 log_echo "Downloading nan-tic modules..."
-bzr checkout --lightweight lp:~openobject-client-kde/openobject-client-kde/$branch openobject-client-kde >> $INSTALL_LOG_FILE
+bzr checkout --lightweight http://bazaar.launchpad.net/~openobject-client-kde/openobject-client-kde/$branch openobject-client-kde >> $INSTALL_LOG_FILE
 cd openobject-client-kde
 bzr update >> $INSTALL_LOG_FILE
 log_echo ""

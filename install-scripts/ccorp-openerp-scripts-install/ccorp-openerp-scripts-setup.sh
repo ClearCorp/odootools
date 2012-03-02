@@ -81,9 +81,9 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 		else
 			branch=trunk
 		fi
-		bzr branch lp:openerp-ccorp-scripts/${branch} /usr/local/share/openerp-ccorp-scripts
+		bzr branch http://bazaar.launchpad.net/openerp-ccorp-scripts/${branch} /usr/local/share/openerp-ccorp-scripts
 		cat > /etc/openerp-ccorp-scripts/settings.cfg <<EOF
-repo="lp:openerp-ccorp-scripts"
+repo="http://bazaar.launchpad.net/openerp-ccorp-scripts"
 branch=$branch
 EOF
 	fi

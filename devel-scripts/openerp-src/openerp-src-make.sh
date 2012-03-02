@@ -28,7 +28,7 @@ function branch_project {
         echo "bzr branch --no-tree $ORI_DIR $DES_DIR"
         bzr branch --no-tree $ORI_DIR $DES_DIR
         
-        echo "parent_location = lp:~clearcorp/$1/$3" > $DES_DIR/.bzr/branch/branch.conf
+        echo "parent_location = http://bazaar.launchpad.net/~clearcorp/$1/$3" > $DES_DIR/.bzr/branch/branch.conf
     fi
     echo ""
 }
