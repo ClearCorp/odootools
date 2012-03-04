@@ -197,6 +197,7 @@ function install_python_lib {
     fi
     
     # Install packages
+    log_echo "apt-get -qy install ${packages[*]}"
     apt-get -qy install ${packages[*]} >> $INSTALL_LOG_FILE
 }
 
