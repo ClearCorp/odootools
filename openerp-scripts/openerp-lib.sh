@@ -33,6 +33,7 @@ function openerp_get_dist {
     if [[ $dist == "lucid" ]]; then
         # Ubuntu 10.04, python 2.6
         posgresql_rel=8.4
+        posgresql_init="-8.4"
         python_rel=python2.6
         ubuntu_rel=10.04
     elif [[ $dist == "maverick" ]]; then
