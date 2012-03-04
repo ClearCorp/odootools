@@ -191,7 +191,9 @@ function install_python_lib {
     
         # Recomended
         packages+=(python-mock)         # For testing
-        packages+=(python-unittest2)    # For testing
+            if [[ ! $dist =~ "lucid" ]]; then
+                packages+=(python-unittest2)    # For testing
+            fi
     fi
     
     # Install packages
@@ -303,7 +305,7 @@ function install_openerp_server {
     #~ Copy bin script skeleton to /etc
     log_echo "Copy bin script skeleton to /etc"
     mkdir -p /etc/openerp/$branch/server/ >> $INSTALL_LOG_FILE
-    cp $OPENERP_CCORP_DIR/openerp-scripts/server/server-bin-skeleton /etc/openerp/$branch/server/bin-skeleton >> $INSTALL_LOG_FILE
+    cp $OPENERP_CCORP_DIR/openerp-scripts/server/server-bin-$branch-skeleton /etc/openerp/$branch/server/bin-skeleton >> $INSTALL_LOG_FILE
     sed -i "s#\\[BRANCH\\]#$branch#g" /etc/openerp/$branch/server/bin-skeleton >> $INSTALL_LOG_FILE
     # OpenERP Server init
     cp $OPENERP_CCORP_DIR/openerp-scripts/server/server-init-$branch-skeleton /etc/openerp/$branch/server/init-$branch-skeleton >> $INSTALL_LOG_FILE

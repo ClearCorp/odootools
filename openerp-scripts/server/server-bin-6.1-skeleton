@@ -1,0 +1,3 @@
+#!/bin/sh
+cd /srv/openerp/[BRANCH]/instances/[NAME]/server
+exec /usr/bin/python ./openerp-server $@
