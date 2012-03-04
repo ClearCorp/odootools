@@ -153,6 +153,7 @@ function install_python_lib {
     if [[ $branch =~ "6.1" ]] || [[ $branch =~ "trunk" ]]; then
         # Dependencies
         packages+=(python-werkzeug)
+        install_werkzeug=1
         packages+=(python-zsi)
     
         # Recomended
@@ -188,6 +189,7 @@ function install_python_lib {
     if [[ $branch =~ "6.1" ]] || [[ $branch =~ "trunk" ]]; then
         # Dependencies
         packages+=(python-werkzeug)
+        install_werkzeug=1
     
         # Recomended
         packages+=(python-mock)         # For testing
@@ -199,6 +201,11 @@ function install_python_lib {
     # Install packages
     log_echo "apt-get -qy install ${packages[*]}"
     apt-get -qy install ${packages[*]} >> $INSTALL_LOG_FILE
+    
+    # werkzeug verion in lucid is too old.
+    if [[ $dist =~ "lucid" ]] && [[ $install_werkzeug == 1 ]]; then
+        easy_install -U werkzeug >> $INSTALL_LOG_FILE
+    fi
 }
 
 function install_bzr {
