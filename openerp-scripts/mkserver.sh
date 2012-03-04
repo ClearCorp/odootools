@@ -91,10 +91,10 @@ if [ -d /etc/openerp/trunk ]; then
     installed_branch="trunk"
 fi
 
-if [[ $installed_count == 0 ]]; then
+if [[ $installed_count -eq 0 ]]; then
     log_echo "No OpenERP installed."
     exit 1
-elif [[ $installed_count == 1 ]]; then
+elif [[ $installed_count -eq 1 ]]; then
     branch=$installed_branch
 else
     branch=""
