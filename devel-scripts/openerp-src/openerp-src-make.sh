@@ -47,9 +47,9 @@ function mkrepo {
         mkdir $REPO_DIR/trunk
         bzr branch $OPENERP_REPO_BASE/openobject-server/main/trunk-ccorp $REPO_DIR/trunk/openobject-server
         echo "parent_location = http://bazaar.launchpad.net/~clearcorp/openobject-server/trunk-ccorp" > $REPO_DIR/trunk/openobject-server/.bzr/branch/branch.conf
-        bzr branch $OPENERP_REPO_BASE/openerp-web/main/ccorp-trunk $REPO_DIR/trunk/openerp-web
+        bzr branch $OPENERP_REPO_BASE/openerp-web/main/trunk-ccorp $REPO_DIR/trunk/openerp-web
         echo "parent_location = http://bazaar.launchpad.net/~clearcorp/openerp-web/trunk-ccorp" > $REPO_DIR/trunk/openerp-web/.bzr/branch/branch.conf
-        bzr branch $OPENERP_REPO_BASE/openobject-addons/main/ccorp-trunk $REPO_DIR/trunk/openobject-addons
+        bzr branch $OPENERP_REPO_BASE/openobject-addons/main/trunk-ccorp $REPO_DIR/trunk/openobject-addons
         echo "parent_location = http://bazaar.launchpad.net/~clearcorp/openobject-addons/trunk-ccorp" > $REPO_DIR/trunk/openobject-addons/.bzr/branch/branch.conf
     fi
 }
