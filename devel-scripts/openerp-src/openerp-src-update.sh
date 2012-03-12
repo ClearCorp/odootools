@@ -51,15 +51,15 @@ function update_repo {
     echo "--------------------------------------------------------------"
     echo ""
     echo "Updating branch trunk/openobject-server"
-    cd $REPO_DIR/openerp/openobject-server
+    cd $REPO_DIR/openerp/trunk/openobject-server
     bzr pull
     echo ""
     echo "Updating branch trunk/openerp-web"
-    cd $REPO_DIR/openerp/openerp-web
+    cd $REPO_DIR/openerp/trunk/openerp-web
     bzr pull
     echo ""
     echo "Updating branch trunk/openobject-addons"
-    cd $REPO_DIR/openerp/openobject-addons
+    cd $REPO_DIR/openerp/trunk/openobject-addons
     bzr pull
 }
 
@@ -74,7 +74,7 @@ function compress_repo {
 	
 	cd $REPO_DIR
 	rm $OPENERP_REPO_BASE/openerp-src/bin/openerp.tgz
-	tar czf $OPENERP_REPO_BASE/openerp-src/bin/$1/$2.tgz openerp/.bzr
+	tar czf $OPENERP_REPO_BASE/openerp-src/bin/openerp.tgz openerp/.bzr
 }
 
 update_project	openobject-server	5.0		5.0-ccorp	openobject-server
