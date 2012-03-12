@@ -31,3 +31,8 @@ echo "parent_location = http://bazaar.launchpad.net/~clearcorp/openobject-client
 echo "parent_location = http://bazaar.launchpad.net/~clearcorp/openobject-client-web/6.0-ccorp" > $REPO_DIR/6.0/openobject-client-web/.bzr/branch/branch.conf
 echo "parent_location = http://bazaar.launchpad.net/~clearcorp/openerp-web/6.1-ccorp" > $REPO_DIR/6.1/openerp-web/.bzr/branch/branch.conf
 echo "parent_location = http://bazaar.launchpad.net/~clearcorp/openerp-web/trunk-ccorp" > $REPO_DIR/trunk/openerp-web/.bzr/branch/branch.conf
+
+
+echo "parent_location = http://bazaar.launchpad.net/~clearcorp/openobject-server/trunk-ccorp" > $REPO_DIR/openerp/trunk/openobject-server/.bzr/branch/branch.conf
+echo "parent_location = http://bazaar.launchpad.net/~clearcorp/openerp-web/trunk-ccorp" > $REPO_DIR/openerp/trunk/openerp-web/.bzr/branch/branch.conf
+echo "parent_location = http://bazaar.launchpad.net/~clearcorp/openobject-addons/trunk-ccorp" > $REPO_DIR/openerp/trunk/openobject-addons/.bzr/branch/branch.conf

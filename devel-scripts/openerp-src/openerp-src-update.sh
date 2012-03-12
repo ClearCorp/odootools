@@ -40,6 +40,43 @@ function compress_project {
 	tar czf $OPENERP_REPO_BASE/openerp-src/bin/$1/$2.tgz $1/$2/
 }
 
+function update_repo {
+	# $1: 
+	
+	REPO_DIR=$OPENERP_REPO_BASE/openerp-src/src
+	
+    echo ""
+    echo ""
+    echo "UPDATE $REPO_DIR/openerp"
+    echo "--------------------------------------------------------------"
+    echo ""
+    echo "Updating branch trunk/openobject-server"
+    cd $REPO_DIR/openerp/openobject-server
+    bzr pull
+    echo ""
+    echo "Updating branch trunk/openerp-web"
+    cd $REPO_DIR/openerp/openerp-web
+    bzr pull
+    echo ""
+    echo "Updating branch trunk/openobject-addons"
+    cd $REPO_DIR/openerp/openobject-addons
+    bzr pull
+}
+
+function compress_repo {
+	# $1: 
+	
+	REPO_DIR=$OPENERP_REPO_BASE/openerp-src/src
+	
+	echo ""
+	echo ""
+	echo "COMPRESS $REPO_DIR/openerp"
+	
+	cd $REPO_DIR
+	rm $OPENERP_REPO_BASE/openerp-src/bin/openerp.tgz
+	tar czf $OPENERP_REPO_BASE/openerp-src/bin/$1/$2.tgz openerp/.bzr
+}
+
 update_project	openobject-server	5.0		5.0-ccorp	openobject-server
 update_project	openobject-server	6.0		6.0-ccorp	openobject-server
 update_project	openobject-server	6.1		6.1-ccorp	openobject-server
@@ -89,3 +126,6 @@ compress_project	5.0		openobject-client-web
 compress_project	6.0		openobject-client-web
 compress_project	6.1		openerp-web
 compress_project	trunk	openerp-web
+
+update_repo
+compress_repo
