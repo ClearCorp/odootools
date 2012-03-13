@@ -36,8 +36,13 @@ function compress_project {
 	echo "COMPRESS $1/$2"
 	
 	cd $OPENERP_REPO_BASE/openerp-src/src
-	rm $OPENERP_REPO_BASE/openerp-src/bin/$1/$2.tgz
-	tar czf $OPENERP_REPO_BASE/openerp-src/bin/$1/$2.tgz $1/$2/
+	tar czf $OPENERP_REPO_BASE/openerp-src/bin/$1/$2.tmp.tgz $1/$2/
+	if [[ $? != 0 ]]; then
+	    echo "tar exited with error code $?, skipping the file"
+	else
+	    echo "tar OK, moving the file"
+	    mv $OPENERP_REPO_BASE/openerp-src/bin/$1/$2.tmp.tgz $OPENERP_REPO_BASE/openerp-src/bin/$1/$2.tgz
+	fi
 }
 
 function update_repo {
@@ -73,8 +78,13 @@ function compress_repo {
 	echo "COMPRESS $REPO_DIR/openerp"
 	
 	cd $REPO_DIR
-	rm $OPENERP_REPO_BASE/openerp-src/bin/openerp.tgz
-	tar czf $OPENERP_REPO_BASE/openerp-src/bin/openerp.tgz openerp/.bzr
+	tar czf $OPENERP_REPO_BASE/openerp-src/bin/openerp.tmp.tgz openerp/.bzr
+	if [[ $? != 0 ]]; then
+	    echo "tar exited with error code $?, skipping the file"
+	else
+	    echo "tar OK, moving the file"
+	    mv $OPENERP_REPO_BASE/openerp-src/bin/openerp.tmp.tgz $OPENERP_REPO_BASE/openerp-src/bin/openerp.tgz
+	fi
 }
 
 update_project	openobject-server	5.0		5.0-ccorp	openobject-server
