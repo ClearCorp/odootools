@@ -251,9 +251,15 @@ function download_openerp_branch {
     mkdir -p /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
     cd /srv/openerp/$branch/src >> $INSTALL_LOG_FILE
     if [ -e $1 ]; then
+        log_echo "$branch/$1 exists, updating"
         cd $1 >> $INSTALL_LOG_FILE
+        log_echo "bzr pull"
         bzr pull >> $INSTALL_LOG_FILE
+    elif [[ $repo_downloaded =~ ^[Yy]$ ]] && [[ $1 =~ ^openobject-server|openerp-web|openobject-addons$ ]]; then
+        log_echo "bzr branch lp:~clearcorp/$2/$3 $1"
+        bzr branch lp:~clearcorp/$2/$3 $1 >> $INSTALL_LOG_FILE
     else
+        log_echo "Downloading $branch/$1 from code.clearcorp.co.cr"
         mkdir -p /usr/local/src/openerp/$branch >> $INSTALL_LOG_FILE
         cd /usr/local/src/openerp/$branch >> $INSTALL_LOG_FILE
         if [[ ! -f $1.tgz ]]; then
@@ -287,8 +293,31 @@ function download_other_branch {
     log_echo ""
 }
 
+function download_repo {
+    # $1: sources branch
+    # $2: launchpad project
+    # $3: launchpad branch
+    # Download branch latest release.
+    log_echo "Downloading latest openerp repository..."
+    mkdir -p /usr/local/src/openerp >> $INSTALL_LOG_FILE
+    cd /usr/local/src/openerp >> $INSTALL_LOG_FILE
+    if [[ ! -f openerp.tgz ]]; then
+        wget http://code.clearcorp.co.cr/bzr/openerp/openerp-src/bin/openerp.tgz >> $INSTALL_LOG_FILE
+    fi
+    cd /srv >> $INSTALL_LOG_FILE
+    tar xzf /usr/local/src/openerp/openerp.tgz >> $INSTALL_LOG_FILE
+    repo_downloaded="y"
+    log_echo ""
+}
+
 function download_openerp {
-    bzr init-repo /srv/openerp
+    log_echo "Creating /srv/openerp repository"
+    if [ -d /srv/openerp ]; then
+        log_echo "/srv/openerp already exists"
+    else
+        download_repo
+    fi
+    
     if [[ $branch == "5.0" ]] || [[ $branch == "6.0" ]] || [[ $branch == "6.1" ]] || [[ $branch == "trunk" ]]; then
         download_openerp_branch openobject-server openobject-server $branch-ccorp
         if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then

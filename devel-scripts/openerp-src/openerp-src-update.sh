@@ -36,8 +36,55 @@ function compress_project {
 	echo "COMPRESS $1/$2"
 	
 	cd $OPENERP_REPO_BASE/openerp-src/src
-	rm $OPENERP_REPO_BASE/openerp-src/bin/$1/$2.tgz
-	tar czf $OPENERP_REPO_BASE/openerp-src/bin/$1/$2.tgz $1/$2/
+	tar czf $OPENERP_REPO_BASE/openerp-src/bin/$1/$2.tmp.tgz $1/$2/
+	if [[ $? != 0 ]]; then
+	    echo "tar exited with error code $?, skipping the file"
+	else
+	    echo "tar OK, moving the file"
+	    mv $OPENERP_REPO_BASE/openerp-src/bin/$1/$2.tmp.tgz $OPENERP_REPO_BASE/openerp-src/bin/$1/$2.tgz
+	fi
+}
+
+function update_repo {
+	# $1: 
+	
+	REPO_DIR=$OPENERP_REPO_BASE/openerp-src/src
+	
+    echo ""
+    echo ""
+    echo "UPDATE $REPO_DIR/openerp"
+    echo "--------------------------------------------------------------"
+    echo ""
+    echo "Updating branch trunk/openobject-server"
+    cd $REPO_DIR/openerp/trunk/openobject-server
+    bzr pull
+    echo ""
+    echo "Updating branch trunk/openerp-web"
+    cd $REPO_DIR/openerp/trunk/openerp-web
+    bzr pull
+    echo ""
+    echo "Updating branch trunk/openobject-addons"
+    cd $REPO_DIR/openerp/trunk/openobject-addons
+    bzr pull
+}
+
+function compress_repo {
+	# $1: 
+	
+	REPO_DIR=$OPENERP_REPO_BASE/openerp-src/src
+	
+	echo ""
+	echo ""
+	echo "COMPRESS $REPO_DIR/openerp"
+	
+	cd $REPO_DIR
+	tar czf $OPENERP_REPO_BASE/openerp-src/bin/openerp.tmp.tgz openerp/.bzr
+	if [[ $? != 0 ]]; then
+	    echo "tar exited with error code $?, skipping the file"
+	else
+	    echo "tar OK, moving the file"
+	    mv $OPENERP_REPO_BASE/openerp-src/bin/openerp.tmp.tgz $OPENERP_REPO_BASE/openerp-src/bin/openerp.tgz
+	fi
 }
 
 update_project	openobject-server	5.0		5.0-ccorp	openobject-server
@@ -89,3 +136,6 @@ compress_project	5.0		openobject-client-web
 compress_project	6.0		openobject-client-web
 compress_project	6.1		openerp-web
 compress_project	trunk	openerp-web
+
+update_repo
+compress_repo
