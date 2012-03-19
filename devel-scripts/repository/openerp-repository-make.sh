@@ -64,7 +64,7 @@ function branch_project {
             bzr branch $LP_OERP $REPO_DIR/main/$branch
         fi
         
-        if [[ $2 =~ ^ccorp$ ]]; then
+        if [[ $2 =~ ^original$ ]]; then
             echo "Branch $LP_CCORP"
             if [ -d $REPO_DIR/main/${branch}-ccorp/.bzr ]; then
                 echo "$REPO_DIR/main/${branch}-ccorp already exists, delete before running the script to recreate"
@@ -76,7 +76,7 @@ function branch_project {
 
         echo "Updating parent locations"
         echo "parent_location = $LP_OERP" > $REPO_DIR/main/$branch/.bzr/branch/branch.conf
-        if [[ $2 =~ ^ccorp$ ]]; then
+        if [[ $2 =~ ^original$ ]]; then
             echo "parent_location = $LP_OERP" > $REPO_DIR/main/${branch}-ccorp/.bzr/branch/branch.conf
             echo "push_location = $LP_CCORP" >> $REPO_DIR/main/${branch}-ccorp/.bzr/branch/branch.conf
         fi
