@@ -22,9 +22,12 @@ function branch_project {
     if [ -d $REPO_DIR ]; then
         echo "repository already exists, delete before running the script to recreate"
         echo "$REPO_DIR"
-    else
+    elif [ $OPENERP_REPO_NOTREES ]; then
         echo "bzr init-repo --no-tree $REPO_DIR"
         bzr init-repo --no-tree $REPO_DIR
+    else
+        echo "bzr init-repo $REPO_DIR"
+        bzr init-repo $REPO_DIR
     fi
     echo ""
     
