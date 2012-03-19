@@ -77,7 +77,7 @@ function update_oerp_project {
             echo ""
         fi
         
-        if [[ $2 =~ ^ccorp$ ]]; then
+        if [[ $2 =~ ^original$ ]]; then
             echo "Check branch $REPO_DIR/main/${branch}-ccorp"
             if [ ! -d $REPO_DIR/main/${branch}-ccorp ]; then
                 echo "branch doesn't exists, skipping"
