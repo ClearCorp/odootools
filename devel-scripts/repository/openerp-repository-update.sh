@@ -36,7 +36,8 @@ function bzr_push {
 
 function update_oerp_project {
     # $1: Project name
-    # $2,3,4,...: Original branches
+    # $2: Type (original, ccorp)
+    # $3,4,5,...: Original branches
     echo ""
     echo ""
     echo "Project: $1"
@@ -45,7 +46,7 @@ function update_oerp_project {
     
     REPO_DIR=$OPENERP_REPO_BASE/$1
     
-    echo "Check repository $REPO_DIR"
+    echo "Check $2 repository $REPO_DIR"
     if [ ! -d $REPO_DIR ]; then
         echo "repository doesn't exists, skipping"
         echo "$REPO_DIR"
@@ -56,7 +57,7 @@ function update_oerp_project {
     echo "Main branches update"
     echo ""
     args=("$@")
-    start=1
+    start=2
     let "stop=$#-1"
     for i in `seq $start $stop`; do
         branch=${args[$i]}
@@ -76,31 +77,33 @@ function update_oerp_project {
             echo ""
         fi
         
-        echo "Check branch $REPO_DIR/main/${branch}-ccorp"
-        if [ ! -d $REPO_DIR/main/${branch}-ccorp ]; then
-            echo "branch doesn't exists, skipping"
-            echo "$REPO_DIR/main/${branch}-ccorp"
-            echo ""
-        else
-            echo "Branch pull: $REPO_DIR/main/${branch}-ccorp"
-            
-            echo "cd $REPO_DIR/main/${branch}-ccorp"
-            cd $REPO_DIR/main/${branch}-ccorp
-            echo "bzr pull"
-            bzr pull
-            echo ""
-            
-            if [ $OPENERP_REPO_PUSH ]; then
-                echo "Branch push: $REPO_DIR/main/${branch}-ccorp"
+        if [[ $2 =~ ^ccorp$ ]]; then
+            echo "Check branch $REPO_DIR/main/${branch}-ccorp"
+            if [ ! -d $REPO_DIR/main/${branch}-ccorp ]; then
+                echo "branch doesn't exists, skipping"
+                echo "$REPO_DIR/main/${branch}-ccorp"
+                echo ""
+            else
+                echo "Branch pull: $REPO_DIR/main/${branch}-ccorp"
                 
                 echo "cd $REPO_DIR/main/${branch}-ccorp"
                 cd $REPO_DIR/main/${branch}-ccorp
-                echo "bzr push"
-                bzr push
+                echo "bzr pull"
+                bzr pull
                 echo ""
+                
+                if [ $OPENERP_REPO_PUSH ]; then
+                    echo "Branch push: $REPO_DIR/main/${branch}-ccorp"
+                    
+                    echo "cd $REPO_DIR/main/${branch}-ccorp"
+                    cd $REPO_DIR/main/${branch}-ccorp
+                    echo "bzr push"
+                    bzr push
+                    echo ""
+                fi
             fi
         fi
-            
+        
         echo ""
     done
     
@@ -108,9 +111,13 @@ function update_oerp_project {
     echo ""
 }
 
-update_oerp_project openobject-server       5.0 6.0 6.1 trunk
-update_oerp_project openobject-addons       5.0 6.0 6.1 trunk extra-5.0 extra-6.0 extra-trunk
-update_oerp_project openobject-client       5.0 6.0 6.1 trunk
-update_oerp_project openobject-client-web   5.0 6.0 trunk
-update_oerp_project openerp-web             6.1 trunk
-update_oerp_project openobject-doc          5.0 6.0 6.1
+update_oerp_project original    openobject-server       5.0 6.0 6.1 trunk
+update_oerp_project original    openobject-addons       5.0 6.0 6.1 trunk extra-5.0 extra-6.0 extra-trunk
+update_oerp_project original    openobject-client       5.0 6.0 6.1 trunk
+update_oerp_project original    openobject-client-web   5.0 6.0 trunk
+update_oerp_project original    openerp-web             6.1 trunk
+update_oerp_project original    openobject-doc          5.0 6.0 6.1
+
+update_oerp_project ccorp       openerp-ccorp-addons    5.0 6.0 6.1 trunk
+update_oerp_project ccorp       openerp-costa rica      6.0 6.1 trunk
+update_oerp_project ccorp       openerp-ccorp-scripts   stable trunk
