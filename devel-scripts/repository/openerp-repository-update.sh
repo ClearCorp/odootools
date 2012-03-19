@@ -111,13 +111,13 @@ function update_oerp_project {
     echo ""
 }
 
-update_oerp_project original    openobject-server       5.0 6.0 6.1 trunk
-update_oerp_project original    openobject-addons       5.0 6.0 6.1 trunk extra-5.0 extra-6.0 extra-trunk
-update_oerp_project original    openobject-client       5.0 6.0 6.1 trunk
-update_oerp_project original    openobject-client-web   5.0 6.0 trunk
-update_oerp_project original    openerp-web             6.1 trunk
-update_oerp_project original    openobject-doc          5.0 6.0 6.1
+update_oerp_project openobject-server       original    5.0 6.0 6.1 trunk
+update_oerp_project openobject-addons       original    5.0 6.0 6.1 trunk extra-5.0 extra-6.0 extra-trunk
+update_oerp_project openobject-client       original    5.0 6.0 6.1 trunk
+update_oerp_project openobject-client-web   original    5.0 6.0 trunk
+update_oerp_project openerp-web             original    6.1 trunk
+update_oerp_project openobject-doc          original    5.0 6.0 6.1
 
-update_oerp_project ccorp       openerp-ccorp-addons    5.0 6.0 6.1 trunk
-update_oerp_project ccorp       openerp-costa rica      6.0 6.1 trunk
-update_oerp_project ccorp       openerp-ccorp-scripts   stable trunk
+update_oerp_project openerp-ccorp-addons    ccorp   5.0 6.0 6.1 trunk
+update_oerp_project openerp-costa rica      ccorp   6.0 6.1 trunk
+update_oerp_project openerp-ccorp-scripts   ccorp   stable trunk
