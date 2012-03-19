@@ -269,7 +269,7 @@ function download_openerp_branch {
         tar xzf $branch/$1.tgz >> $INSTALL_LOG_FILE
         bzr branch $branch/$1 /srv/openerp/$branch/src/$1 >> $INSTALL_LOG_FILE
         rm -r $branch/$1 >> $INSTALL_LOG_FILE
-        echo "parent_location = http://bazaar.launchpad.net/~clearcorp/$2/$3" > /srv/openerp/$branch/src/$1/.bzr/branch/branch.conf
+        echo "parent_location = bzr+ssh://bazaar.launchpad.net/%2Bbranch/~clearcorp/$2/$3" > /srv/openerp/$branch/src/$1/.bzr/branch/branch.conf
         cd /srv/openerp/$branch/src/$1 >> $INSTALL_LOG_FILE
         bzr pull
     fi
@@ -288,7 +288,7 @@ function download_other_branch {
         cd $1 >> $INSTALL_LOG_FILE
         bzr pull >> $INSTALL_LOG_FILE
     else
-        bzr branch http://bazaar.launchpad.net/$2/$3 $1 >> $INSTALL_LOG_FILE
+        bzr branch bzr+ssh://bazaar.launchpad.net/%2Bbranch/$2/$3 $1 >> $INSTALL_LOG_FILE
     fi
     log_echo ""
 }
