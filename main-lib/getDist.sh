@@ -31,8 +31,10 @@ function getDist {
 			eval "$1=maverick"
 		elif [[ `cat /etc/issue | grep -c 11.04` == 1 ]]; then
 			eval "$1=natty"
-		elif [[ `cat /etc/issue | grep -c 11.10` == 1 ]]; then
-			eval "$1=oneiric"
+        elif [[ `cat /etc/issue | grep -c 11.10` == 1 ]]; then
+            eval "$1=oneiric"
+        elif [[ `cat /etc/issue | grep -c 12.04` == 1 ]]; then
+            eval "$1=precise"
 		# This has to be updated as soon as lucid succesor is announced.
 		else
 			eval "$1=error"

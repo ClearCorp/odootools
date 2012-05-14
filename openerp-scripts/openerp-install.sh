@@ -308,10 +308,25 @@ add_openerp_user
 if [[ $do_update_system =~ ^[Yy]$ ]]; then update_system; fi
 # Install the required python libraries for openerp-server.
 install_python_lib
+rc=$?
+if [ ! $rc -eq 0 ]; then
+    echo "Couldn't install the required packages, please check your reporsitories."
+    exit
+fi
 # Install bazaar.
 install_bzr
+rc=$?
+if [ ! $rc -eq 0 ]; then
+    echo "Couldn't install the required packages, please check your reporsitories."
+    exit
+fi
 # Install postgresql
 install_postgresql
+rc=$?
+if [ ! $rc -eq 0 ]; then
+    echo "Couldn't install the required packages, please check your reporsitories."
+    exit
+fi
 # Update pg_hba.conf
 if [[ $update_pg_hba =~ ^[Yy]$ ]]; then update_pg_hba; fi
 # Add openerp postgres user

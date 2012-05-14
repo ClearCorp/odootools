@@ -52,6 +52,11 @@ function openerp_get_dist {
         posgresql_rel=9.1
         python_rel=python2.7
         ubuntu_rel=11.10
+    elif [[ $dist == "precise" ]]; then
+        # Ubuntu 12.04, python 2.7, postgres 9.1
+        posgresql_rel=9.1
+        python_rel=python2.7
+        ubuntu_rel=12.04
     else
         # Only Lucid supported for now
         log_echo "ERROR: This program must be executed on Ubuntu 10.04 - 11.10 (Desktop or Server)"
