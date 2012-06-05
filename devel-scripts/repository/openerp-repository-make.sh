@@ -101,3 +101,5 @@ branch_project  openobject-doc          original    5.0 6.0 6.1
 branch_project  openerp-ccorp-addons    ccorp   5.0 6.0 6.1 trunk
 branch_project  openerp-costa-rica      ccorp   6.0 6.1 trunk
 branch_project  openerp-ccorp-scripts   ccorp   stable trunk
+
+branch_project  banking-addons          original    5.0 6.0 6.1 trunk

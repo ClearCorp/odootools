@@ -119,5 +119,7 @@ update_oerp_project openerp-web             original    6.1 trunk
 update_oerp_project openobject-doc          original    5.0 6.0 6.1
 
 update_oerp_project openerp-ccorp-addons    ccorp   5.0 6.0 6.1 trunk
-update_oerp_project openerp-costa rica      ccorp   6.0 6.1 trunk
+update_oerp_project openerp-costa-rica      ccorp   6.0 6.1 trunk
 update_oerp_project openerp-ccorp-scripts   ccorp   stable trunk
+
+update_oerp_project banking-addons          original    5.0 6.0 6.1 trunk
