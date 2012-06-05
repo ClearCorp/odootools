@@ -56,7 +56,7 @@ function branch_project {
     for i in `seq $start $stop`; do
         branch=${args[$i]}
         LP_OERP="bzr+ssh://bazaar.launchpad.net/%2Bbranch/$1/$branch"
-        LP_CCORP="bzr+ssh://bazaar.launchpad.net/%2Bbranch/~clearcorp/$1/${branch}-ccorp"
+        LP_CCORP="bzr+ssh://bazaar.launchpad.net/%2Bbranch/~clearcorp-drivers/$1/${branch}-ccorp"
         echo "Branch creation: $1/$branch"
         
         echo "Branch $LP_OERP"
