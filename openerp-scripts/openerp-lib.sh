@@ -261,8 +261,8 @@ function download_openerp_branch {
         log_echo "bzr pull"
         bzr pull >> $INSTALL_LOG_FILE
     elif [[ $repo_downloaded =~ ^[Yy]$ ]] && [[ $1 =~ ^openobject-server|openerp-web|openobject-addons$ ]]; then
-        log_echo "bzr branch lp:~clearcorp/$2/$3 $1"
-        bzr branch lp:~clearcorp/$2/$3 $1 >> $INSTALL_LOG_FILE
+        log_echo "bzr branch lp:~clearcorp-drivers/$2/$3 $1"
+        bzr branch lp:~clearcorp-drivers/$2/$3 $1 >> $INSTALL_LOG_FILE
     else
         log_echo "Downloading $branch/$1 from code.clearcorp.co.cr"
         mkdir -p /usr/local/src/openerp/$branch >> $INSTALL_LOG_FILE
@@ -274,7 +274,7 @@ function download_openerp_branch {
         tar xzf $branch/$1.tgz >> $INSTALL_LOG_FILE
         bzr branch $branch/$1 /srv/openerp/$branch/src/$1 >> $INSTALL_LOG_FILE
         rm -r $branch/$1 >> $INSTALL_LOG_FILE
-        echo "parent_location = http://bazaar.launchpad.net/~clearcorp/$2/$3" > /srv/openerp/$branch/src/$1/.bzr/branch/branch.conf
+        echo "parent_location = http://bazaar.launchpad.net/~clearcorp-drivers/$2/$3" > /srv/openerp/$branch/src/$1/.bzr/branch/branch.conf
         cd /srv/openerp/$branch/src/$1 >> $INSTALL_LOG_FILE
         bzr pull
     fi
