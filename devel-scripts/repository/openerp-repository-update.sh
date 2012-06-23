@@ -90,6 +90,8 @@ function update_oerp_project {
                 cd $REPO_DIR/main/${branch}-ccorp
                 echo "bzr pull"
                 bzr pull
+                echo "bzr pull :push"
+                bzr pull :push
                 echo ""
                 
                 if [ $OPENERP_REPO_PUSH ]; then
