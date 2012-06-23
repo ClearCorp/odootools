@@ -82,6 +82,8 @@ function branch_project {
         if [[ $2 =~ ^original$ ]]; then
             echo "parent_location = $LP_OERP" > $REPO_DIR/main/${branch}-ccorp/.bzr/branch/branch.conf
             echo "push_location = $LP_CCORP" >> $REPO_DIR/main/${branch}-ccorp/.bzr/branch/branch.conf
+        elif [[ $2 =~ ccorp ]]; then
+            echo "push_location = $LP_OERP" >> $REPO_DIR/main/$branch/.bzr/branch/branch.conf
         fi
         
         echo ""
