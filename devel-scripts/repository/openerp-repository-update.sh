@@ -75,6 +75,16 @@ function update_oerp_project {
             echo "bzr pull"
             bzr pull
             echo ""
+            
+            if [ $OPENERP_REPO_PUSH ]; then
+                echo "Branch push: $REPO_DIR/main/${branch}"
+                
+                echo "cd $REPO_DIR/main/${branch}"
+                cd $REPO_DIR/main/${branch}
+                echo "bzr push"
+                bzr push
+                echo ""
+            fi
         fi
         
         if [[ $2 =~ ^original$ ]]; then
