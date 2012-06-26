@@ -1,3 +1,5 @@
 *~
 bin/
 openerp-ccorp-scripts.tgz
+.buildpath
+.project

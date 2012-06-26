@@ -88,11 +88,12 @@ function check_system_values {
 
 function add_openerp_user {
     log_echo "Adding openerp user..."
-    adduser --system --home /var/run/openerp --no-create-home --group openerp >> $INSTALL_LOG_FILE
     #Add group in case the user existed without a group (previous versions)
     addgroup openerp >> $INSTALL_LOG_FILE
     if [[ $server_type =~ ^station$ ]]; then
         adduser $openerp_user openerp
+    else
+        adduser --system --home /var/run/openerp --no-create-home --group openerp >> $INSTALL_LOG_FILE
     fi
     log_echo ""
 }
@@ -235,8 +236,8 @@ function update_pg_hba {
 }
 
 function add_postgres_user {
-    /usr/bin/sudo -u postgres createuser openerp --superuser --createdb --no-createrole >> $INSTALL_LOG_FILE
-    /usr/bin/sudo -u postgres psql template1 -U postgres -c "alter user openerp with password '$openerp_admin_passwd'" >> $INSTALL_LOG_FILE
+    /usr/bin/sudo -u postgres createuser $openerp_user --superuser --createdb --no-createrole >> $INSTALL_LOG_FILE
+    /usr/bin/sudo -u postgres psql template1 -U postgres -c "alter user $openerp_user with password '$openerp_admin_passwd'" >> $INSTALL_LOG_FILE
     log_echo ""
 }
 

@@ -209,9 +209,11 @@ echo ""
 # Sets apt sources.
 REPLY='none'
 while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to set the apt sources (Y/n)? " -n 1 REPLY
+	read -p "Do you want to set the apt sources (If you added manual sources to the main file they will be replaced, enter "p" to print the actual file on screen) (Y/n/p)? " -n 1 REPLY
 	if [[ $REPLY == "" ]]; then
 		REPLY="y"
+	elif [[ $REPLY == "p" ]]; then
+		cat /etc/apt/sources.list
 	fi
 	echo ""
 done
@@ -219,8 +221,74 @@ done
 if [[ $REPLY =~ ^[Yy]$ ]]; then
 	dist=""
 	getDist dist
-	setSources $dist
+	setSources_ubuntu $dist
 	echo "Apt sources set."
+		REPLY='none'
+		while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
+			read -p "Do you want to disable source repositories (Y/n)? " -n 1 REPLY
+			if [[ $REPLY == "" ]]; then
+				REPLY="y"
+			fi
+			echo ""
+		done
+		if [[ $REPLY =~ ^[Yy]$ ]]; then
+			setSources_disable_src $dist
+		fi
+		REPLY='none'
+		while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
+			read -p "Do you want to disable restricted repositories (not full OpenSource packages) (y/N)? " -n 1 REPLY
+			if [[ $REPLY == "" ]]; then
+				REPLY="n"
+			fi
+			echo ""
+		done
+		if [[ $REPLY =~ ^[Yy]$ ]]; then
+			setSources_disable_restricted $dist
+		fi
+		REPLY='none'
+		while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
+			read -p "Do you want to disable universe repositories (community maintained software) (y/N)? " -n 1 REPLY
+			if [[ $REPLY == "" ]]; then
+				REPLY="n"
+			fi
+			echo ""
+		done
+		if [[ $REPLY =~ ^[Yy]$ ]]; then
+			setSources_disable_universe $dist
+		fi
+		REPLY='none'
+		while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
+			read -p "Do you want to disable multiverse repositories (closed source software) (Y/n)? " -n 1 REPLY
+			if [[ $REPLY == "" ]]; then
+				REPLY="y"
+			fi
+			echo ""
+		done
+		if [[ $REPLY =~ ^[Yy]$ ]]; then
+			setSources_disable_multiverse $dist
+		fi
+		REPLY='none'
+		while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
+			read -p "Do you want to disable backport updates repositories (unsupported updates) (y/N)? " -n 1 REPLY
+			if [[ $REPLY == "" ]]; then
+				REPLY="n"
+			fi
+			echo ""
+		done
+		if [[ $REPLY =~ ^[Yy]$ ]]; then
+			setSources_disable_backports $dist
+		fi
+		REPLY='none'
+		while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
+			read -p "Do you want to disable proposed updates repositories (pre-release updates) (y/N)? " -n 1 REPLY
+			if [[ $REPLY == "" ]]; then
+				REPLY="n"
+			fi
+			echo ""
+		done
+		if [[ $REPLY =~ ^[Yy]$ ]]; then
+			setSources_disable_proposed $dist
+		fi
 fi
 echo ""
 
@@ -260,9 +328,9 @@ echo ""
 # Remove unnecesary packages and daemons.
 REPLY='none'
 while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to remove unnecesary packages and daemons (Y/n)? " -n 1 REPLY
+	read -p "Do you want to remove unnecesary packages and daemons (ONLY recommended for a server) (y/N)? " -n 1 REPLY
 	if [[ $REPLY == "" ]]; then
-		REPLY="y"
+		REPLY="n"
 	fi
 	echo ""
 done
@@ -284,9 +352,9 @@ while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
 done
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-	read -p "List the packages to install (acpid dnsutils ifstat traceroute locate psmisc nmap python-software-properties)? " packages
+	read -p "List the packages to install (acpid dnsutils ifstat traceroute locate psmisc nmap python-software-properties aptitude synaptic iotop htop)? " packages
 	if [[ $packages == "" ]]; then
-		packages="dnsutils ifstat traceroute locate psmisc python-software-properties"
+		packages="acpid dnsutils ifstat traceroute locate psmisc nmap python-software-properties aptitude synaptic iotop htop"
 	fi
 	echo ""
 	apt-get -y install $packages
@@ -311,7 +379,7 @@ echo ""
 # Regenerate SSH keys on next reboot.
 REPLY='none'
 while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-	read -p "Do you want to regenerate SSH keys on next reboot (y/N)? " -n 1 REPLY
+	read -p "Do you want to regenerate SSH keys on next reboot (ONLY needed to clone a virtual instance) (y/N)? " -n 1 REPLY
 	if [[ $REPLY == "" ]]; then
 		REPLY="n"
 	fi

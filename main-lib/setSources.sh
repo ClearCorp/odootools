@@ -15,74 +15,57 @@ function setSources_ubuntu {
 	fi
 # Ubuntu repository
 	cat > /etc/apt/sources.list << EOF
-# See http://help.ubuntu.com/community/UpgradeNotes for how to upgrade to
-# newer versions of the distribution.
+# main repository
+deb mirror://mirrors.ubuntu.com/mirrors.txt $1 main
+deb mirror://mirrors.ubuntu.com/mirrors.txt $1-updates main
+deb mirror://mirrors.ubuntu.com/mirrors.txt $1-security main
+deb mirror://mirrors.ubuntu.com/mirrors.txt $1-backports main
+deb mirror://mirrors.ubuntu.com/mirrors.txt $1-proposed main
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt $1 main
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt $1-updates main
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt $1-security main
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt $1-backports main
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt $1-proposed main
 
-## N.B. software from universe repository is ENTIRELY UNSUPPORTED by the Ubuntu
-## team. Also, please note that software in universe WILL NOT receive any
-## review or updates from the Ubuntu security team.
+# restricted repository
+deb mirror://mirrors.ubuntu.com/mirrors.txt $1 restricted
+deb mirror://mirrors.ubuntu.com/mirrors.txt $1-updates restricted
+deb mirror://mirrors.ubuntu.com/mirrors.txt $1-security restricted
+deb mirror://mirrors.ubuntu.com/mirrors.txt $1-backports restricted
+deb mirror://mirrors.ubuntu.com/mirrors.txt $1-proposed restricted
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt $1 restricted
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt $1-updates restricted
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt $1-security restricted
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt $1-backports restricted
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt $1-proposed restricted
 
-## N.B. software from multiverse repository is ENTIRELY UNSUPPORTED by the Ubuntu 
-## team, and may not be under a free licence. Please satisfy yourself as to 
-## your rights to use the software. Also, please note that software in 
-## multiverse WILL NOT receive any review or updates from the Ubuntu
-## security team.
+# universe repository
+deb mirror://mirrors.ubuntu.com/mirrors.txt $1 universe
+deb mirror://mirrors.ubuntu.com/mirrors.txt $1-updates universe
+deb mirror://mirrors.ubuntu.com/mirrors.txt $1-security universe
+deb mirror://mirrors.ubuntu.com/mirrors.txt $1-backports universe
+deb mirror://mirrors.ubuntu.com/mirrors.txt $1-proposed universe
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt $1 universe
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt $1-updates universe
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt $1-security universe
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt $1-backports universe
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt $1-proposed universe
 
-## N.B. software from updates repository are major bug fix updates produced after the final release of the
-## distribution.
-
-## N.B. software from backports repository may not have been tested as
-## extensively as that contained in the main release, although it includes
-## newer versions of some applications which may provide useful features.
-## Also, please note that software in backports WILL NOT receive any review
-## or updates from the Ubuntu security team.
-
-## N.B. software from partner repository is not part of Ubuntu, but is offered by Canonical and the
-## respective vendors as a service to Ubuntu users.
-
-# Main repository
-deb http://$archive.ubuntu.com/ubuntu/ $1 main
-deb http://$archive.ubuntu.com/ubuntu/ $1-updates main
-deb http://$archive.ubuntu.com/ubuntu/ $1-security main
-#deb http://$archive.ubuntu.com/ubuntu/ $1-backports main
-#deb-src http://$archive.ubuntu.com/ubuntu/ $1 main
-#deb-src http://$archive.ubuntu.com/ubuntu/ $1-updates main
-#deb-src http://$archive.ubuntu.com/ubuntu/ $1-security main
-#deb-src http://$archive.ubuntu.com/ubuntu/ $1-backports main
-
-# Restricted repository
-deb http://$archive.ubuntu.com/ubuntu/ $1 restricted
-deb http://$archive.ubuntu.com/ubuntu/ $1-updates restricted
-deb http://$archive.ubuntu.com/ubuntu/ $1-security restricted
-#deb http://$archive.ubuntu.com/ubuntu/ $1-backports restricted
-#deb-src http://$archive.ubuntu.com/ubuntu/ $1 restricted
-#deb-src http://$archive.ubuntu.com/ubuntu/ $1-updates restricted
-#deb-src http://$archive.ubuntu.com/ubuntu/ $1-security restricted
-#deb-src http://$archive.ubuntu.com/ubuntu/ $1-backports restricted
-
-# Universe repository
-deb http://$archive.ubuntu.com/ubuntu/ $1 universe
-deb http://$archive.ubuntu.com/ubuntu/ $1-updates universe
-deb http://$archive.ubuntu.com/ubuntu/ $1-security universe
-#deb http://$archive.ubuntu.com/ubuntu/ $1-backports universe
-#deb-src http://$archive.ubuntu.com/ubuntu/ $1 universe
-#deb-src http://$archive.ubuntu.com/ubuntu/ $1-updates universe
-#deb-src http://$archive.ubuntu.com/ubuntu/ $1-security universe
-#deb-src http://$archive.ubuntu.com/ubuntu/ $1-backports universe
-
-# Multiverse repository
-deb http://$archive.ubuntu.com/ubuntu/ $1 multiverse
-deb http://$archive.ubuntu.com/ubuntu/ $1-updates multiverse
-deb http://$archive.ubuntu.com/ubuntu/ $1-security multiverse
-#deb http://$archive.ubuntu.com/ubuntu/ $1-backports multiverse
-#deb-src http://$archive.ubuntu.com/ubuntu/ $1 multiverse
-#deb-src http://$archive.ubuntu.com/ubuntu/ $1-updates multiverse
-#deb-src http://$archive.ubuntu.com/ubuntu/ $1-security multiverse
-#deb-src http://$archive.ubuntu.com/ubuntu/ $1-backports multiverse
+# multiverse repository
+deb mirror://mirrors.ubuntu.com/mirrors.txt $1 multiverse
+deb mirror://mirrors.ubuntu.com/mirrors.txt $1-updates multiverse
+deb mirror://mirrors.ubuntu.com/mirrors.txt $1-security multiverse
+deb mirror://mirrors.ubuntu.com/mirrors.txt $1-backports multiverse
+deb mirror://mirrors.ubuntu.com/mirrors.txt $1-proposed multiverse
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt $1 multiverse
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt $1-updates multiverse
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt $1-security multiverse
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt $1-backports multiverse
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt $1-proposed multiverse
 
 # Partner repository
 deb http://archive.canonical.com/ubuntu $1 partner
-#deb-src http://archive.canonical.com/ubuntu $1 partner
+deb-src http://archive.canonical.com/ubuntu $1 partner
 EOF
 }
 
@@ -111,4 +94,34 @@ function setSources {
 	setSources_ubuntu $1
 	setSources_zentyal $1
 	setSources_webmin $1
+}
+
+function setSources_disable_src {
+	# Comments all deb-src lines
+	sed -i "s/^\(\s*deb-src.*$\)/# &/g" /etc/apt/sources.list
+}
+
+function setSources_disable_restricted {
+	# Comments all restricted repo lines
+	sed -i "s/^\(\s*deb.*restricted.*$\)/# &/g" /etc/apt/sources.list
+}
+
+function setSources_disable_universe {
+	# Comments all universe repo lines
+	sed -i "s/^\(\s*deb.*universe.*$\)/# &/g" /etc/apt/sources.list
+}
+
+function setSources_disable_multiuniverse {
+	# Comments all multiuniverse repo lines
+	sed -i "s/^\(\s*deb.*multiuniverse.*$\)/# &/g" /etc/apt/sources.list
+}
+
+function setSources_disable_proposed {
+	# Comments all proposed repo lines
+	sed -i "s/^\(\s*deb.*-proposed.*$\)/# &/g" /etc/apt/sources.list
+}
+
+function setSources_disable_backports {
+	# Comments all backports repo lines
+	sed -i "s/^\(\s*deb.*-backports.*$\)/# &/g" /etc/apt/sources.list
 }
