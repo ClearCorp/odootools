@@ -44,7 +44,9 @@ function bzrUpdate {
 	# Check user is root
 	checkRoot
 	for x in $(ls -1 $OPENERP_CCORP_DIR/bin-links); do
-		rm -r /usr/local/sbin/$x
+		if [[ -e /usr/local/sbin/$x ]]; then
+			rm -r /usr/local/sbin/$x
+		fi
 		ln -s $OPENERP_CCORP_DIR/bin-links/$x /usr/local/sbin/$x
 	done
 	

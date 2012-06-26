@@ -65,25 +65,29 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 		cd /usr/local/share/openerp-ccorp-scripts
 		bzr pull
 	else
+		# Removed the choice, the trunk isn't updated anymore, only install from stable
+		#------------------------------------------------------------------------------
 		#Chose the branch to install
-		REPLY='none'
-		while [[ ! $REPLY =~ ^[SsTt]$ ]]; do
-			read -p "Do you want to install openerp-ccorp-scripts stable or trunk (S/t)? " -n 1
-			if [[ $REPLY == "" ]]; then
-				REPLY="s"
-			fi
-			echo ""
-		done
+		#REPLY='none'
+		#while [[ ! $REPLY =~ ^[SsTt]$ ]]; do
+		#	read -p "Do you want to install openerp-ccorp-scripts stable or trunk (S/t)? " -n 1
+		#	if [[ $REPLY == "" ]]; then
+		#		REPLY="s"
+		#	fi
+		#	echo ""
+		#done
+		#if [[ $REPLY =~ ^[Ss]$ ]]; then
+		#	branch=stable
+		#else
+		#	branch=trunk
+		#fi
+
+		branch=stable
 
 		mkdir -p /etc/openerp-ccorp-scripts
-		if [[ $REPLY =~ ^[Ss]$ ]]; then
-			branch=stable
-		else
-			branch=trunk
-		fi
-		bzr branch http://bazaar.launchpad.net/openerp-ccorp-scripts/${branch} /usr/local/share/openerp-ccorp-scripts
+		bzr branch lp:openerp-ccorp-scripts/${branch} /usr/local/share/openerp-ccorp-scripts
 		cat > /etc/openerp-ccorp-scripts/settings.cfg <<EOF
-repo="http://bazaar.launchpad.net/openerp-ccorp-scripts"
+repo="lp:openerp-ccorp-scripts"
 branch=$branch
 EOF
 	fi
