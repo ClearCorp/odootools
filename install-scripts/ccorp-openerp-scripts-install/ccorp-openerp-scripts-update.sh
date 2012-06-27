@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #       ccorp-openerp-scripts-update.sh
 #       
 #       Copyright 2010 ClearCorp S.A. <info@clearcorp.co.cr>
@@ -16,7 +18,6 @@
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
-#!/bin/bash
 
 if [[ ! -d $OPENERP_CCORP_DIR ]]; then
 	echo "openerp-ccorp-scripts not installed."
