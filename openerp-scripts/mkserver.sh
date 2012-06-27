@@ -140,9 +140,9 @@ while [[ $port == "" ]]; do
     if [[ ! $port =~ $test ]]; then
         log_echo "The port has to contain exactly 2 digits."
         port=""
-    elif [[ $(ls -1 /etc/openerp/ports/${port}_* | wc -l) != 0 ]]; then
+    elif ls /etc/openerp/ports/${port}_* > /dev/null 2>&1; then
         tmp=$(ls /etc/openerp/ports/${port}_* | xargs -n1 basename)
-        log_echo "The port $port is already in use by the server $(tmp:3) (/etc/openerp/ports)."
+        log_echo "The port $port is already in use by the server ${tmp:3} (/etc/openerp/ports)."
         port=""
     fi
 done

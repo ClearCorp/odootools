@@ -238,7 +238,7 @@ function update_pg_hba {
 
 function add_postgres_user {
     /usr/bin/sudo -u postgres createuser $openerp_user --superuser --createdb --no-createrole >> $INSTALL_LOG_FILE
-    /usr/bin/sudo -u postgres psql template1 -U postgres -c "alter user $openerp_user with password '$openerp_admin_passwd'" >> $INSTALL_LOG_FILE
+    /usr/bin/sudo -u postgres psql template1 -U postgres -c "alter user \"$openerp_user\" with password '$openerp_admin_passwd'" >> $INSTALL_LOG_FILE
     log_echo ""
 }
 
@@ -354,7 +354,11 @@ function install_openerp_server {
     # OpenERP Server init
     cp $OPENERP_CCORP_DIR/openerp-scripts/server/server-init-$branch-skeleton /etc/openerp/$branch/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
     sed -i "s#\\[PATH\\]#/usr/local#g" /etc/openerp/$branch/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
-    
+    if [[ $server_type =~ ^station$ ]]; then
+         sed -i "s#\\[USER\\]#$openerp_user#g" /etc/openerp/$branch/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
+         sed -i "s#\(chown.*\)openerp:openerp#\1$openerp_user:openerp#g" /etc/openerp/$branch/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
+    fi
+        
     # OpenERP Server config skeletons
     cp $OPENERP_CCORP_DIR/openerp-scripts/server/server.conf-$branch-skeleton /etc/openerp/$branch/server/ >> $INSTALL_LOG_FILE
     sed -i "s#\\[BRANCH\\]#$branch#g" /etc/openerp/$branch/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
