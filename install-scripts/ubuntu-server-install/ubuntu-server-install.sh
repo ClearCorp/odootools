@@ -269,9 +269,9 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 		fi
 		REPLY='none'
 		while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-			read -p "Do you want to disable backport updates repositories (unsupported updates) (y/N)? " -n 1 REPLY
+			read -p "Do you want to disable backport updates repositories (unsupported updates) (Y/n)? " -n 1 REPLY
 			if [[ $REPLY == "" ]]; then
-				REPLY="n"
+				REPLY="y"
 			fi
 			echo ""
 		done
@@ -280,9 +280,9 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 		fi
 		REPLY='none'
 		while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
-			read -p "Do you want to disable proposed updates repositories (pre-release updates) (y/N)? " -n 1 REPLY
+			read -p "Do you want to disable proposed updates repositories (pre-release updates) (Y/n)? " -n 1 REPLY
 			if [[ $REPLY == "" ]]; then
-				REPLY="n"
+				REPLY="y"
 			fi
 			echo ""
 		done
@@ -320,6 +320,7 @@ while [[ ! $REPLY =~ ^[YyNn]$ ]]; do
 done
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
+	setSources_webmin $dist
 	apt-get -y install webmin
 	echo "Webmin is installed."
 fi

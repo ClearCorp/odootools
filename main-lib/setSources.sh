@@ -111,7 +111,7 @@ function setSources_disable_universe {
 	sed -i "s/^\(\s*deb.*universe.*$\)/# &/g" /etc/apt/sources.list
 }
 
-function setSources_disable_multiuniverse {
+function setSources_disable_multiverse {
 	# Comments all multiuniverse repo lines
 	sed -i "s/^\(\s*deb.*multiuniverse.*$\)/# &/g" /etc/apt/sources.list
 }
