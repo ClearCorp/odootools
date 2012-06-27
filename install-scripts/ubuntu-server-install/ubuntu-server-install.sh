@@ -321,6 +321,7 @@ done
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
 	setSources_webmin $dist
+	apt-get -y update
 	apt-get -y install webmin
 	echo "Webmin is installed."
 fi

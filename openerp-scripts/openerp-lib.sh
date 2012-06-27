@@ -393,9 +393,11 @@ function install_change_perms {
     chmod -R g+w /srv/openerp >> $INSTALL_LOG_FILE
     chmod -R g+w /var/log/openerp >> $INSTALL_LOG_FILE
     chmod -R g+w /var/run/openerp >> $INSTALL_LOG_FILE
-    for x in $(ls -d /srv/openerp/$branch/instances/*/addons); do
-        chmod +x $x >> $INSTALL_LOG_FILE;
-    done
+    if ls /srv/openerp/$branch/instances/*/addons > /dev/null 1>&2; then
+	    for x in $(ls -d /srv/openerp/$branch/instances/*/addons); do
+	        chmod +x $x >> $INSTALL_LOG_FILE;
+	    done
+	fi
 }
 
 function install_openerp {
@@ -561,6 +563,8 @@ function make_menus {
 }
 
 function add_log_rotation {
-    rm /etc/logrotate.d/openerp*
+    if ls /etc/logrotate.d/openerp* > /dev/null 1>&2; then
+        rm /etc/logrotate.d/openerp*
+    fi
     cp $OPENERP_CCORP_DIR/openerp-scripts/scripts/openerp.logrotate /etc/logrotate.d/
 }
