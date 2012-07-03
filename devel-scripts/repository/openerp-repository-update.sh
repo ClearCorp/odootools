@@ -11,28 +11,7 @@ if [[ $OPENERP_REPO_PUSH != 1 ]]; then
     OPENERP_REPO_PUSH=0
 fi
 
-function bzr_pull {
-    echo ""
-	cd $1
-	echo "+++ bzr pull $1"
-    echo "$(pwd)/$1"
-	bzr pull
-	cd ..
-}
-
-function bzr_push {
-    if [ $OPENERP_REPO_PUSH ]; then
-        echo ""
-        cd $1
-        echo "+++ bzr pull $1"
-        echo "$(pwd)/$1"
-        bzr pull
-        echo "+++ bzr push $1"
-        echo "$(pwd)/$1"
-        bzr push
-        cd ..
-    fi
-}
+LOG=""
 
 function update_oerp_project {
     # $1: Project name
@@ -67,6 +46,8 @@ function update_oerp_project {
             echo "branch doesn't exists, skipping"
             echo "$REPO_DIR/main/$branch"
             echo ""
+            LOG="${LOG}WARNING: $REPO_DIR/main/$branch"
+            LOG="${LOG}\nbranch doesn't exists, skipping\n\n"
         else
             echo "Branch pull: $REPO_DIR/main/$branch"
             
@@ -74,17 +55,14 @@ function update_oerp_project {
             cd $REPO_DIR/main/$branch
             echo "bzr pull"
             bzr pull
-            echo ""
-            
-            if [ $OPENERP_REPO_PUSH ]; then
-                echo "Branch push: $REPO_DIR/main/${branch}"
-                
-                echo "cd $REPO_DIR/main/${branch}"
-                cd $REPO_DIR/main/${branch}
-                echo "bzr push"
-                bzr push
-                echo ""
+            if [[ $? == 0 ]]; then
+                LOG="${LOG}INFO: $REPO_DIR/main/$branch"
+                LOG="${LOG}\nbzr pull OK\n\n"
+            else
+                LOG="${LOG}ERROR: $REPO_DIR/main/$branch"
+                LOG="${LOG}\nbzr pull FAIL\n\n"
             fi
+            echo ""
         fi
         
         if [[ $2 =~ ^original$ ]]; then
@@ -93,6 +71,8 @@ function update_oerp_project {
                 echo "branch doesn't exists, skipping"
                 echo "$REPO_DIR/main/${branch}-ccorp"
                 echo ""
+                LOG="${LOG}WARNING: $REPO_DIR/main/$branch-ccorp"
+                LOG="${LOG}\nbranch doesn't exists, skipping\n\n"
             else
                 echo "Branch pull: $REPO_DIR/main/${branch}-ccorp"
                 
@@ -100,8 +80,22 @@ function update_oerp_project {
                 cd $REPO_DIR/main/${branch}-ccorp
                 echo "bzr pull"
                 bzr pull
+	            if [[ $? == 0 ]]; then
+	                LOG="${LOG}INFO: $REPO_DIR/main/$branch-ccorp"
+	                LOG="${LOG}\nbzr pull OK\n\n"
+	            else
+	                LOG="${LOG}ERROR: $REPO_DIR/main/$branch-ccorp"
+	                LOG="${LOG}\nbzr pull FAIL\n\n"
+	            fi
                 echo "bzr pull :push"
                 bzr pull :push
+	            if [[ $? == 0 ]]; then
+	                LOG="${LOG}INFO: $REPO_DIR/main/$branch-ccorp"
+	                LOG="${LOG}\nbzr pull OK\n\n"
+	            else
+	                LOG="${LOG}ERROR: $REPO_DIR/main/$branch-ccorp"
+	                LOG="${LOG}\nbzr pull FAIL\n\n"
+	            fi
                 echo ""
                 
                 if [ $OPENERP_REPO_PUSH ]; then
@@ -111,8 +105,32 @@ function update_oerp_project {
                     cd $REPO_DIR/main/${branch}-ccorp
                     echo "bzr push"
                     bzr push
+		            if [[ $? == 0 ]]; then
+		                LOG="${LOG}INFO: $REPO_DIR/main/$branch-ccorp"
+		                LOG="${LOG}\nbzr push OK\n\n"
+		            else
+		                LOG="${LOG}ERROR: $REPO_DIR/main/$branch-ccorp"
+		                LOG="${LOG}\nbzr push FAIL\n\n"
+		            fi
                     echo ""
                 fi
+            fi
+        elif [[ $2 =~ ^ccorp$ ]]; then
+            if [ $OPENERP_REPO_PUSH ]; then
+                echo "Branch push: $REPO_DIR/main/${branch}"
+                
+                echo "cd $REPO_DIR/main/${branch}"
+                cd $REPO_DIR/main/${branch}
+                echo "bzr push"
+                bzr push
+	            if [[ $? == 0 ]]; then
+	                LOG="${LOG}INFO: $REPO_DIR/main/$branch"
+	                LOG="${LOG}\nbzr push OK\n\n"
+	            else
+	                LOG="${LOG}ERROR: $REPO_DIR/main/$branch"
+	                LOG="${LOG}\nbzr push FAIL\n\n"
+	            fi
+                echo ""
             fi
         fi
         
@@ -135,3 +153,9 @@ update_oerp_project openerp-costa-rica      ccorp   6.0 6.1 trunk
 update_oerp_project openerp-ccorp-scripts   ccorp   stable trunk
 
 update_oerp_project banking-addons          original    5.0 6.0 6.1 trunk
+
+
+
+echo "OpenERP repository update log:"
+echo ""
+echo -e $LOG
