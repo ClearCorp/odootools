@@ -67,7 +67,7 @@ shutil.copy(scripts_dir+"/install-scripts/ccorp-openerp-scripts-install/setup.sh
             scripts_dir+"/bin/setup.sh")
 
 # Set setup.py as executable
-os.chmod(scripts_dir+"/bin/setup.sh", 0755)
+os.chmod(scripts_dir+"/bin/setup.sh", stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
 # Copy the created bin dir to openerp-ccorp-scripts dir
 shutil.copytree(scripts_dir+"/bin", "openerp-ccorp-scripts")
