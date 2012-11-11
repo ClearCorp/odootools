@@ -67,18 +67,6 @@ deb-src mirror://mirrors.ubuntu.com/mirrors.txt $1-proposed multiverse
 deb http://archive.canonical.com/ubuntu $1 partner
 deb-src http://archive.canonical.com/ubuntu $1 partner
 EOF
-}
-
-function setSources_zentyal {
-	if [[ $1 == "lucid" ]]; then
-		# Zentyal repository
-		cat > /etc/apt/sources.list.d/zentyal.list << EOF
-	# zentyal repository
-	deb http://ppa.launchpad.net/zentyal/2.0/ubuntu lucid main
-EOF
-		apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 10E239FF
-	fi
-}
 
 function setSources_webmin {
 	# Webmin repository
@@ -92,7 +80,6 @@ EOF
 function setSources {
 	#Adds add-apt-repository
 	setSources_ubuntu $1
-	setSources_zentyal $1
 	setSources_webmin $1
 }
 
