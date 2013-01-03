@@ -34,49 +34,53 @@ import os
 import shutil
 import tarfile
 import logging
+import stat
 
-logger = logging.getLogger(__name__)
+def make_installer(context={}):
+    # TODO: get logger
+    logger = logging.getLogger(__name__)
 
-logger.info("test")
+    logger.info("test")
 
-# Get the scripts dir absolute path
-scripts_dir = os.path.abspath(os.path.dirname(sys.argv[0])+"/../..")
+    # Get the scripts dir absolute path
+    if not 'oerptools_path' in context:
+        context.update({'oerptools_path' : os.path.abspath(os.path.dirname(__file__)+'../..')})
 
-# Remove previous binaries
-if os.path.exists(scripts_dir+"/bin"):
-    shutil.rmtree(scripts_dir+"/bin")
+    # Remove previous binaries
+    if os.path.exists(context['oerptools_path']+"/bin"):
+        shutil.rmtree(context['oerptools_path']+"/bin")
 
-# Create new bin dirs
-os.makedirs(scripts_dir+"/bin/lib")
-os.makedirs(scripts_dir+"/bin/install")
+    # Create new bin dirs
+    os.makedirs(context['oerptools_path']+"/bin/oerptools_lib")
+    os.makedirs(context['oerptools_path']+"/bin/oerptools_install")
 
-# Copy files to bin dirs
-shutil.copy(scripts_dir+"/lib/checkRoot.sh",
-            scripts_dir+"/bin/lib/checkRoot.sh")
-shutil.copy(scripts_dir+"/lib/getDist.sh",
-            scripts_dir+"/bin/lib/getDist.sh")
-shutil.copy(scripts_dir+"/lib/setSources.sh",
-            scripts_dir+"/bin/lib/setSources.sh")
+    # Copy files to bin dirs
+    shutil.copy(context['oerptools_path']+"/lib/tools.py",
+                context['oerptools_path']+"/bin/oerptools_lib/tools.py")
+    shutil.copy(context['oerptools_path']+"/install/setup.py",
+                context['oerptools_path']+"/bin/setup.py")
+    shutil.copy(context['oerptools_path']+"/install/update.py",
+                context['oerptools_path']+"/bin/oerptools_install/update.py")
+    
+    init_file = open(context['oerptools_path']+"/bin/oerptools_lib/__init__.py",'w')
+    init_file.close()
+    init_file = open(context['oerptools_path']+"/bin/oerptools_install/__init__.py",'w')
+    init_file.close()
 
-shutil.copy(scripts_dir+"/install/ccorp-openerp-scripts-setup.sh",
-            scripts_dir+"/bin/install-scripts/ccorp-openerp-scripts-install/ccorp-openerp-scripts-setup.sh")
-shutil.copy(scripts_dir+"/install-scripts/ccorp-openerp-scripts-install/ccorp-openerp-scripts-update.sh",
-            scripts_dir+"/bin/install-scripts/ccorp-openerp-scripts-install/ccorp-openerp-scripts-update.")
+    # Set setup.py as executable
+    os.chmod(context['oerptools_path']+"/bin/setup.py", stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
-shutil.copy(scripts_dir+"/install-scripts/ccorp-openerp-scripts-install/setup.sh",
-            scripts_dir+"/bin/setup.sh")
+    # Copy the created bin dir to openerp-ccorp-scripts dir
+    if os.path.exists("oerptools-setup"):
+        shutil.rmtree("oerptools-setup")
+    shutil.copytree(context['oerptools_path']+"/bin", "oerptools-setup")
+    shutil.copystat(context['oerptools_path']+"/bin", "oerptools-setup")
 
-# Set setup.py as executable
-os.chmod(scripts_dir+"/bin/setup.sh", stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+    # Compress the openerp-ccorp-scripts dir
+    tar = tarfile.open("oerptools-setup.tgz", "w:gz")
+    tar.add("oerptools-setup")
+    tar.close()
 
-# Copy the created bin dir to openerp-ccorp-scripts dir
-shutil.copytree(scripts_dir+"/bin", "openerp-ccorp-scripts")
-shutil.copystat(scripts_dir+"/bin", "openerp-ccorp-scripts")
-
-# Compress the openerp-ccorp-scripts dir
-tar = tarfile.open("openerp-ccorp-scripts.tgz", "w:gz")
-tar.add("openerp-ccorp-scripts")
-tar.close()
-
-# Delete the openerp-ccorp-scripts dir
-shutil.rmtree("openerp-ccorp-scripts")
+    # Delete the openerp-ccorp-scripts dir
+    shutil.rmtree("oerptools-setup")
+    return

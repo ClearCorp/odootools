@@ -21,6 +21,10 @@
 #
 ########################################################################
 
+'''
+Description: Install webmin
+'''
+
 import os, sys
 import subprocess
 from oerptools.lib import tools
@@ -37,32 +41,17 @@ def webmin_install():
 def ubuntu_webmin_install():
     if not os.path.isfile('/etc/apt/sources.list.d/webmin.list'):
         apt_src = open('/etc/apt/sources.list.d/webmin.list', 'w')
-        apt_src.write('# Webmin repository')
+        apt_src.write('# Webmin repository\n')
         apt_src.write('deb http://download.webmin.com/download/repository sarge contrib')
         apt_src.close()
-    command = subprocess.Popen(['wget -q http://www.webmin.com/jcameron-key.asc -O - | apt-key add -'],
-                                shell=True,
-                                stdin=sys.stdin.fileno(),
-                                stdout=sys.stdout.fileno(),
-                                stderr=sys.stderr.fileno())
-    command.wait()
     #TODO: logger gets the output of the command
+    command = tools.exec_command('wget -q http://www.webmin.com/jcameron-key.asc -O - | apt-key add -')
+    command = tools.exec_command('apt-get -y update')
+    command = tools.exec_command('apt-get -y install webmin')
     return
 
 def arch_webmin_install():
-    command = subprocess.Popen('pacman -Sy',
-                                shell=True,
-                                stdin=sys.stdin.fileno(),
-                                stdout=sys.stdout.fileno(),
-                                stderr=sys.stderr.fileno())
-    command.wait()
     #TODO: logger gets the output of the command
-
-    command = subprocess.Popen('pacman -Sy webmin',
-                                shell=True,
-                                stdin=sys.stdin.fileno(),
-                                stdout=sys.stdout.fileno(),
-                                stderr=sys.stderr.fileno())
-    command.wait()
-    #TODO: logger gets the output of the command
+    command = tools.exec_command('pacman -Sy webmin')
+    return
 

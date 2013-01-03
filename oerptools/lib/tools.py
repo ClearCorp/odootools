@@ -23,10 +23,19 @@
 
 import os
 import platform
+import subprocess
+import sys
 
 def check_root():
     uid = os.getuid()
     return uid == 0
+
+def exit_if_not_root():
+    if not check_root():
+        sys.stderr.write("The command: \"%s\" must be used as root. Aborting.\n" % command)
+        sys.exit(1)
+    else:
+        return True
 
 def get_os():
     os_name = platform.system()
@@ -58,4 +67,15 @@ rm -f \$0
     rc_local = open('/etc/rc.local', 'a')
     rc_local.write('/etc/regen-ssh-keys.sh\n')
     rc_local.close()
+
+def exec_command(command, as_root=False):
+    if as_root:
+        exit_if_not_root()
+    process = subprocess.Popen(command,
+                                shell=True,
+                                stdin=sys.stdin.fileno(),
+                                stdout=sys.stdout.fileno(),
+                                stderr=sys.stderr.fileno())
+    process.wait()
+    return process
 
