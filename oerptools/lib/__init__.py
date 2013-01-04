@@ -21,4 +21,4 @@
 #
 ########################################################################
 
-__all__ = ['tools', 'ubunturepo', 'webmin']
+__all__ = ['tools', 'config', 'logger', 'ubunturepo', 'webmin']
