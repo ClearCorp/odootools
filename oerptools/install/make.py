@@ -29,31 +29,40 @@ WARNING:    If you update this file, please remake the installer and
             if the oerptools are installed.
 '''
 
-import sys, os, logging
-import shutil
-import tarfile
-import stat
+import os, logging
+from bzrlib.branch import Branch
+
+#import shutil
+#import tarfile
+#import stat
 
 _logger = logging.getLogger('oerptools.install.make')
 
-def make_installer(context={}):
+def make_installer():
 
     _logger.info("Starting OERPTools make process")
 
     #TODO: enable the user to choose the oerptools path
-    _logger.debug("Getting the scripts dir absolute path")
-    if not 'oerptools_path' in context:
-        _logger.debug("Scripts dir path not in context, updating")
-        context.update({'oerptools_path' : os.path.abspath(os.path.dirname(__file__)+'../..')})
+    _logger.debug("Getting this oerptools dir absolute path")
+    #TODO: Remove one ../ when moving oerptools to the root.
+    scripts_path =  os.path.abspath(os.path.dirname(__file__)+'../../..')
+    
+    _logger.debug("Opening this bzr branch")
+    this_branch = Branch.open(scripts_path)
+    
+    
+    
+    
+    
 
     _logger.debug("Checking if previous binaries exist")
-    if os.path.exists(context['oerptools_path']+"/bin"):
+    if os.path.exists(scripts_path+"/bin"):
         _logger.info("Binaries (bin dir) exists, removing")
-        shutil.rmtree(context['oerptools_path']+"/bin")
+        shutil.rmtree(scripts_path+"/bin")
 
     _logger.debug("Making new bin dirs")
-    os.makedirs(context['oerptools_path']+"/bin/oerptools_lib")
-    os.makedirs(context['oerptools_path']+"/bin/oerptools_install")
+    os.makedirs(scripts_path+"/bin/oerptools_lib")
+    os.makedirs(scripts_path+"/bin/oerptools_install")
 
     _logger.debug("Copying files to bin dirs")
     shutil.copy(context['oerptools_path']+"/lib/tools.py",

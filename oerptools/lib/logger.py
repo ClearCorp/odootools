@@ -26,7 +26,7 @@
 import os, sys, logging, logging.handlers
 import config
 
-_logger = logging.getLogger('oerptools.logger')
+_logger = logging.getLogger('oerptools.lib.logger')
 
 BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE, _NOTHING, DEFAULT = range(10)
 #The background is set with 40 plus the number of the color, and the foreground with 30

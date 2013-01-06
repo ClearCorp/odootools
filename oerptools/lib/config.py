@@ -27,7 +27,6 @@
 import argparse, ConfigParser, logging
 logger = logging.getLogger('oerptools.lib.config')
 
-from oerptools.install import make
 
 #This class is initialized before initialization of the loggers, beware of this.
 class configParameters(object):
@@ -104,9 +103,10 @@ class configParameters(object):
                             choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
                             help='File log level, (overwrite general log level).')
         group.add_argument('--log-handler', action="append", metavar="PREFIX:LEVEL", default=argparse.SUPPRESS,
-                            help='Setup a handler at LEVEL for a given PREFIX. An empty PREFIX indicates the root logger. This option can be repeated. Example: "oerptools.build:DEBUG" or "oerptools.oerp.install:CRITICAL" (default: ":INFO")')
+                            help='Setup a handler at LEVEL for a given PREFIX. An empty PREFIX indicates the root logger. This option can be repeated. Example: "oerptools.install.make:DEBUG" or "oerptools.oerp.install:CRITICAL" (default: ":INFO")')
 
         
+        from oerptools.install import *
         # Commands
         subparsers = parser.add_subparsers(dest='command', title='command', description='Valid OERPTools commands',
                             help='Command to execute (for help use "command --help")')
@@ -117,6 +117,8 @@ class configParameters(object):
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help',
                             help='Show this help message and exit.')
+        group.add_argument('--target', '-t', type=str, required=True,
+                            help='Target directory for building and writing the oerptools.tgz file.')
         subparser.set_defaults(function=make.make_installer)
         
         #oerptools-update
