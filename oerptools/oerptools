@@ -23,7 +23,7 @@
 
 import sys, os, logging
 
-logger = logging.getLogger('oerptools')
+_logger = logging.getLogger('oerptools')
 
 # Add the module oerptools to PYTHONPATH
 # This is necesary in order to call the module without installing it
@@ -38,7 +38,10 @@ if __name__ == '__main__':
     params = config.params
     
     # Init logger
-    logger.init_logger()
+    logger.init_loggers()
     
-    logger.debug('Params loaded, logger initialized.')
-
+    _logger.debug('Params loaded, logger initialized.')
+    
+    params['function']()
+    
+    _logger.info('OERPTools finished.')

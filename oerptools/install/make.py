@@ -34,28 +34,28 @@ import shutil
 import tarfile
 import stat
 
-logger = logging.getLogger('oerptools.install.make')
+_logger = logging.getLogger('oerptools.install.make')
 
-def make_installer(args, context={}):
+def make_installer(context={}):
 
-    logger.info("Starting OERPTools make process")
+    _logger.info("Starting OERPTools make process")
 
     #TODO: enable the user to choose the oerptools path
-    logger.debug("Getting the scripts dir absolute path")
+    _logger.debug("Getting the scripts dir absolute path")
     if not 'oerptools_path' in context:
-        logger.debug("Scripts dir path not in context, updating")
+        _logger.debug("Scripts dir path not in context, updating")
         context.update({'oerptools_path' : os.path.abspath(os.path.dirname(__file__)+'../..')})
 
-    logger.debug("Checking if previous binaries exist")
+    _logger.debug("Checking if previous binaries exist")
     if os.path.exists(context['oerptools_path']+"/bin"):
-        logger.info("Binaries (bin dir) exists, removing")
+        _logger.info("Binaries (bin dir) exists, removing")
         shutil.rmtree(context['oerptools_path']+"/bin")
 
-    logger.debug("Making new bin dirs")
+    _logger.debug("Making new bin dirs")
     os.makedirs(context['oerptools_path']+"/bin/oerptools_lib")
     os.makedirs(context['oerptools_path']+"/bin/oerptools_install")
 
-    logger.debug("Copying files to bin dirs")
+    _logger.debug("Copying files to bin dirs")
     shutil.copy(context['oerptools_path']+"/lib/tools.py",
                 context['oerptools_path']+"/bin/oerptools_lib/tools.py")
     shutil.copy(context['oerptools_path']+"/install/setup.py",
@@ -63,27 +63,33 @@ def make_installer(args, context={}):
     shutil.copy(context['oerptools_path']+"/install/update.py",
                 context['oerptools_path']+"/bin/oerptools_install/update.py")
     
-    logger.debug("Creating __init__ files into bin dirs")
+    _logger.debug("Creating __init__ files into bin dirs")
     init_file = open(context['oerptools_path']+"/bin/oerptools_lib/__init__.py",'w')
     init_file.close()
     init_file = open(context['oerptools_path']+"/bin/oerptools_install/__init__.py",'w')
     init_file.close()
 
-    logger.debug("Setting setup.py as executable")
+    _logger.debug("Setting setup.py as executable")
     os.chmod(context['oerptools_path']+"/bin/setup.py", stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
-    logger.debug("Copying the created bin dir to oerptools-setup dir")
+    _logger.debug("Copying the created bin dir to oerptools-setup dir")
     if os.path.exists("oerptools-setup"):
-        logger.debug("oerptools-setup dir exists, removing")
+        _logger.debug("oerptools-setup dir exists, removing")
         shutil.rmtree("oerptools-setup")
     shutil.copytree(context['oerptools_path']+"/bin", "oerptools-setup")
     shutil.copystat(context['oerptools_path']+"/bin", "oerptools-setup")
 
-    logger.debug("Compressing the oerptools-setup dir")
+    _logger.debug("Compressing the oerptools-setup dir")
     tar = tarfile.open("oerptools-setup.tgz", "w:gz")
     tar.add("oerptools-setup")
     tar.close()
 
-    logger.debug("Deleting the oerptools-setup dir")
+    _logger.debug("Deleting the oerptools-setup dir")
     shutil.rmtree("oerptools-setup")
+    
+    _logger.debug("Removing binaries")
+    if os.path.exists(context['oerptools_path']+"/bin"):
+        shutil.rmtree(context['oerptools_path']+"/bin")
+    
+    _logger.info("OERPTools make process finished")
     return

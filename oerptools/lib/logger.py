@@ -23,8 +23,10 @@
 
 #This logger method is inspired in OpenERP logger
 
-import os, sys, logging
+import os, sys, logging, logging.handlers
 import config
+
+_logger = logging.getLogger('oerptools.logger')
 
 BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE, _NOTHING, DEFAULT = range(10)
 #The background is set with 40 plus the number of the color, and the foreground with 30
@@ -48,98 +50,74 @@ class ColoredFormatter(logging.Formatter):
         return logging.Formatter.format(self, record)
 
 
-def init_logger():
+def init_loggers():
 
     # Format for both file and stout logging
     file_log_format = '%(asctime)s %(levelname)s %(name)s: %(message)s'
-    stout_log_format = '%(levelname)s %(name)s: %(message)s'
+    stdout_log_format = '%(levelname)s %(name)s: %(message)s'
 
-    if 'log_file' in config.params:
+    file_handler = False
+    stdout_handler = logging.StreamHandler()
+    
+    # Set log file handler if needed
+    if 'log_file' in config.params and config.params['log_file']:
         # LogFile Handler
-        logf = tools.config['logfile']
+        log_file = config.params['log_file']
         try:
-            dirname = os.path.dirname(logf)
+            dirname = os.path.dirname(log_file)
             if dirname and not os.path.isdir(dirname):
                 os.makedirs(dirname)
-            if tools.config['logrotate'] is not False:
-                handler = logging.handlers.TimedRotatingFileHandler(logf,'D',1,30)
-            elif os.name == 'posix':
-                handler = logging.handlers.WatchedFileHandler(logf)
-            else:
-                handler = logging.handlers.FileHandler(logf)
+            file_handler = logging.handlers.WatchedFileHandler(log_file)
         except Exception:
             sys.stderr.write("ERROR: couldn't create the logfile directory. Logging to the standard output.\n")
-            handler = logging.StreamHandler(sys.stdout)
-    else:
-        # Normal Handler on standard output
-        handler = logging.StreamHandler(sys.stdout)
 
-    if isinstance(handler, logging.StreamHandler) and os.isatty(handler.stream.fileno()):
-        formatter = ColoredFormatter(format)
+    # Set formatters
+    if os.isatty(stdout_handler.stream.fileno()):
+        stdout_handler.setFormatter(ColoredFormatter(stdout_log_format))
     else:
-        formatter = DBFormatter(format)
-    handler.setFormatter(formatter)
+        stdout_handler.setFormatter(logging.Formatter(stdout_log_format))
+    if file_handler:
+        file_handler.setFormatter(logging.Formatter(file_log_format))
 
-    # Configure handlers
-    default_config = [
-        'openerp.netsvc.rpc.request:INFO',
-        'openerp.netsvc.rpc.response:INFO',
-        'openerp.addons.web.common.http:INFO',
-        'openerp.addons.web.common.openerplib:INFO',
-        'openerp.sql_db:INFO',
+    # Configure levels
+    default_log_levels = [
         ':INFO',
     ]
-
-    logconfig = tools.config['log_handler']
-
-    for logconfig_item in default_config + pseudo_config + logconfig:
-        loggername, level = logconfig_item.split(':')
-        level = getattr(logging, level, logging.INFO)
-        logger = logging.getLogger(loggername)
-        logger.handlers = []
-        logger.setLevel(level)
-        logger.addHandler(handler)
-        if loggername != '':
-            logger.propagate = False
-
-    for logconfig_item in default_config + pseudo_config + logconfig:
-        _logger.debug('logger level set: "%s"', logconfig_item)
-
-
-
-
-
-
-
-'''
     
-    # Set log level
-    if config.console_log_level:
-        log_console.setLevel(getattr(logging, config.console_log_level.upper()))
-    else:
-        log_console.setLevel(getattr(logging, config.log_level.upper()))
-        
-    if config.file_log_level:
-        log_file.setLevel(getattr(logging, config.file_log_level.upper()))
-    else:
-        log_file.setLevel(getattr(logging, config.log_level.upper()))
-        
-        
+    # Initialize pseudo log levels for easy log-level config param
+    pseudo_log_levels = []
+    if 'log_level' in config.params and config.params['log_level']:
+        log_level = config.params['log_level']
+        if log_level.lower() == 'debug':
+            pseudo_log_levels = ['oerptools:DEBUG']
+        elif log_level.lower() == 'info':
+            pseudo_log_levels = ['oerptools:INFO']
+        elif log_level.lower() == 'warning':
+            pseudo_log_levels = ['oerptools:WARNING']
+        elif log_level.lower() == 'error':
+            pseudo_log_levels = ['oerptools:ERROR']
+        elif log_level.lower() == 'critical':
+            pseudo_log_levels = ['oerptools:CRITICAL']
 
+    if 'log_handler' in config.params and config.params['log_handler']:
+        log_handler = config.params['log_handler']
+    else:
+        log_handler = []
 
-logger.setLevel(logging.DEBUG)
-# create file handler which logs even debug messages
-log_file = logging.FileHandler('setup.log')
-log_file.setLevel(logging.DEBUG)
-# create console handler with a higher log level
-log_console = logging.StreamHandler()
-log_console.setLevel(logging.INFO)
-# create formatter and add it to the handlers
-log_file_formatter = logging.Formatter('%(asctime)s %(levelname)s - %(name)s: %(message)s')
-log_console_formatter = logging.Formatter('%(levelname)s - %(name)s: %(message)s')
-log_file.setFormatter(log_file_formatter)
-log_console.setFormatter(log_console_formatter)
-# add the handlers to the logger
-logger.addHandler(log_file)
-logger.addHandler(log_console)
-'''
+    for log_handler_item in default_log_levels + pseudo_log_levels + log_handler:
+        loggername, level = log_handler_item.split(':')
+        level = getattr(logging, level, logging.INFO)
+        item_logger = logging.getLogger(loggername)
+        item_logger.handlers = []
+        item_logger.setLevel(level)
+        if file_handler:
+            item_logger.addHandler(file_handler)
+        item_logger.addHandler(stdout_handler)
+        if loggername != '':
+            item_logger.propagate = False
+
+    for log_handler_item in default_log_levels + pseudo_log_levels + log_handler:
+        _logger.debug('logger level set: "%s"', log_handler_item)
+        
+    if file_handler:
+        _logger.info('Logging to %s' % log_file)
