@@ -81,6 +81,9 @@ def make_installer():
     _logger.debug("Copying setup file to main dir.")
     shutil.copy(target_path+"/oerptools/install/setup.py",
                 target_path+"/setup.py")
+    _logger.debug("Copying INSTALL.txt file to main dir.")
+    shutil.copy(target_path+"/oerptools/install/INSTALL.txt",
+                target_path+"/INSTALL.txt")
 
     _logger.debug("Compressing the oerptools dir")
     tar = tarfile.open("oerptools-setup.tgz", "w:gz")
