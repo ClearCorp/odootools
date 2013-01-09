@@ -24,7 +24,7 @@
 #This logger method is inspired in OpenERP logger
 
 import os, sys, logging, logging.handlers
-import config
+import oerptools.lib.config as config
 
 _logger = logging.getLogger('oerptools.lib.logger')
 
@@ -37,7 +37,7 @@ BOLD_SEQ = "\033[1m"
 COLOR_PATTERN = "%s%s%%s%s" % (COLOR_SEQ, COLOR_SEQ, RESET_SEQ)
 LEVEL_COLOR_MAPPING = {
     logging.DEBUG: (BLUE, DEFAULT),
-    logging.INFO: (GREEN, DEFAULT),
+    logging.INFO: (WHITE, GREEN),
     logging.WARNING: (YELLOW, DEFAULT),
     logging.ERROR: (RED, DEFAULT),
     logging.CRITICAL: (WHITE, RED),
@@ -104,7 +104,11 @@ def init_loggers():
     else:
         log_handler = []
 
-    for log_handler_item in default_log_levels + pseudo_log_levels + log_handler:
+    log_hander_list = default_log_levels + pseudo_log_levels + log_handler
+    # Force bzr:INFO if no bzr handler
+    log_hander_list = ['bzr:INFO'] + log_hander_list
+
+    for log_handler_item in log_hander_list:
         loggername, level = log_handler_item.split(':')
         level = getattr(logging, level, logging.INFO)
         item_logger = logging.getLogger(loggername)
@@ -116,7 +120,7 @@ def init_loggers():
         if loggername != '':
             item_logger.propagate = False
 
-    for log_handler_item in default_log_levels + pseudo_log_levels + log_handler:
+    for log_handler_item in log_hander_list:
         _logger.debug('logger level set: "%s"', log_handler_item)
         
     if file_handler:

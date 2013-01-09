@@ -7,3 +7,4 @@ install-scripts/ccorp-openerp-scripts-install/test.sh
 oerptools/install/test
 oerptools-setup.tgz
 test
+./setup.py

@@ -29,76 +29,66 @@ WARNING:    If you update this file, please remake the installer and
             if the oerptools are installed.
 '''
 
-import os, logging
-from bzrlib.branch import Branch
-
-#import shutil
-#import tarfile
-#import stat
+import os, logging, shutil, tarfile
+import oerptools.lib.config
 
 _logger = logging.getLogger('oerptools.install.make')
 
+# Import and initialize bzr
+_logger.debug('Importing and initializing bzrlib')
+from bzrlib.branch import Branch
+from bzrlib.trace import set_verbosity_level
+from bzrlib.plugin import load_plugins
+from bzrlib import initialize
+library_state = initialize()
+library_state.__enter__()
+set_verbosity_level(1000)
+
+
 def make_installer():
-
+    
+    params = oerptools.lib.config.params
+    
     _logger.info("Starting OERPTools make process")
-
+    
     #TODO: enable the user to choose the oerptools path
     _logger.debug("Getting this oerptools dir absolute path")
     #TODO: Remove one ../ when moving oerptools to the root.
     scripts_path =  os.path.abspath(os.path.dirname(__file__)+'../../..')
     
-    _logger.debug("Opening this bzr branch")
+    _logger.debug("Opening this bzr branch: %s" % scripts_path)
     this_branch = Branch.open(scripts_path)
     
+    target_path = params['target']+'/oerptools'
+    if not os.path.isdir(target_path):
+        _logger.debug("Copying this bzr branch to target: %s" % target_path)
+        target_branch = this_branch.bzrdir.sprout(params['target']+'/oerptools').open_branch()
+    else:
+        _logger.debug("Updating target branch (from this): %s" % target_path)
+        target_branch = Branch.open(target_path)
+        target_branch.pull(this_branch)
     
-    
-    
-    
+    # TODO: Let the user choose the parent branch.
+    parent_path = 'lp:openerp-ccorp-scripts/stable'
+    _logger.debug('Set parent location for target branch: %s' % parent_path)
+    from bzrlib.plugin import load_plugins
+    load_plugins()
+    target_branch.set_parent(parent_path)
+    _logger.debug('Updating target branch from parent location.')
+    parent_branch = Branch.open(parent_path)
+    target_branch.pull(parent_branch)
 
-    _logger.debug("Checking if previous binaries exist")
-    if os.path.exists(scripts_path+"/bin"):
-        _logger.info("Binaries (bin dir) exists, removing")
-        shutil.rmtree(scripts_path+"/bin")
+    _logger.debug("Copying setup file to main dir.")
+    shutil.copy(target_path+"/oerptools/install/setup.py",
+                target_path+"/setup.py")
 
-    _logger.debug("Making new bin dirs")
-    os.makedirs(scripts_path+"/bin/oerptools_lib")
-    os.makedirs(scripts_path+"/bin/oerptools_install")
-
-    _logger.debug("Copying files to bin dirs")
-    shutil.copy(context['oerptools_path']+"/lib/tools.py",
-                context['oerptools_path']+"/bin/oerptools_lib/tools.py")
-    shutil.copy(context['oerptools_path']+"/install/setup.py",
-                context['oerptools_path']+"/bin/setup.py")
-    shutil.copy(context['oerptools_path']+"/install/update.py",
-                context['oerptools_path']+"/bin/oerptools_install/update.py")
-    
-    _logger.debug("Creating __init__ files into bin dirs")
-    init_file = open(context['oerptools_path']+"/bin/oerptools_lib/__init__.py",'w')
-    init_file.close()
-    init_file = open(context['oerptools_path']+"/bin/oerptools_install/__init__.py",'w')
-    init_file.close()
-
-    _logger.debug("Setting setup.py as executable")
-    os.chmod(context['oerptools_path']+"/bin/setup.py", stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
-
-    _logger.debug("Copying the created bin dir to oerptools-setup dir")
-    if os.path.exists("oerptools-setup"):
-        _logger.debug("oerptools-setup dir exists, removing")
-        shutil.rmtree("oerptools-setup")
-    shutil.copytree(context['oerptools_path']+"/bin", "oerptools-setup")
-    shutil.copystat(context['oerptools_path']+"/bin", "oerptools-setup")
-
-    _logger.debug("Compressing the oerptools-setup dir")
+    _logger.debug("Compressing the oerptools dir")
     tar = tarfile.open("oerptools-setup.tgz", "w:gz")
-    tar.add("oerptools-setup")
+    tar.add("oerptools")
     tar.close()
 
-    _logger.debug("Deleting the oerptools-setup dir")
-    shutil.rmtree("oerptools-setup")
-    
-    _logger.debug("Removing binaries")
-    if os.path.exists(context['oerptools_path']+"/bin"):
-        shutil.rmtree(context['oerptools_path']+"/bin")
+    _logger.debug("Deleting the oerptools dir")
+    shutil.rmtree("oerptools")
     
     _logger.info("OERPTools make process finished")
     return

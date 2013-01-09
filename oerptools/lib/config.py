@@ -106,7 +106,7 @@ class configParameters(object):
                             help='Setup a handler at LEVEL for a given PREFIX. An empty PREFIX indicates the root logger. This option can be repeated. Example: "oerptools.install.make:DEBUG" or "oerptools.oerp.install:CRITICAL" (default: ":INFO")')
 
         
-        from oerptools.install import *
+        import oerptools.install.make as make
         # Commands
         subparsers = parser.add_subparsers(dest='command', title='command', description='Valid OERPTools commands',
                             help='Command to execute (for help use "command --help")')

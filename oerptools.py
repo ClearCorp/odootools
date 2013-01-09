@@ -30,7 +30,7 @@ _logger = logging.getLogger('oerptools')
 oerptools_path = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(oerptools_path+'/..')
 
-from lib import config, logger
+from oerptools.lib import config, logger
 
 if __name__ == '__main__':
     
