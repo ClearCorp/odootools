@@ -49,15 +49,15 @@ class ColoredFormatter(logging.Formatter):
         record.levelname = COLOR_PATTERN % (30 + fg_color, 40 + bg_color, record.levelname)
         return logging.Formatter.format(self, record)
 
-
-def init_loggers():
-
+def load_info():
+    res = {}
+    
     # Format for both file and stout logging
-    file_log_format = '%(asctime)s %(levelname)s %(name)s: %(message)s'
-    stdout_log_format = '%(levelname)s %(name)s: %(message)s'
+    res['file_log_format'] = '%(asctime)s %(levelname)s %(name)s: %(message)s'
+    res['stdout_log_format'] = '%(levelname)s %(name)s: %(message)s'
 
-    file_handler = False
-    stdout_handler = logging.StreamHandler()
+    res['file_handler'] = False
+    res['stdout_handler'] = logging.StreamHandler()
     
     # Set log file handler if needed
     if 'log_file' in config.params and config.params['log_file']:
@@ -67,17 +67,17 @@ def init_loggers():
             dirname = os.path.dirname(log_file)
             if dirname and not os.path.isdir(dirname):
                 os.makedirs(dirname)
-            file_handler = logging.handlers.WatchedFileHandler(log_file)
+            res['file_handler'] = logging.handlers.WatchedFileHandler(log_file)
         except Exception:
             sys.stderr.write("ERROR: couldn't create the logfile directory. Logging to the standard output.\n")
 
     # Set formatters
-    if os.isatty(stdout_handler.stream.fileno()):
-        stdout_handler.setFormatter(ColoredFormatter(stdout_log_format))
+    if os.isatty(res['stdout_handler'].stream.fileno()):
+        res['stdout_handler'].setFormatter(ColoredFormatter(res['stdout_log_format']))
     else:
-        stdout_handler.setFormatter(logging.Formatter(stdout_log_format))
-    if file_handler:
-        file_handler.setFormatter(logging.Formatter(file_log_format))
+        res['stdout_handler'].setFormatter(logging.Formatter(res['stdout_log_format']))
+    if res['file_handler']:
+        res['file_handler'].setFormatter(logging.Formatter(res['file_log_format']))
 
     # Configure levels
     default_log_levels = [
@@ -104,24 +104,25 @@ def init_loggers():
     else:
         log_handler = []
 
-    log_hander_list = default_log_levels + pseudo_log_levels + log_handler
+    res['log_hander_list'] = default_log_levels + pseudo_log_levels + log_handler
     # Force bzr:INFO if no bzr handler
-    log_hander_list = ['bzr:INFO'] + log_hander_list
+    res['log_hander_list'] = ['bzr:INFO'] + res['log_hander_list']
+    return res
 
-    for log_handler_item in log_hander_list:
+def set_levels():
+    for log_handler_item in logger_info['log_hander_list']:
         loggername, level = log_handler_item.split(':')
         level = getattr(logging, level, logging.INFO)
         item_logger = logging.getLogger(loggername)
         item_logger.handlers = []
         item_logger.setLevel(level)
-        if file_handler:
-            item_logger.addHandler(file_handler)
-        item_logger.addHandler(stdout_handler)
+        if logger_info['file_handler']:
+            item_logger.addHandler(logger_info['file_handler'])
+        item_logger.addHandler(logger_info['stdout_handler'])
         if loggername != '':
             item_logger.propagate = False
 
-    for log_handler_item in log_hander_list:
+    for log_handler_item in logger_info['log_hander_list']:
         _logger.debug('logger level set: "%s"', log_handler_item)
-        
-    if file_handler:
-        _logger.info('Logging to %s' % log_file)
+
+logger_info = load_info()

@@ -34,18 +34,18 @@ import oerptools.lib.config
 
 _logger = logging.getLogger('oerptools.install.make')
 
-# Import and initialize bzr
-_logger.debug('Importing and initializing bzrlib')
-from bzrlib.branch import Branch
-from bzrlib.trace import set_verbosity_level
-from bzrlib.plugin import load_plugins
-from bzrlib import initialize
-library_state = initialize()
-library_state.__enter__()
-set_verbosity_level(1000)
-
 
 def make_installer():
+
+    # Import and initialize bzr
+    _logger.debug('Importing and initializing bzrlib')
+    from bzrlib.branch import Branch
+    from bzrlib.trace import set_verbosity_level
+    from bzrlib.plugin import load_plugins
+    from bzrlib import initialize
+    library_state = initialize()
+    library_state.__enter__()
+    set_verbosity_level(1000)
     
     params = oerptools.lib.config.params
     

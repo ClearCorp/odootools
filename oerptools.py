@@ -38,7 +38,7 @@ if __name__ == '__main__':
     params = config.params
     
     # Init logger
-    logger.init_loggers()
+    logger.set_levels()
     
     _logger.debug('Params loaded, logger initialized.')
     

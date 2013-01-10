@@ -104,7 +104,7 @@ class configParameters(object):
 
         
         
-        import oerptools.lib.tools.command_not_available
+        import oerptools.lib.tools
         
         # Commands
         subparsers = parser.add_subparsers(dest='command', title='command', description='Valid OERPTools commands',
@@ -115,11 +115,22 @@ class configParameters(object):
         subparser = subparsers.add_parser('oerptools-build', help='Make a OERPTools installer .tgz file.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
-        group.add_argument('--help', '-h', action='help',
+        group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
         group.add_argument('--target', '-t', type=str, required=True,
                             help='Target directory for building and writing the oerptools.tgz file.')
         subparser.set_defaults(function=oerptools.install.make.make_installer)
+        
+        import oerptools.install.install
+        #oerptools-install
+        subparser = subparsers.add_parser('oerptools-install', help='Install OERPTools.', add_help=False)
+        # Main
+        group = subparser.add_argument_group('Main', 'Main parameters')
+        group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
+                            help='Show this help message and exit.')
+        group.add_argument('--oerptools-path', '-p', type=str, default=argparse.SUPPRESS,
+                            help='Path to install OERPTools in (default: /usr/local/share/oerptools).')
+        subparser.set_defaults(function=oerptools.install.install.install)
         
         import oerptools.install.update
         #oerptools-update

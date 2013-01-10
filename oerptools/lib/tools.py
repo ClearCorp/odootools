@@ -29,7 +29,7 @@ import logging
 
 _logger = logging.getLogger('oerptools.lib.tools')
 
-from oerptools.lib import config.params
+import oerptools.lib.config
 
 def check_root():
     uid = os.getuid()
@@ -85,5 +85,5 @@ def exec_command(command, as_root=False):
     return process
 
 def command_not_available():
-    _logger('The command %s is not implemented yet.' % config.params['command'])
+    _logger('The command %s is not implemented yet.' % oerptools.lib.config.params['command'])
     return
