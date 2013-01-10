@@ -68,9 +68,6 @@ class configParameters(object):
     
     def __contains__(self, key):
         return key in self.params
-    
-    def _function_not_implemented(self):
-        return True
         
     def _get_cmdline_args(self):
         #Initialize argument parser
@@ -106,11 +103,14 @@ class configParameters(object):
                             help='Setup a handler at LEVEL for a given PREFIX. An empty PREFIX indicates the root logger. This option can be repeated. Example: "oerptools.install.make:DEBUG" or "oerptools.oerp.install:CRITICAL" (default: ":INFO")')
 
         
-        import oerptools.install.make as make
+        
+        import oerptools.lib.tools.command_not_available
+        
         # Commands
         subparsers = parser.add_subparsers(dest='command', title='command', description='Valid OERPTools commands',
                             help='Command to execute (for help use "command --help")')
         
+        import oerptools.install.make
         #oerptools-build
         subparser = subparsers.add_parser('oerptools-build', help='Make a OERPTools installer .tgz file.', add_help=False)
         # Main
@@ -119,81 +119,90 @@ class configParameters(object):
                             help='Show this help message and exit.')
         group.add_argument('--target', '-t', type=str, required=True,
                             help='Target directory for building and writing the oerptools.tgz file.')
-        subparser.set_defaults(function=make.make_installer)
+        subparser.set_defaults(function=oerptools.install.make.make_installer)
         
+        import oerptools.install.update
         #oerptools-update
         subparser = subparsers.add_parser('oerptools-update', help='Update the installed OERPTools.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
-        subparser.set_defaults(function=self._function_not_implemented)
+        subparser.set_defaults(function=oerptools.install.update.update)
         
+        #import oerptools.install.uninstall
         #oerptools-uninstall
         subparser = subparsers.add_parser('oerptools-uninstall', help='Uninstall OERPTools.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
-        subparser.set_defaults(function=self._function_not_implemented)
+        subparser.set_defaults(function=oerptools.lib.tools.command_not_available)
         
         
+        #import oerptools.openerp.server.install
         #oerp-install
         subparser = subparsers.add_parser('oerp-install', help='Install OpenERP service.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
-        subparser.set_defaults(function=self._function_not_implemented)
+        subparser.set_defaults(function=oerptools.lib.tools.command_not_available)
         
+        #import oerptools.openerp.server.update
         #oerp-update
         subparser = subparsers.add_parser('oerp-update', help='Update OpenERP service.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
-        subparser.set_defaults(function=self._function_not_implemented)
+        subparser.set_defaults(function=oerptools.lib.tools.command_not_available)
         
+        #import oerptools.openerp.server.uninstall
         #oerp-uninstall
         subparser = subparsers.add_parser('oerp-uninstall', help='Uninstall OpenERP service.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
-        subparser.set_defaults(function=self._function_not_implemented)
+        subparser.set_defaults(function=oerptools.lib.tools.command_not_available)
         
         
+        #import oerptools.openerp.instance.make
         #oerp-server-make
         subparser = subparsers.add_parser('oerp-server-make', help='Make an OpenERP instance.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
-        subparser.set_defaults(function=self._function_not_implemented)
+        subparser.set_defaults(function=oerptools.lib.tools.command_not_available)
         
+        #import oerptools.openerp.instance.remove
         #oerp-server-remove
         subparser = subparsers.add_parser('oerp-server-remove', help='Remove an OpenERP instance.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
-        subparser.set_defaults(function=self._function_not_implemented)
+        subparser.set_defaults(function=oerptools.lib.tools.command_not_available)
         
+        #import oerptools.dev.repo.make
         #oerp-repo-make
         subparser = subparsers.add_parser('oerp-repo-make', help='Make the OpenERP bzr repository in ~/Development/openerp.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
-        subparser.set_defaults(function=self._function_not_implemented)
+        subparser.set_defaults(function=oerptools.lib.tools.command_not_available)
         
+        #import oerptools.dev.repo.update
         #oerp-repo-update
         subparser = subparsers.add_parser('oerp-repo-update', help='Update the OpenERP bzr repository in ~/Development/openerp.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
-        subparser.set_defaults(function=self._function_not_implemented)
+        subparser.set_defaults(function=oerptools.lib.tools.command_not_available)
         
         return parser.parse_args()
     

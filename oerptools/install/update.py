@@ -29,7 +29,10 @@ WARNING:    If you update this file, please remake the installer and
             if the oerptools are installed.
 '''
 
+import oerptools.lib.tools.command_not_available
 
+def update()
+    return oerptools.lib.tools.command_not_available()
 
 '''
 if [[ ! -d $OPENERP_CCORP_DIR ]]; then
