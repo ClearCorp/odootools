@@ -33,24 +33,35 @@ import oerptools.lib.config
 
 def check_root():
     uid = os.getuid()
+    _logger.debug('UID = %s' % uid)
     return uid == 0
 
-def exit_if_not_root():
+def exit_if_not_root(command_name):
     if not check_root():
-        sys.stderr.write("The command: \"%s\" must be used as root. Aborting.\n" % command)
+        _logger.error("The command: \"%s\" must be used as root. Aborting.\n" % command_name)
         sys.exit(1)
     else:
         return True
 
 def get_os():
     os_name = platform.system()
+    os_version = ""
+    known_os = False
     if os_name == "Linux":
-        return {'os': 'Linux', 'version': platform.linux_distribution()}
+        known_os = True
+        os_version = platform.linux_distribution()
     elif os_name == "Mac":
-        return {'os': 'Mac', 'version': platform.mac_ver()}
+        known_os = True
+        os_version = platform.mac_ver()
     elif os_name == "Windows":
-        return {'os': 'Windows', 'version': platform.win32_ver()}
-    return False
+        known_os = True
+        os_version = platform.win32_ver()
+    
+    if known_os:
+        _logger.debug('OS: %s, Version: %s' % (os_name, os_version))
+        return {'os': os_name, 'version': os_version}
+    else:
+        return False
 
 def regenerate_ssh_keys():
     regen_script = open('/etc/regen-ssh-keys.sh', 'w')
@@ -74,16 +85,18 @@ rm -f \$0
     rc_local.close()
 
 def exec_command(command, as_root=False):
+    _logger.debug('Executing command: %s' % command)
     if as_root:
-        exit_if_not_root()
+        exit_if_not_root(command)
     process = subprocess.Popen(command,
                                 shell=True,
                                 stdin=sys.stdin.fileno(),
                                 stdout=sys.stdout.fileno(),
                                 stderr=sys.stderr.fileno())
     process.wait()
+    _logger.debug('Command finished: %s' % process)
     return process
 
 def command_not_available():
-    _logger('The command %s is not implemented yet.' % oerptools.lib.config.params['command'])
+    _logger.error('The command %s is not implemented yet.' % oerptools.lib.config.params['command'])
     return

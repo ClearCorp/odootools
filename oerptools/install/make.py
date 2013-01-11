@@ -31,6 +31,8 @@ WARNING:    If you update this file, please remake the installer and
 
 import os, logging, shutil, tarfile
 import oerptools.lib.config
+import oerptools.lib.logger
+from oerptools.lib import bzr
 
 _logger = logging.getLogger('oerptools.install.make')
 
@@ -38,14 +40,7 @@ _logger = logging.getLogger('oerptools.install.make')
 def make_installer():
 
     # Import and initialize bzr
-    _logger.debug('Importing and initializing bzrlib')
-    from bzrlib.branch import Branch
-    from bzrlib.trace import set_verbosity_level
-    from bzrlib.plugin import load_plugins
-    from bzrlib import initialize
-    library_state = initialize()
-    library_state.__enter__()
-    set_verbosity_level(1000)
+    bzr.bzr_initialize()
     
     params = oerptools.lib.config.params
     

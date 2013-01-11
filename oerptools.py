@@ -32,16 +32,17 @@ sys.path.append(oerptools_path+'/..')
 
 from oerptools.lib import config, logger
 
+# Read configuration values
+_params = config.params
+
 if __name__ == '__main__':
-    
-    # Read configuration values
-    params = config.params
-    
     # Init logger
     logger.set_levels()
     
     _logger.debug('Params loaded, logger initialized.')
     
-    params['function']()
+    _logger.info('OERPTools started, with command: %s' % _params['command'])
+    
+    _params.exec_function()
     
     _logger.info('OERPTools finished.')
