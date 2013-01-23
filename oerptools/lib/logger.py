@@ -28,25 +28,84 @@ import oerptools.lib.config as config
 
 _logger = logging.getLogger('oerptools.lib.logger')
 
-BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE, _NOTHING, DEFAULT = range(10)
-#The background is set with 40 plus the number of the color, and the foreground with 30
-#These are the sequences need to get colored ouput
-RESET_SEQ = "\033[0m"
-COLOR_SEQ = "\033[1;%dm"
-BOLD_SEQ = "\033[1m"
-COLOR_PATTERN = "%s%s%%s%s" % (COLOR_SEQ, COLOR_SEQ, RESET_SEQ)
+class consoleColors (object):
+    #Attributes
+    RESET      = "0"
+    BOLD       = "1"
+    DIM        = "2"
+    UNDERSCORE = "4"
+    BLINK      = "5"
+    REVERSE    = "7"
+    HIDDEN     = "8"
+    STROKE     = "9"
+
+    #Foreground colors
+    FG_BLACK   = "30"
+    FG_RED     = "31"
+    FG_GREEN   = "32"
+    FG_YELLOW  = "33"
+    FG_BLUE    = "34"
+    FG_MAGENTA = "35"
+    FG_CYAN    = "36"
+    FG_WHITE   = "37"
+    FG_DEFAULT = "39"
+    #Light foreground colors
+    FG_L_BLACK   = "90"
+    FG_L_RED     = "91"
+    FG_L_GREEN   = "92"
+    FG_L_YELLOW  = "93"
+    FG_L_BLUE    = "94"
+    FG_L_MAGENTA = "95"
+    FG_L_CYAN    = "96"
+    FG_L_WHITE   = "97"
+    FG_L_DEFAULT = "99"
+
+    #Background colors
+    BG_BLACK   = "40"
+    BG_RED     = "41"
+    BG_GREEN   = "42"
+    BG_YELLOW  = "43"
+    BG_BLUE    = "44"
+    BG_MAGENTA = "45"
+    BG_CYAN    = "46"
+    BG_WHITE   = "47"
+    BG_DEFAULT = "49"
+    #Light foreground colors
+    BG_L_BLACK   = "100"
+    BG_L_RED     = "101"
+    BG_L_GREEN   = "102"
+    BG_L_YELLOW  = "103"
+    BG_L_BLUE    = "104"
+    BG_L_MAGENTA = "105"
+    BG_L_CYAN    = "106"
+    BG_L_WHITE   = "107"
+    BG_L_DEFAULT = "109"
+    
+    def get_escape(self, codes):
+        """Returns the escape secuence for the provided codes (list)."""
+        seq = "\033["
+        for code in codes:
+            seq += code+";"
+        #Replace last ; with an m
+        return seq[:len(seq)-1] + "m"
+    
+    def get_reset(self):
+        return "\033[0m"
+
+_colors = consoleColors()
+
 LEVEL_COLOR_MAPPING = {
-    logging.DEBUG: (BLUE, DEFAULT),
-    logging.INFO: (WHITE, GREEN),
-    logging.WARNING: (YELLOW, DEFAULT),
-    logging.ERROR: (RED, DEFAULT),
-    logging.CRITICAL: (WHITE, RED),
+    logging.DEBUG:      [_colors.FG_BLACK,    _colors.BG_WHITE],
+    logging.INFO:       [_colors.FG_BLACK,  _colors.BG_L_GREEN],
+    logging.WARNING:    [_colors.FG_BLACK,    _colors.BG_L_YELLOW],
+    logging.ERROR:      [_colors.FG_L_WHITE,  _colors.BG_RED, _colors.BOLD],
+    logging.CRITICAL:   [_colors.FG_L_WHITE,  _colors.BG_RED, _colors.BOLD],
 }
 
 class ColoredFormatter(logging.Formatter):
     def format(self, record):
-        fg_color, bg_color = LEVEL_COLOR_MAPPING[record.levelno]
-        record.levelname = COLOR_PATTERN % (30 + fg_color, 40 + bg_color, record.levelname)
+        record.levelname = _colors.get_escape(LEVEL_COLOR_MAPPING[record.levelno]) + record.levelname + _colors.get_reset()
+        record.name = _colors.get_escape([_colors.FG_L_BLUE]) + record.name + _colors.get_reset()
         return logging.Formatter.format(self, record)
 
 def load_info():
