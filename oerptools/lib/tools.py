@@ -94,8 +94,8 @@ def exec_command(command, as_root=False):
                                 stdout=sys.stdout.fileno(),
                                 stderr=sys.stderr.fileno())
     process.wait()
-    _logger.debug('Command finished: %s' % process)
-    return process
+    _logger.debug('Command finished: %s' % process.returncode)
+    return process.returncode
 
 def command_not_available():
     _logger.error('The command %s is not implemented yet.' % oerptools.lib.config.params['command'])

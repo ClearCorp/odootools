@@ -24,7 +24,7 @@
 #This config params loading method is inspired in OpenERP Server
 
 #TODO: Change ConfigParser to configparser for python3 compat
-import argparse, ConfigParser, ast
+import os, argparse, ConfigParser, ast
 
 import logging
 _logger = logging.getLogger('oerptools.lib.config')
@@ -51,10 +51,16 @@ class configParameters(object):
         # config_files list has all files to read, in order of precedence
         config_files = ['/etc/oerptools/settings.conf', '~/.oerptools.conf']
         if 'config_file' in cmdline_args and cmdline_args.config_file:
-            config_files.append(cmdline_args.config_file)
+            config_files += cmdline_args.config_file
+        
+        # Build list only with existing files
+        self.config_files = []
+        for config_file in config_files:
+            if os.path.isfile(config_file):
+                self.config_files.append(config_file)
         
         # Read config files from list
-        config_files_params = self._read_config_files(config_files)
+        config_files_params = self._read_config_files(self.config_files)
         
         # Add main sections config params from files to memory
         for section in self.param_sections:
@@ -72,23 +78,23 @@ class configParameters(object):
         # Read params from command line (overwrite params from files)
         for key, arg in cmdline_args.__dict__.iteritems():
             self.params[key] = arg
-        
-        
+    
     def __getitem__(self, item):
         return self.params[item]
-        
+    
     def __setitem__(self, key, value):
         self.params[key] = value
     
     def __contains__(self, key):
         return key in self.params
-        
+    
     def _get_cmdline_args(self):
         """ Reads and parses command line arguments.
         
         Return namespace: parse_args() namespace with the arguments information parsed.
         """
         #WARNING: If you add or remove options remember to update the self.param_types dict.
+        #         Also update the default-oerptools.conf file.
         #WARNING: If you add or remove option groups remember to update the self.param_types dict and
         #         the self.param_setions.
         
@@ -100,8 +106,8 @@ class configParameters(object):
         self.param_sections.append('main')
         parser.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
-        parser.add_argument('--config-file', '-c', type=str, default=argparse.SUPPRESS,
-                            help='Custom config file.')
+        parser.add_argument('--config-file', '-c', action="append", metavar="PATH", type=str, default=argparse.SUPPRESS,
+                            help='Custom config file. This option can be repeated. The order in declared files states precedence of options.')
         parser.add_argument('--oerptools-path', '-p', type=str, default=argparse.SUPPRESS,
                             help='Custom oerptools installation path.')
         
@@ -135,7 +141,7 @@ class configParameters(object):
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
-        group.add_argument('--target', '-t', type=str, required=True,
+        group.add_argument('--target', '-t', type=str, default=argparse.SUPPRESS,
                             help='Target directory for building and writing the oerptools.tgz file.')
         
         #oerptools-install
@@ -144,7 +150,9 @@ class configParameters(object):
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
-        group.add_argument('--oerptools-path', '-p', type=str, default=argparse.SUPPRESS,
+        group.add_argument('--install-target-path', '-t', type=str, default=argparse.SUPPRESS,
+                            help='Path to install OERPTools in (default: /usr/local/share/oerptools).')
+        group.add_argument('--install-config-path', type=str, default=argparse.SUPPRESS,
                             help='Path to install OERPTools in (default: /usr/local/share/oerptools).')
         
         #oerptools-update
@@ -268,5 +276,97 @@ class configParameters(object):
                 oerptools.lib.tools.command_not_available()
         else:
             return False
-
+    
+    def update_config_file_values(self, values, force_file=None):
+        """Update the values in the specified config file.
+        
+        :params
+        
+        values dict: one key per section, each section is a dict .
+        
+        file str: Config file to update.
+        """
+        import copy
+        copy_values = copy.deepcopy(values)
+        
+        if not self.config_files:
+            if not force_file:
+                _logger.warning('Not saving values to config, config file doesn\'t exist.')
+                return False
+            else:
+                file_path = force_file
+        else:
+            file_path = self.config_files[-1]
+        
+        try:
+            config_file = open(file_path)
+        except:
+            _logger.error('Failed to open config file for reading: %s' % file_path)
+            return False
+        
+        new_file = ""
+        section = False
+        for line in config_file:
+            #Case: new section
+            if re.match(r"^\[[^\s]*\]$",line):
+                #Check to see if there is still values to update in last section
+                if section and section in copy_values and copy_values[section]:
+                    new_file += '\n#THE FOLLOWING VALUES WHERE AUTOMATICALLY ADDED\n'
+                    for key, value in copy_values[section]:
+                        new_file += key+' = '+str(value)+'\n'
+                    copy_values.pop(section)
+                #Check if section present but empty
+                elif section and section in copy_values:
+                    copy_values.pop(section)
+                new_file += line
+                section = line[1:len(line)-2]
+            #Case: no new section, no actual section
+            elif not section:
+                new_file += line
+            #Case: actual section in copy_values
+            elif section and section in copy_values:
+                #Case: value line
+                value_match = re.match(r"^[\s]*([^\s=:;#]+)",line)
+                commented_value_match = re.match(r"^[\s]*[#;]+[\s]*([^\s=:;#]+)",line)
+                if match:
+                    #Case: line value is in copy_values to update
+                    if value_match.group(1) in copy_values[section]:
+                        new_file += value_match.group(1)+' = '+str(copy_values[section].pop(value_match.group(1)))+'\n'
+                    else:
+                        new_file += line
+                #Case: commented value line
+                elif commented_value_match:
+                    #Case: line value is in copy_values to update
+                    if commented_value_match.group(1) in copy_values[section]:
+                        new_file += commented_value_match.group(1)+' = '+str(copy_values[section].pop(commented_value_match.group(1)))+'\n'
+                    else:
+                        new_file += line
+                #Case: other line, comments
+                else:
+                    new_file += line
+            #Case: no actual section, no new section
+            else:
+                new_file += line
+        
+        #Check to see if all copy_values where updated
+        if copy_values:
+            for section_key,section in copy_values.items():
+                if section:
+                    new_file += '\n#THE FOLLOWING SECTION WAS AUTOMATICALLY ADDED\n'
+                    new_file += "\n"+section_key+"\n"
+                    for key,value in section.items():
+                        new_file += key+" = "+str(value)+'\n'
+                copy_values.pop(section_key)
+        
+        config_file.close()
+        
+        try:
+            config_file = open(file_path,'w')
+            config_file.write(new_file)
+            config_file.close()
+        except:
+            _logger.error('Failed to open config file for updating: %s' % file_path)
+            return False
+        return True
+    
 params = configParameters()
