@@ -29,7 +29,7 @@ WARNING:    If you update this file, please remake the installer and
             if the oerptools are installed.
 '''
 
-import os, logging, shutil, tarfile
+import os, logging, shutil, tarfile, random, string
 import oerptools.lib.config
 import oerptools.lib.logger
 from oerptools.lib import bzr
@@ -41,6 +41,7 @@ def make_installer():
 
     # Import and initialize bzr
     bzr.bzr_initialize()
+    from bzrlib.branch import Branch
     
     params = oerptools.lib.config.params
     
@@ -54,17 +55,26 @@ def make_installer():
     _logger.debug("Opening this bzr branch: %s" % scripts_path)
     this_branch = Branch.open(scripts_path)
     
-    target_path = params['target']+'/oerptools'
-    if not os.path.isdir(target_path):
-        _logger.debug("Copying this bzr branch to target: %s" % target_path)
-        target_branch = this_branch.bzrdir.sprout(params['target']+'/oerptools').open_branch()
+    if 'target' in params:
+        target_path = params['target']
     else:
-        _logger.debug("Updating target branch (from this): %s" % target_path)
-        target_branch = Branch.open(target_path)
-        target_branch.pull(this_branch)
+        target_path = '.'
+    target_path = os.path.abspath(target_path)
+    tmp_string = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(8))
+    build_path = target_path+'/.oerptools.'+tmp_string
+    
+    if not os.path.isdir(target_path):
+        _logger.error('The provided directory path to build the installer (%s) doesn\'t exist. Exiting.' % target_path)
+        return False
+    
+    if os.path.isdir(build_path):
+        _logger.error('The temporary directory path used to build the installer (%s) already exist. Exiting.' % build_path)
+        return False
+    
+    target_branch = this_branch.bzrdir.sprout(build_path).open_branch()
     
     # TODO: Let the user choose the parent branch.
-    parent_path = 'lp:openerp-ccorp-scripts/stable'
+    parent_path = 'lp:oerptools/2.0'
     _logger.debug('Set parent location for target branch: %s' % parent_path)
     from bzrlib.plugin import load_plugins
     load_plugins()
@@ -74,19 +84,19 @@ def make_installer():
     target_branch.pull(parent_branch)
 
     _logger.debug("Copying setup file to main dir.")
-    shutil.copy(target_path+"/oerptools/install/setup.py",
-                target_path+"/setup.py")
+    shutil.copy(build_path+"/oerptools/install/setup.py",
+                build_path+"/setup.py")
     _logger.debug("Copying INSTALL.txt file to main dir.")
-    shutil.copy(target_path+"/oerptools/install/INSTALL.txt",
-                target_path+"/INSTALL.txt")
+    shutil.copy(build_path+"/oerptools/install/INSTALL.txt",
+                build_path+"/INSTALL.txt")
 
     _logger.debug("Compressing the oerptools dir")
     tar = tarfile.open("oerptools-setup.tgz", "w:gz")
-    tar.add("oerptools")
+    tar.add(build_path, arcname='oerptools')
     tar.close()
 
     _logger.debug("Deleting the oerptools dir")
-    shutil.rmtree("oerptools")
+    shutil.rmtree(build_path)
     
     _logger.info("OERPTools make process finished")
     return
