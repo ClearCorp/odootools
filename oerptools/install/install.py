@@ -120,7 +120,7 @@ def install():
         
         # Update config
         if not os.path.exists(values['main']['config_file']):
-            shutil.copy(branch_path+"/install/default-oerptools.conf",values['main']['config_file'])
+            shutil.copy(branch_path+"/oerptools/install/default-oerptools.conf",values['main']['config_file'])
         elif not os.path.isfile(values['main']['config_file']):
             _logger.warning('Config file (%s) not updated because it is not a regular file.' % values['main']['config_file'])
         
