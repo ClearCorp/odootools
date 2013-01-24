@@ -30,13 +30,14 @@ WARNING:    If you update this file, please remake the installer and
 '''
 
 import logging
-_logger = logging.get_logger('oerptools.install.update')
+_logger = logging.getLogger('oerptools.install.update')
 
 import os
 
 from oerptools.lib import config, bzr
 
 def update():
+    bzr.bzr_initialize()
     
     if 'oerptools_path' in config.params:
         oerptools_path = config.params['oerptools_path']
