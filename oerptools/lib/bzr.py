@@ -65,3 +65,49 @@ def bzr_initialize():
     
     import oerptools.lib.logger
     oerptools.lib.logger.set_levels()
+    
+    load_plugins()
+
+def bzr_branch(source, target):
+    from bzrlib.branch import Branch
+    
+    try:
+        source_branch = Branch.open(source)
+    except:
+        _logger.error('Bzr branch: The provided source branch (%s) can\'t be opened.' % source)
+        return False
+
+    try:
+        branch = source_branch.bzrdir.sprout(target).open_branch()
+    except:
+        _logger.error('Bzr branch: The branch to %s failed.' % target)
+        return False
+    
+    return branch
+
+def bzr_pull(target, source=None):
+    from bzrlib.branch import Branch
+    try:
+        branch = Branch.open(target)
+    except:
+        _logger.error('Bzr pull: The provided target branch (%s) can\'t be opened.' % target)
+        return False
+    
+    if source:
+        try:
+            branch.pull(Branch.open(source))
+        except:
+            _logger.error('Bzr pull: The provided source branch (%s) can\'t be opened.' % source)
+            return False
+    else:
+        try:
+            branch.pull(Branch.open(branch.get_parent()))
+        except:
+            _logger.error('Bzr pull: The provided source branch (%s) can\'t be opened.' % branch.get_parent())
+            return False
+    
+    return True
+    
+
+def bzr_push():
+    return
