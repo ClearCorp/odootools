@@ -29,7 +29,7 @@ WARNING:    If you update this file, please remake the installer and
             if the oerptools are installed.
 '''
 
-import os, shutil, logging
+import os, shutil, stat, logging
 from oerptools.lib import config, tools, bzr
 
 _logger = logging.getLogger('oerptools.install.install')
