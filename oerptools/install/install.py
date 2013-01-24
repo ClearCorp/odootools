@@ -148,6 +148,9 @@ def install():
         elif not os.path.isdir(log_dir):
             _logger.debug('Making the log directory: %s' % log_dir)
             os.makedirs(log_dir)
+            os.chmod(log_dir, stat.S_IREAD | stat.S_IWRITE)
+        else:
+            os.chmod(log_dir, stat.S_IREAD | stat.S_IWRITE)
 
         return True
     
