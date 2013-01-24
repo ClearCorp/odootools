@@ -44,12 +44,13 @@ def exit_if_not_root(command_name):
         return True
 
 def get_os():
+    supported_dists = ['Ubuntu','arch']
     os_name = platform.system()
     os_version = ""
     known_os = False
     if os_name == "Linux":
         known_os = True
-        os_version = platform.linux_distribution()
+        os_version = platform.linux_distribution(supported_dists=supported_dists)
     elif os_name == "Mac":
         known_os = True
         os_version = platform.mac_ver()

@@ -37,7 +37,8 @@ def bzr_install():
             return ubuntu_bzr_install()
         elif os_version['version'][0] == 'arch':
             return arch_bzr_install()
-    _logger.warning('Can\'t install bzr in this OS')
+    _logger.warning('Can\'t install bzr in this OS (%s)' % os_version['version'][0])
+    print os_version
     return False
 
 def ubuntu_bzr_install():
