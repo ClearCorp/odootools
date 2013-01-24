@@ -29,46 +29,28 @@ WARNING:    If you update this file, please remake the installer and
             if the oerptools are installed.
 '''
 
-import oerptools.lib.tools
+import logging
+_logger = logging.get_logger('oerptools.install.update')
+
+import os
+
+from oerptools.lib import config, bzr
 
 def update():
-    return oerptools.lib.tools.command_not_available()
-
-'''
-if [[ ! -d $OPENERP_CCORP_DIR ]]; then
-	echo "openerp-ccorp-scripts not installed."
-	exit 1
-fi
-
-#~ Libraries import
-. $OPENERP_CCORP_DIR/main-lib/checkRoot.sh
-
-# Settings import
-if [[ ! -f /etc/openerp-ccorp-scripts/settings.cfg ]]; then
-	mkdir -p /etc/openerp-ccorp-scripts
-	cat > /etc/openerp-ccorp-scripts/settings.cfg <<EOF
-repo="http://bazaar.launchpad.net/openerp-ccorp-scripts"
-branch=stable
-EOF
-fi
-. /etc/openerp-ccorp-scripts/settings.cfg
-
-function bzrUpdate {
-	# Make sure parent branch is updated
-	cd $OPENERP_CCORP_DIR
-	bzr pull ${repo}/${branch}
-
-	# Check user is root
-	checkRoot
-	for x in $(ls -1 $OPENERP_CCORP_DIR/bin-links); do
-		if [[ -e /usr/local/sbin/$x ]]; then
-			rm -r /usr/local/sbin/$x
-		fi
-		ln -s $OPENERP_CCORP_DIR/bin-links/$x /usr/local/sbin/$x
-	done
-	
-	return 0
-}
-
-bzrUpdate
-'''
+    
+    if 'oerptools_path' in config.params:
+        oerptools_path = config.params['oerptools_path']
+    else
+        _logger.error('The OERPTools path was not specified. Exiting.')
+        return False
+    
+    if not os.path.isdir(oerptools_path):
+        _logger.error('The OERPTools path (%s) is not a valid directory. Exiting.' % oerptools_path)
+        return False
+        
+    if 'source_branch' in config.params:
+        bzr.bzr_pull(oerptools_path, config.params['source_branch'])
+    else:
+        bzr.bzr_pull(oerptools_path)
+        
+    return True
