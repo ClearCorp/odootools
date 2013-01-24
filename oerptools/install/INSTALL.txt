@@ -3,7 +3,7 @@ Installation instructions for OERPTools
 
 Steps to install OERPTools:
 
-1. Download oerptools-setup.tgz from https://launchpad.net/openerp-ccorp-scripts
+1. Download oerptools-setup.tgz from https://launchpad.net/oerptools
 
 2. Untar the file with a graphical utility, or from the command line with:
     'tar xfvz oerptools-setup.tgz'

@@ -1,0 +1,3 @@
+#!/bin/bash
+
+./oerptools.py oerptools-install

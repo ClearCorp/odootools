@@ -83,8 +83,8 @@ def make_installer():
     target_branch.pull(parent_branch)
 
     _logger.debug("Copying setup file to main dir.")
-    shutil.copy(build_path+"/oerptools/install/setup.py",
-                build_path+"/setup.py")
+    shutil.copy(build_path+"/oerptools/install/setup",
+                build_path+"/setup")
     _logger.debug("Copying INSTALL.txt file to main dir.")
     shutil.copy(build_path+"/oerptools/install/INSTALL.txt",
                 build_path+"/INSTALL.txt")
