@@ -46,5 +46,3 @@ if __name__ == '__main__':
     _params.exec_function()
     
     _logger.info('OERPTools finished.')
-    
-    #TEST
