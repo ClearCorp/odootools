@@ -40,7 +40,7 @@ def update():
     
     if 'oerptools_path' in config.params:
         oerptools_path = config.params['oerptools_path']
-    else
+    else:
         _logger.error('The OERPTools path was not specified. Exiting.')
         return False
     
