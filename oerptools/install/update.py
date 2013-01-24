@@ -34,7 +34,7 @@ _logger = logging.getLogger('oerptools.install.update')
 
 import os
 
-from oerptools.lib import config, bzr
+from oerptools.lib import config, bzr, tools
 
 def update():
     _logger.debug('Checking if user is root')
