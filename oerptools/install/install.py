@@ -57,7 +57,7 @@ def install():
         from bzrlib.branch import Branch
         
         # Get this oerptools branch directory
-        branch_path = os.path.abspath(os.path.dirname(__file__)+"/..")
+        branch_path = os.path.abspath(os.path.dirname(__file__)+"/../..")
         
         # Values dict to store default config values for this install
         values = {
