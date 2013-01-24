@@ -46,6 +46,8 @@ class configParameters(object):
         self.params['oerptools_path'] = '/usr/local/share/oerptools'
         self.params['log_file'] = '/var/log/oerptools/oerptools.log'
         
+        self.params_lists = ['config_file','log_handler']
+        
         cmdline_args = self._get_cmdline_args()
         
         # config_files list has all files to read, in order of precedence
@@ -66,10 +68,24 @@ class configParameters(object):
         for section in self.param_sections:
             if section in config_files_params:
                 for key, value in config_files_params[section].items():
-                    try:
-                        self.params[key] = ast.literal_eval(value)
-                    except:
-                        self.params[key] = value
+                    #check if value should be a list
+                    if key in self.params_lists:
+                        if key not in self.params:
+                            self.params[key] = []
+                        try:
+                            parsed_value = ast.literal_eval(value)
+                        except:
+                            parsed_value = value
+                        finally:
+                            if isinstance(parsed_value, list):
+                                self.params[key] += parsed_value
+                            else:
+                                self.params[key].append(parsed_value)
+                    else:
+                        try:
+                            self.params[key] = ast.literal_eval(value)
+                        except:
+                            self.params[key] = value
         # Add command config params from files to memory
         if 'command' in cmdline_args and cmdline_args.command and cmdline_args.command in config_files_params:
             for key, value in config_files_params[cmdline_args.command]:
@@ -153,7 +169,7 @@ class configParameters(object):
         group.add_argument('--install-target-path', '-t', type=str, default=argparse.SUPPRESS,
                             help='Path to install OERPTools in (default: /usr/local/share/oerptools).')
         group.add_argument('--install-config-path', type=str, default=argparse.SUPPRESS,
-                            help='Path to install OERPTools in (default: /usr/local/share/oerptools).')
+                            help='Path for the OERPTools config file in (default: /etc/oerptools/settings.conf).')
         
         #oerptools-update
         subparser = subparsers.add_parser('oerptools-update', help='Update the installed OERPTools.', add_help=False)
@@ -231,7 +247,7 @@ class configParameters(object):
                 if not section in params:
                     params[section] = {}
                 for (key, value) in parser.items(section):
-                    params[section][key] = value
+                    params[section][key.replace('-','_')] = value
         except IOError:
             pass
         except ConfigParser.NoSectionError:
@@ -277,7 +293,7 @@ class configParameters(object):
         else:
             return False
     
-    def update_config_file_values(self, values, force_file=None):
+    def update_config_file_values(self, values, update_file=None):
         """Update the values in the specified config file.
         
         :params
@@ -286,17 +302,17 @@ class configParameters(object):
         
         file str: Config file to update.
         """
-        import copy
+        import copy,re
         copy_values = copy.deepcopy(values)
         
-        if not self.config_files:
-            if not force_file:
-                _logger.warning('Not saving values to config, config file doesn\'t exist.')
+        if update_file:
+            file_path = update_file
+        else:
+            if not self.config_files:
+                _logger.warning('Not saving values, config file unknown.')
                 return False
             else:
-                file_path = force_file
-        else:
-            file_path = self.config_files[-1]
+                file_path = self.config_files[-1]
         
         try:
             config_file = open(file_path)
@@ -312,8 +328,9 @@ class configParameters(object):
                 #Check to see if there is still values to update in last section
                 if section and section in copy_values and copy_values[section]:
                     new_file += '\n#THE FOLLOWING VALUES WHERE AUTOMATICALLY ADDED\n'
-                    for key, value in copy_values[section]:
+                    for key, value in copy_values[section].items():
                         new_file += key+' = '+str(value)+'\n'
+                    new_file += '\n\n'
                     copy_values.pop(section)
                 #Check if section present but empty
                 elif section and section in copy_values:
@@ -328,16 +345,16 @@ class configParameters(object):
                 #Case: value line
                 value_match = re.match(r"^[\s]*([^\s=:;#]+)",line)
                 commented_value_match = re.match(r"^[\s]*[#;]+[\s]*([^\s=:;#]+)",line)
-                if match:
+                if value_match:
                     #Case: line value is in copy_values to update
-                    if value_match.group(1) in copy_values[section]:
+                    if value_match.group(1).replace('-','_') in copy_values[section]:
                         new_file += value_match.group(1)+' = '+str(copy_values[section].pop(value_match.group(1)))+'\n'
                     else:
                         new_file += line
                 #Case: commented value line
                 elif commented_value_match:
                     #Case: line value is in copy_values to update
-                    if commented_value_match.group(1) in copy_values[section]:
+                    if commented_value_match.group(1).replace('-','_') in copy_values[section]:
                         new_file += commented_value_match.group(1)+' = '+str(copy_values[section].pop(commented_value_match.group(1)))+'\n'
                     else:
                         new_file += line
@@ -356,6 +373,7 @@ class configParameters(object):
                     new_file += "\n"+section_key+"\n"
                     for key,value in section.items():
                         new_file += key+" = "+str(value)+'\n'
+                    new_file += '\n\n'
                 copy_values.pop(section_key)
         
         config_file.close()
