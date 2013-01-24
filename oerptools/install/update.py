@@ -38,7 +38,7 @@ from oerptools.lib import config, bzr
 
 def update():
     _logger.debug('Checking if user is root')
-    tools.exit_if_not_root('oerptools-install')
+    tools.exit_if_not_root('oerptools-update')
     
     bzr.bzr_initialize()
     
