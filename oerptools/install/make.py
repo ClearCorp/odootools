@@ -71,13 +71,12 @@ def make_installer():
         _logger.error('The temporary directory path used to build the installer (%s) already exist. Exiting.' % build_path)
         return False
     
+    _logger.debug('Branching this branch to target branch: %s' % build_path)
     target_branch = this_branch.bzrdir.sprout(build_path).open_branch()
     
     # TODO: Let the user choose the parent branch.
     parent_path = 'lp:oerptools/2.0'
     _logger.debug('Set parent location for target branch: %s' % parent_path)
-    from bzrlib.plugin import load_plugins
-    load_plugins()
     target_branch.set_parent(parent_path)
     _logger.debug('Updating target branch from parent location.')
     parent_branch = Branch.open(parent_path)
@@ -91,7 +90,7 @@ def make_installer():
                 build_path+"/INSTALL.txt")
 
     _logger.debug("Compressing the oerptools dir")
-    tar = tarfile.open("oerptools-setup.tgz", "w:gz")
+    tar = tarfile.open(target_path+"/oerptools-setup.tgz", "w:gz")
     tar.add(build_path, arcname='oerptools')
     tar.close()
 
