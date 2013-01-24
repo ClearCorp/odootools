@@ -21,4 +21,12 @@
 #
 ########################################################################
 
+import logging
+_logger = logging.getLogger('oerptools.oerp.instance')
 
+import os
+
+from oerptools.lib import config, bzr, tools
+
+class oerpInstance(object):
+    

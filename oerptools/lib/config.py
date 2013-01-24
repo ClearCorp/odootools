@@ -274,8 +274,8 @@ class configParameters(object):
                 import oerptools.lib.tools
                 oerptools.lib.tools.command_not_available()
             elif command == 'oerp-install':
-                import oerptools.lib.tools
-                oerptools.lib.tools.command_not_available()
+                import oerptools.oerp.server
+                oerptools.oerp.server.oerpServer.install()
             elif command == 'oerp-update':
                 import oerptools.lib.tools
                 oerptools.lib.tools.command_not_available()
