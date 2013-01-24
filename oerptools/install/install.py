@@ -152,11 +152,8 @@ def install():
         return True
     
     def arch_oerptools_install(install_dir):
-        #TODO: logger gets the output of the command
-        print('Installing bzr...')
-        print('')
-        tools.exec_command('pacman -Sy --noconfirm bzr')
-        return
+        # No differences as of now
+        return ubuntu_oerptools_install(install_dir)
 
 
     _logger.debug('Checking if user is root')
