@@ -105,14 +105,19 @@ def install():
             _logger.info('bzr repository: %s already exists, updating.' % install_dir)
             bzr.bzr_pull(install_dir)
         else:
-            #TODO: add the option for the user to install another version of oerptools
-            #the prefered method of selection is with a command line option.
-            
             # Copy this branch
             branch = bzr.bzr_branch(branch_path, install_dir)
             # Update from lp
-            branch.set_parent('lp:oerptools')
-            bzr.bzr_pull(install_dir)
+            if 'source_branch' in config.params:
+                try:
+                    branch.set_parent(config.params['source_branch'])
+                    bzr.bzr_pull(install_dir)
+                except:
+                    branch.set_parent('lp:oerptools')
+                    bzr.bzr_pull(install_dir)
+            else:
+                branch.set_parent('lp:oerptools')
+                bzr.bzr_pull(install_dir)
         
         #Make config directory
         if not os.path.exists('/etc/oerptools'):

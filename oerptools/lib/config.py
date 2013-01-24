@@ -170,6 +170,8 @@ class configParameters(object):
                             help='Path to install OERPTools in (default: /usr/local/share/oerptools).')
         group.add_argument('--install-config-path', type=str, default=argparse.SUPPRESS,
                             help='Path for the OERPTools config file in (default: /etc/oerptools/settings.conf).')
+        group.add_argument('--source-branch', '-s', type=str, default=argparse.SUPPRESS,
+                            help='URL of the OERPTools branch to install from (default: lp:oerptools).')
         
         #oerptools-update
         subparser = subparsers.add_parser('oerptools-update', help='Update the installed OERPTools.', add_help=False)
@@ -177,6 +179,8 @@ class configParameters(object):
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
+        group.add_argument('--source-branch', '-s', type=str, default=argparse.SUPPRESS,
+                            help='URL of the OERPTools branch to update from (default: lp:oerptools).')
         
         #oerptools-uninstall
         subparser = subparsers.add_parser('oerptools-uninstall', help='Uninstall OERPTools.', add_help=False)
