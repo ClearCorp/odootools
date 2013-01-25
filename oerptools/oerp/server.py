@@ -24,15 +24,53 @@
 import logging
 _logger = logging.getLogger('oerptools.oerp.install')
 
-import os
+import os, datetime
 
 from oerptools.lib import config, bzr, tools
 
 class oerpServer(object):
     
-    
-    
-    def install():
-        _logger.info('TEST')
+    def install(self):
+        _logger.info('OpenERP server installation started.')
+        
+        _logger.debug('Checking if user is root')
+        tools.exit_if_not_root('oerptools-install')
+        
+        os_info = tools.get_os()
+        #Old Ubuntu versions have a suffix in postgresql init script
+        posgresql_init_suffix = ''
+        if os_info['os'] == 'Linux' and os_info['version'][0] == 'Ubuntu':
+            if os_info['version'][1] in ('10.04','10.10'):
+                postgresql_init_suffix = '-8.4'
+        
+        _logger.info('Please check the following information before continuing.')
+        _logger.info('=========================================================')
+        
+        _logger.info('')
+        _logger.info('System info')
+        #Check system variables
+        hostname = tools.get_hostname()
+        _logger.info('Hostname: %s' % hostname[0])
+        if not hostname[1]:
+            _logger.warning('FQDN unknown, he hostname may not be properly set.')
+        else:
+            _logger.info('FQDN: %s' % hostname[1])
+        
+        _logger.info('Time and date: %s' % datetime.datetime.today().strftime('%Y/%m/%d %H:%M:%S (%Z)'))
+        #TODO: list installed and default locale
+        
+        _logger.info('')
+        _logger.info('Installation info')
+        
+        if config.params['intallation_type'] == 'dev':
+            _logger.info('Installation type: development station')
+        elif config.params['installation_type'] == 'server':
+            _logger.info('Installation type: production server')
+        
+        
+            
+        
     
         return True
+
+oerp_server = oerpServer()

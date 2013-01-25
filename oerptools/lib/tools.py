@@ -44,15 +44,21 @@ def exit_if_not_root(command_name):
         return True
 
 def get_os():
+    """ Returns a dict with os info:
+    key os: os name
+    key version: tuple with more info
+    """
     supported_dists = ['Ubuntu','arch']
     os_name = platform.system()
     os_version = ""
     known_os = False
     if os_name == "Linux":
         known_os = True
+        # for linux the os_version is in the form: (distro name, version, version code name)
         os_version = platform.linux_distribution(supported_dists=supported_dists)
     elif os_name == "Mac":
         known_os = True
+        # for mac the os_version is in the form: (release, versioninfo, machine)
         os_version = platform.mac_ver()
     elif os_name == "Windows":
         known_os = True
@@ -63,6 +69,15 @@ def get_os():
         return {'os': os_name, 'version': os_version}
     else:
         return False
+
+def get_hostname():
+    import socket
+    short_name = socket.gethostname()
+    try:
+        long_name = socket.gethostbyaddr(socket.gethostname())[0]
+    except:
+        long_name = None
+    return (short_name, long_name)
 
 def regenerate_ssh_keys():
     regen_script = open('/etc/regen-ssh-keys.sh', 'w')

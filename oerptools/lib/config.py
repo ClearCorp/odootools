@@ -196,6 +196,8 @@ class configParameters(object):
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
+        group.add_argument('--installation-type', '-i', choices=['dev','server'], default='dev',
+                            help='Server type (default: dev).')
         
         #oerp-update
         subparser = subparsers.add_parser('oerp-update', help='Update OpenERP service.', add_help=False)
@@ -275,7 +277,7 @@ class configParameters(object):
                 oerptools.lib.tools.command_not_available()
             elif command == 'oerp-install':
                 import oerptools.oerp.server
-                oerptools.oerp.server.oerpServer.install()
+                oerptools.oerp.server.oerp_server.install()
             elif command == 'oerp-update':
                 import oerptools.lib.tools
                 oerptools.lib.tools.command_not_available()
