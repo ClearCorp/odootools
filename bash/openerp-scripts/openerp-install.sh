@@ -63,6 +63,7 @@ if [[ $? == 1 ]]; then
 fi
 
 
+
 # Initial questions
 ####################
 
@@ -131,6 +132,7 @@ else
 fi
 log_echo ""
 
+################DONE################
 #Install openerp_addons
 while [[ ! $install_openerp_addons =~ ^[YyNn]$ ]]; do
         read -p "Would you like to install openerp addons (Y/n)? " -n 1 install_openerp_addons

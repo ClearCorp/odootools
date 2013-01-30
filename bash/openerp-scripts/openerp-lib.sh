@@ -86,6 +86,7 @@ function check_system_values {
     fi
     return 1
 }
+################DONE################
 
 function add_openerp_user {
     log_echo "Adding openerp user..."

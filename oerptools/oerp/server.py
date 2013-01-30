@@ -24,7 +24,7 @@
 import logging
 _logger = logging.getLogger('oerptools.oerp.install')
 
-import os, datetime
+import os, datetime, pwd
 
 from oerptools.lib import config, bzr, tools
 
@@ -66,9 +66,21 @@ class oerpServer(object):
             _logger.info('Installation type: development station')
         elif config.params['installation_type'] == 'server':
             _logger.info('Installation type: production server')
+            if not 'user' in config.params:
+                user = pwd.getpwuid(os.getuid()).pw_name
+                _logger.warning('No user specified for dev intallation, using current user: %s' % user)
+            else:
+                _logger.info('User: %s' % config.params['user'])
+                user = config.params['user']
+        else:
+            _logger.error('Installation type unknown: %s' % config.params['installation_type'])
+            return False
         
-        
+        if config.params['install_openobject_addons']:
             
+        
+        
+        
         
     
         return True

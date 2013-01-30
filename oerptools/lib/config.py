@@ -198,6 +198,10 @@ class configParameters(object):
                             help='Show this help message and exit.')
         group.add_argument('--installation-type', '-i', choices=['dev','server'], default='dev',
                             help='Server type (default: dev).')
+        group.add_argument('--user', '-u', type=str, default=argparse.SUPPRESS,
+                            help='User for development station installation.')
+        group.add_argument('--branch', '-b', choices=['5.0','6.0', '6.1', '7.0', 'trunk'], default=argparse.SUPPRESS,
+                            help='OpenERP branch to install (default: 7.0).')
         
         #oerp-update
         subparser = subparsers.add_parser('oerp-update', help='Update OpenERP service.', add_help=False)
