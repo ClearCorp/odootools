@@ -85,9 +85,9 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 		branch=stable
 
 		mkdir -p /etc/openerp-ccorp-scripts
-		bzr branch lp:openerp-ccorp-scripts/${branch} /usr/local/share/openerp-ccorp-scripts
+		bzr branch lp:~clearcorp-drivers/oerptools/${branch} /usr/local/share/openerp-ccorp-scripts
 		cat > /etc/openerp-ccorp-scripts/settings.cfg <<EOF
-repo="lp:openerp-ccorp-scripts"
+repo="lp:~clearcorp-drivers/oerptools"
 branch=$branch
 EOF
 	fi
