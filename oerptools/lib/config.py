@@ -96,7 +96,10 @@ class configParameters(object):
             self.params[key] = arg
     
     def __getitem__(self, item):
-        return self.params[item]
+        if item in self.params:
+            return self.params[item]
+        else:
+            return None
     
     def __setitem__(self, key, value):
         self.params[key] = value
@@ -202,6 +205,41 @@ class configParameters(object):
                             help='User for development station installation.')
         group.add_argument('--branch', '-b', choices=['5.0','6.0', '6.1', '7.0', 'trunk'], default=argparse.SUPPRESS,
                             help='OpenERP branch to install (default: 7.0).')
+        # Addons
+        group = subparser.add_argument_group('Addons', 'Addons to install')
+        subgroup = group.add_mutually_exclusive_group()
+        subgroup.add_argument('--openobject-addons', dest='install_openobject_addons', action='store_true',
+                            help='Install openobject-addons modules branch (lp:openobject-addons).')
+        subgroup.add_argument('--no-openobject-addons', dest='install_openobject_addons', action='store_false',
+                            help='Don\'t install openobject-addons modules branch (lp:openobject-addons).')
+        subgroup = group.add_mutually_exclusive_group()
+        subgroup.add_argument('--openerp-ccorp-addons', '--ccorp', dest='install_openerp_ccorp_addons', action='store_true',
+                            help='Install openerp-ccorp-addons modules branch (lp:openerp-ccorp-addons).')
+        subgroup.add_argument('--no-openerp-ccorp-addons', '--no-ccorp', dest='install_openerp_ccorp_addons', action='store_false',
+                            help='Don\'t install openerp-ccorp-addons modules branch (lp:openerp-ccorp-addons).')
+        subgroup = group.add_mutually_exclusive_group()
+        subgroup.add_argument('--openerp-costa-rica', '--l10n_cr', '--costa-rica', dest='install_openerp_costa_rica', action='store_true',
+                            help='Install openerp-costa-rica modules branch (lp:openerp-costa-rica).')
+        subgroup.add_argument('--no-openerp-costa-rica', '--no-l10n_cr', '--no-costa-rica', dest='install_openerp_costa_rica', action='store_false',
+                            help='Don\'t install openerp-costa-rica modules branch (lp:openerp-costa-rica).')
+        group.set_defaults(install_openobject_addons=True, install_openerp_ccorp_addons=True, install_openerp_costa_rica=True)
+        #Advanced
+        group = subparser.add_argument_group('Advanced', 'Advanced options')
+        subgroup = group.add_mutually_exclusive_group()
+        subgroup.add_argument('--update-postgres-hba', '--hba', dest='update_postgres_hba', action='store_true',
+                            help='Update PostgreSQL HBA file (default).')
+        subgroup.add_argument('--no-update-postgres-hba', '--no-hba', dest='update_postgres_hba', action='store_false',
+                            help='Don\'t update PostgreSQL HBA file.')
+        subgroup = group.add_mutually_exclusive_group()
+        subgroup.add_argument('--create-postgres-user', '--pg-user', dest='create_postgres_user', action='store_true',
+                            help='Create PostgreSQL user (default).')
+        subgroup.add_argument('--no-create-postgres-user', '--no-pg-user', dest='create_postgres_user', action='store_false',
+                            help='Don\'t create PostgreSQL user.')
+        subgroup.add_argument('--install-apache', '--apache', dest='install_apache', action='store_true',
+                            help='Install Apache server (for reverse SSL proxy) (default).')
+        subgroup.add_argument('--no-install-apache', '--no-apache', dest='install_apache', action='store_false',
+                            help='Don\'t  install Apache server (for reverse SSL proxy) (default).')
+        group.set_defaults(update_postgres_hba=True, create_postgres_user=True, install_apache=True)
         
         #oerp-update
         subparser = subparsers.add_parser('oerp-update', help='Update OpenERP service.', add_help=False)

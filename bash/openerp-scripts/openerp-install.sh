@@ -132,7 +132,6 @@ else
 fi
 log_echo ""
 
-################DONE################
 #Install openerp_addons
 while [[ ! $install_openerp_addons =~ ^[YyNn]$ ]]; do
         read -p "Would you like to install openerp addons (Y/n)? " -n 1 install_openerp_addons
@@ -287,6 +286,7 @@ while [[ ! $do_update_system =~ ^[YyNn]$ ]]; do
     log_echo ""
 done
 
+################DONE################
 #Writting config file
 #--------------------
 mkdir -p /etc/openerp/$branch
