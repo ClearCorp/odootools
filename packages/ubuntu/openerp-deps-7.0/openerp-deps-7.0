@@ -1,0 +1,29 @@
+### Commented entries have reasonable defaults.
+### Uncomment to edit them.
+# Source: <source package name; defaults to package name>
+Section: net
+Priority: optional
+# Homepage: <enter URL here; no default>
+Standards-Version: 3.9.2
+
+Package: openerp-deps-7.0
+Version: 1.0
+Maintainer: Carlos Vásquez <carlos.vasquez@clearcorp.co.cr>
+# Pre-Depends: <comma-separated list of packages>
+Depends: adduser, python, postgresql-client, python-dateutil, python-docutils, python-feedparser, python-gdata, python-jinja2, python-ldap, python-libxslt1, python-lxml, python-mako, python-mock, python-openid, python-psutil, python-psycopg2, python-pybabel, python-pychart, python-pydot, python-pyparsing, python-reportlab, python-simplejson, python-tz, python-unittest2, python-vatnumber, python-vobject, python-webdav, python-werkzeug, python-xlwt, python-yaml, python-zsi
+Recommends: graphviz, ghostscript, postgresql, python-imaging, python-matplotlib
+Conflicts: openerp-server, openerp-web, tinyerp-server
+Replaces: openerp-server, openerp-web, tinyerp-server
+# Suggests: <comma-separated list of packages>
+# Provides: <comma-separated list of packages>
+Architecture: all
+Copyright: LICENSE
+# Changelog: <changelog file; defaults to a generic changelog>
+# Readme: <README.Debian file; defaults to a generic one>
+# Extra-Files: <comma-separated list of additional files for the doc directory>
+# Files: <pair of space-separated paths; First is file to include, second is destination>
+#  <more pairs, if there's more than one file to include. Notice the starting space>
+Description:
+ This is a meta-package
+ .
+ It installs dependencies for OpenERP server version 7.0
