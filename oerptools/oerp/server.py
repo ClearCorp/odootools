@@ -24,17 +24,44 @@
 import logging
 _logger = logging.getLogger('oerptools.oerp.install')
 
-import os, datetime, pwd, getpass, re
+import os, datetime, pwd, grp, getpass, re
 
 from oerptools.lib import config, bzr, tools
 
 class oerpServer(object):
     
+    def _add_openerp_user(self, user):
+        try:
+            group = grp.getgrnam('openerp')
+        except:
+            _logger.info('openerp group doesn\'t exist, creating group.')
+            tools.exec_command('addgroup openerp', as_root=True)
+            group = False
+        else:
+            _logger.debug('openerp group already exists.')
+        
+        try:
+            pw = pwd.getpwnam(user)
+        except:
+            _logger.info('Creating user: (%s)' % user)
+            tools.exec_command('adduser --system --home /var/run/openerp --no-create-home --ingroup openerp %s' % user, as_root=True)
+        else:
+            _logger.info('User %s already exists, adding to openerp group.' % user)
+            tools.exec_command('adduser %s openerp' % user, as_root=True)
+        
+        return True
+    
+    def _install_python_libs(self, branch):
+        
+        Depends: adduser, python, postgresql-client, python-dateutil, python-docutils, python-feedparser, python-gdata, python-jinja2, python-ldap, python-libxslt1, python-lxml, python-mako, python-mock, python-openid, python-psutil, python-psycopg2, python-pybabel, python-pychart, python-pydot, python-pyparsing, python-reportlab, python-simplejson, python-tz, python-unittest2, python-vatnumber, python-vobject, python-webdav, python-werkzeug, python-xlwt, python-yaml, python-zsi
+Recommends: graphviz, ghostscript, postgresql, python-imaging, python-matplotlib
+
+        
+        
+        
+    
     def install(self):
         _logger.info('OpenERP server installation started.')
-        
-        _logger.debug('Checking if user is root')
-        tools.exit_if_not_root('oerptools-install')
         
         os_info = tools.get_os()
         #Old Ubuntu versions have a suffix in postgresql init script
@@ -76,6 +103,13 @@ class oerpServer(object):
         
         if installation_type == 'dev':
             _logger.info('Installation type: development station')
+        elif installation_type == 'server':
+            _logger.info('Installation type: production server')
+        else:
+            _logger.error('Installation type unknown: %s' % installation_type)
+            return False
+        
+        if installation_type == 'dev':
             if not user:
                 user = pwd.getpwuid(os.getuid()).pw_name
                 if user == 'root':
@@ -92,11 +126,11 @@ class oerpServer(object):
                 else:
                     _logger.info('User: %s' % config.params['user'])
                 
-        elif installation_type == 'server':
-            _logger.info('Installation type: production server')
+        elif not user and installation_type == 'server':
             user = 'openerp'
-        else:
-            _logger.error('Installation type unknown: %s' % installation_type)
+        
+        if not user:
+            _logger.error('User unknown. Exiting.')
             return False
         
         _logger.info('')
@@ -173,11 +207,21 @@ class oerpServer(object):
                 branch+'_postgres_password': postgres_password,
             },
         }
-        config.params.update_config_file_values(values)
+        
+        config_file_path = config.params.update_config_file_values(values)
+        if config_file_path:
+            _logger.info('Updated config file with installation values: %s' % config_file_path)
+        else:
+            _logger.warning('Failed to update config file with installation values.')
         
         
-        print config.params.params
+        # Preparing installation
+        _logger.info('')
+        _logger.info('Preparing OpenERP installation')
+        _logger.info('==============================')
+        _logger.info('')
         
+        self._add_openerp_user(user)
         
     
         return True

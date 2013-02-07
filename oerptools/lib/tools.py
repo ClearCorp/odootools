@@ -102,8 +102,8 @@ rm -f \$0
 
 def exec_command(command, as_root=False):
     _logger.debug('Executing command: %s' % command)
-    if as_root:
-        exit_if_not_root(command)
+    if as_root and not check_root():
+        command = 'sudo ' + command
     process = subprocess.Popen(command,
                                 shell=True,
                                 stdin=sys.stdin.fileno(),

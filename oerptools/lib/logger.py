@@ -25,8 +25,17 @@
 
 import os, sys, logging, logging.handlers
 import oerptools.lib.config as config
+import oerptools.lib.tools as tools
 
 _logger = logging.getLogger('oerptools.lib.logger')
+# create console handler with a higher log level
+log_console = logging.StreamHandler()
+log_console.setLevel(logging.WARNING)
+# create formatter and add it to the handlers
+log_console_formatter = logging.Formatter('%(levelname)s %(name)s: %(message)s')
+log_console.setFormatter(log_console_formatter)
+# add the handlers to the logger
+_logger.addHandler(log_console)
 
 class consoleColors (object):
     #Attributes
@@ -122,13 +131,35 @@ def load_info():
     if 'log_file' in config.params and config.params['log_file']:
         # LogFile Handler
         log_file = config.params['log_file']
-        try:
-            dirname = os.path.dirname(log_file)
-            if dirname and not os.path.isdir(dirname):
+        dirname = os.path.dirname(log_file)
+        dir_exists = True
+        if dirname and not os.path.isdir(dirname):
+            dir_exists = False
+            try:
                 os.makedirs(dirname)
-            res['file_handler'] = logging.handlers.WatchedFileHandler(log_file)
-        except Exception:
-            sys.stderr.write("ERROR: couldn't create the logfile directory. Logging to the standard output.\n")
+                dir_exists = True
+            except:
+                try:
+                    tools.exec_command('mkdir %s' % dirname, as_root=True)
+                    tools.exec_command('chmod a+rwx %s' % dirname, as_root=True)
+                    dir_exists = True
+                except:
+                    _logger.error("Couldn't create the log file directory. Logging to the standard output.")
+        
+        if dir_exists:
+            try:
+                res['file_handler'] = logging.handlers.WatchedFileHandler(log_file)
+            except:
+                if dirname:
+                    try:
+                        tools.exec_command('chmod a+rwx %s' % dirname, as_root=True)
+                        if os.path.isfile(log_file):
+                            tools.exec_command('chmod a+rw %s' % log_file, as_root=True)
+                        res['file_handler'] = logging.handlers.WatchedFileHandler(log_file)
+                    except:
+                        _logger.error("Couldn't create the log file. Logging to the standard output.")
+                else:
+                    _logger.error("Couldn't create the log file. Logging to the standard output.")
 
     # Set formatters
     if os.isatty(res['stdout_handler'].stream.fileno()):
@@ -183,5 +214,12 @@ def set_levels():
 
     for log_handler_item in logger_info['log_hander_list']:
         _logger.debug('logger level set: "%s"', log_handler_item)
+    
+    #Force oerptools.lib.config to reset handlers
+    if not 'oerptools.lib.config' in logger_info['log_hander_list']:
+        logging.getLogger('oerptools.lib.config').handlers = []
+    #Force oerptools.lib.logger to reset handlers
+    if not 'oerptools.lib.logger' in logger_info['log_hander_list']:
+        logging.getLogger('oerptools.lib.logger').handlers = []
 
 logger_info = load_info()

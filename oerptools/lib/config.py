@@ -88,7 +88,7 @@ class configParameters(object):
                             self.params[key] = value
         # Add command config params from files to memory
         if 'command' in cmdline_args and cmdline_args.command and cmdline_args.command in config_files_params:
-            for key, value in config_files_params[cmdline_args.command]:
+            for key, value in config_files_params[cmdline_args.command].items():
                 self.params[key] = value
         
         # Read params from command line (overwrite params from files)
@@ -146,7 +146,6 @@ class configParameters(object):
                             help='File log level, (overwrite general log level).')
         group.add_argument('--log-handler', action="append", metavar="PREFIX:LEVEL", default=argparse.SUPPRESS,
                             help='Setup a handler at LEVEL for a given PREFIX. An empty PREFIX indicates the root logger. This option can be repeated. Example: "oerptools.install.make:DEBUG" or "oerptools.oerp.install:CRITICAL" (default: ":INFO")')
-
         
         
         
@@ -360,11 +359,18 @@ class configParameters(object):
             else:
                 file_path = self.config_files[-1]
         
+        chmod_r = False
         try:
             config_file = open(file_path)
         except:
-            _logger.error('Failed to open config file for reading: %s' % file_path)
-            return False
+            try:
+                import oerptools.lib.tools as tools
+                tools.exec_command('chmod o+r %s' % file_path, as_root=True)
+                chmod_r = True
+                config_file = open(file_path)
+            except:
+                _logger.error('Failed to open config file for reading: %s' % file_path)
+                return False
         
         new_file = ""
         section = False
@@ -424,13 +430,29 @@ class configParameters(object):
         
         config_file.close()
         
+        chmod_w = False
         try:
             config_file = open(file_path,'w')
             config_file.write(new_file)
             config_file.close()
         except:
-            _logger.error('Failed to open config file for updating: %s' % file_path)
-            return False
-        return True
+            try:
+                import oerptools.lib.tools as tools
+                tools.exec_command('chmod o+w %s' % file_path, as_root=True)
+                chmod_w = True
+                config_file = open(file_path,'w')
+                config_file.write(new_file)
+                config_file.close()
+            except:
+                _logger.error('Failed to open config file for updating: %s' % file_path)
+                return False
+            
+        #Check if chmod applied in order to restore perms
+        if chmod_r == True:
+            tools.exec_command('chmod o-r %s' % file_path, as_root=True)
+        if chmod_w == True:
+            tools.exec_command('chmod o-w %s' % file_path, as_root=True)
+        
+        return file_path
     
 params = configParameters()

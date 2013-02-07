@@ -86,7 +86,6 @@ function check_system_values {
     fi
     return 1
 }
-################DONE################
 
 function add_openerp_user {
     log_echo "Adding openerp user..."
@@ -107,6 +106,7 @@ function update_system {
     log_echo ""
 }
 
+################DONE################
 function install_python_lib {
     # Install the required packages and python libraries for openerp.
     echo "Installing the required packages and python libraries for openerp..."
