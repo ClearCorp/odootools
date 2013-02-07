@@ -286,7 +286,6 @@ while [[ ! $do_update_system =~ ^[YyNn]$ ]]; do
     log_echo ""
 done
 
-################DONE################
 #Writting config file
 #--------------------
 mkdir -p /etc/openerp/$branch
@@ -301,6 +300,7 @@ echo "install_extra_addons=$install_extra_addons" >> /etc/openerp/$branch/instal
 echo "install_magentoerpconnect=$install_magentoerpconnect" >> /etc/openerp/$branch/install.cfg
 echo "install_nantic=$install_nantic" >> /etc/openerp/$branch/install.cfg
 
+################DONE################
 #Preparing installation
 #----------------------
 log_echo "Preparing installation"

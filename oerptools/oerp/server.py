@@ -43,6 +43,12 @@ class oerpServer(object):
             if os_info['version'][1] in ('10.04','10.10'):
                 postgresql_init_suffix = '-8.4'
         
+        branch = config.params['branch'] or '7.0'
+        installation_type = config.params[branch+'_installation_type'] or 'dev'
+        user = config.params[branch+'_user']
+        install_openobject_addons = config.params[branch+'_install_openobject_addons'] or True
+        install_openerp_ccorp_addons = config.params[branch+'_install_openerp_ccorp_addons'] or True
+        install_openerp_costa_rica = config.params[branch+'_install_openerp_costa_rica'] or True
         
         _logger.info('')
         _logger.info('Please check the following information before continuing.')
@@ -66,10 +72,11 @@ class oerpServer(object):
         _logger.info('Installation info')
         _logger.info('-----------------')
         
-        installation_type = config.params['installation_type']
+        _logger.info('OpenERP version (branch) to install: %s' % branch)
+        
         if installation_type == 'dev':
             _logger.info('Installation type: development station')
-            if not 'user' in config.params:
+            if not user:
                 user = pwd.getpwuid(os.getuid()).pw_name
                 if user == 'root':
                     _logger.error('No user specified for dev intallation, current user is root, can\'t install with root. Exiting.')
@@ -77,7 +84,6 @@ class oerpServer(object):
                 else:
                     _logger.warning('No user specified for dev intallation, using current user: %s' % user)
             else:
-                user = config.params['user']
                 try:
                     pw = pwd.getpwnam(user)
                 except:
@@ -97,17 +103,14 @@ class oerpServer(object):
         _logger.info('Addons installation:')
         _logger.info('--------------------')
         
-        install_openobject_addons = config.params['install_openobject_addons']
         if install_openobject_addons:
             _logger.info('Install openobject-addons: YES')
         else:
             _logger.info('Install openobject-addons: NO')
-        install_openerp_ccorp_addons = config.params['install_openerp_ccorp_addons']
         if install_openerp_ccorp_addons:
             _logger.info('Install openerp-ccorp-addons: YES')
         else:
             _logger.info('Install openerp-ccorp-addons: NO')
-        install_openerp_costa_rica = config.params['install_openerp_costa_rica']
         if install_openerp_costa_rica:
             _logger.info('Install openerp-costa-rica: YES')
         else:
@@ -159,6 +162,19 @@ class oerpServer(object):
                         postgres_password  = False
         
         #Update config file with new values
+        values = {
+            'oerp-install': {
+                branch+'_installation_type': installation_type,
+                branch+'_user': user,
+                branch+'_install_openobject_addons': install_openobject_addons,
+                branch+'_install_openerp_ccorp_addons': install_openerp_ccorp_addons,
+                branch+'_install_openerp_costa_rica': install_openerp_costa_rica,
+                branch+'_admin_password': admin_password,
+                branch+'_postgres_password': postgres_password,
+            },
+        }
+        config.params.update_config_file_values(values)
+        
         
         print config.params.params
         

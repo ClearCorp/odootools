@@ -199,7 +199,7 @@ class configParameters(object):
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
-        group.add_argument('--installation-type', '-i', choices=['dev','server'], default='dev',
+        group.add_argument('--installation-type', '-i', choices=['dev','server'], default=argparse.SUPPRESS,
                             help='Server type (default: dev).')
         group.add_argument('--user', '-u', type=str, default=argparse.SUPPRESS,
                             help='User for development station installation.')
@@ -222,7 +222,6 @@ class configParameters(object):
                             help='Install openerp-costa-rica modules branch (lp:openerp-costa-rica).')
         subgroup.add_argument('--no-openerp-costa-rica', '--no-l10n_cr', '--no-costa-rica', dest='install_openerp_costa_rica', action='store_false',
                             help='Don\'t install openerp-costa-rica modules branch (lp:openerp-costa-rica).')
-        group.set_defaults(install_openobject_addons=True, install_openerp_ccorp_addons=True, install_openerp_costa_rica=True)
         #Advanced
         group = subparser.add_argument_group('Advanced', 'Advanced options')
         subgroup = group.add_mutually_exclusive_group()
@@ -239,7 +238,6 @@ class configParameters(object):
                             help='Install Apache server (for reverse SSL proxy) (default).')
         subgroup.add_argument('--no-install-apache', '--no-apache', dest='install_apache', action='store_false',
                             help='Don\'t  install Apache server (for reverse SSL proxy) (default).')
-        group.set_defaults(update_postgres_hba=True, create_postgres_user=True, install_apache=True)
         
         #oerp-update
         subparser = subparsers.add_parser('oerp-update', help='Update OpenERP service.', add_help=False)
@@ -346,7 +344,7 @@ class configParameters(object):
         
         :params
         
-        values dict: one key per section, each section is a dict .
+        values dict: one key per section, each section is a dict.
         
         file str: Config file to update.
         """
