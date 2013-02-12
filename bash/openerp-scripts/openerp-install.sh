@@ -315,7 +315,6 @@ if [ ! $rc -eq 0 ]; then
     echo "Couldn't install the required packages, please check your reporsitories."
     exit
 fi
-################DONE################
 # Install bazaar.
 install_bzr
 rc=$?
@@ -330,6 +329,7 @@ if [ ! $rc -eq 0 ]; then
     echo "Couldn't install the required packages, please check your reporsitories."
     exit
 fi
+################DONE################
 # Update pg_hba.conf
 if [[ $update_pg_hba =~ ^[Yy]$ ]]; then update_pg_hba; fi
 # Add openerp postgres user

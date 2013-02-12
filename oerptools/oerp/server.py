@@ -151,7 +151,7 @@ class oerpServer(object):
         else:
             return False
     
-    def _install_python_libs(self, branch):
+    def _install_python_libs(self, branch, os_version):
         _logger.info('Installing the required packages and python libraries for OpenERP.')
         
         packages = []
@@ -315,7 +315,6 @@ class oerpServer(object):
             ])
         
         # Test distro and call appropriate function
-        os_version = tools.get_os()
         if os_version and os_version['os'] == 'Linux':
             if os_version['version'][0] == 'Ubuntu':
                 return _ubuntu_install_python_libs(branch, packages)
@@ -384,6 +383,23 @@ class oerpServer(object):
             error = True
         
         return not error
+    
+    def _install_postgresql(self, os_version):
+        _logger.info('Installing PostgreSQL.')
+        # Test distro and call appropriate function
+        if os_version and os_version['os'] == 'Linux':
+            if os_version['version'][0] == 'Ubuntu':
+                return _ubuntu_install_postgresql()
+            elif os_version['version'][0] == 'arch':
+                return _arch_install_postgresql()
+        _logger.error('Can\'t install python libraries in this OS: %s. Exiting.' % os_version['version'][0])
+        return False
+    
+    def _ubuntu_install_postgresql(self):
+        return tools.ubuntu_install_package(['postgresql'])
+        
+    def _arch_install_postgresql(self):
+        return tools.arch_install_package(['postgresql'])
     
     def install(self):
         _logger.info('OpenERP server installation started.')
@@ -547,9 +563,20 @@ class oerpServer(object):
         _logger.info('')
         
         self._add_openerp_user(user)
-        self._install_python_libs(branch)
+        self._install_python_libs(branch, os_info)
         
-    
+        result = bzr.bzr_install()
+        if result != 0:
+            _logger.error('Failed to install bzr (Bazaar VCS). Exiting.')
+            return False
+        
+        result = self._install_postgresql()
+        if result != 0:
+            _logger.error('Failed to install PostgreSQL. Exiting.')
+            return False
+        
+        
+        
         return True
 
 oerp_server = oerpServer()

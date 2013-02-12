@@ -215,7 +215,6 @@ function install_python_lib {
     fi
 }
 
-################DONE################
 function install_bzr {
     # Install bazaar.
     log_echo "Installing bazaar..."
@@ -230,6 +229,7 @@ function install_postgresql {
     log_echo ""
 }
 
+################DONE################
 function update_pg_hba {
     # Update pg_hba.conf
     sed -i 's/\(local[[:space:]]*all[[:space:]]*all[[:space:]]*\)\(ident[[:space:]]*sameuser\)/\1md5/g' /etc/postgresql/$posgresql_rel/main/pg_hba.conf >> $INSTALL_LOG_FILE
