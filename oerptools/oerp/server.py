@@ -340,8 +340,7 @@ class oerpServer(object):
                 _logger.warning('Package unknown: %s. Exiting.' % package)
         
         # Install packages
-        result = tools.ubuntu_install_package(distro_packages)
-        return result
+        return tools.ubuntu_install_package(distro_packages)
     
     def _arch_install_python_libs(self, branch, packages):
         #Initialize packages match
@@ -369,16 +368,14 @@ class oerpServer(object):
         # Install packages
         _logger.info('Installing packages with pacman.')
         _logger.debug('Packages: %s' % str(distro_packages))
-        result = tools.arch_install_repo_package(distro_packages)
         error = False
-        if != result:
+        if not tools.arch_install_repo_package(distro_packages):
             _logger.warning('Failed to install some repo packages. This can render the OpenERP installation unusable.')
             error = True
         
         _logger.info('Installing packages from AUR.')
         _logger.debug('Packages: %s' % str(aur_packages))
-        result = tools.arch_install_repo_package(aur_packages)
-        if not result:
+        if not tools.arch_install_repo_package(aur_packages):
             _logger.warning('Failed to install some AUR packages. This can render the OpenERP installation unusable.')
             error = True
         
@@ -399,24 +396,73 @@ class oerpServer(object):
         return tools.ubuntu_install_package(['postgresql'])
         
     def _arch_install_postgresql(self):
-        return tools.arch_install_package(['postgresql'])
+        #TODO: change some of this calls with a python way to do it (because of perms)
+        if os.path.isdir('/var/lib/postgres/data'):
+            _logger.info('PostgreSQL appears to be already configured. Skipping.')
+            return False
+        
+        if tools.arch_install_package(['postgresql']):
+            _logger.error('Failed to install PostgreSQL. Exiting.')
+            return False
+        if tools.exec_command('systemd-tmpfiles --create postgresql.conf', as_root=True):
+            _logger.error('Failed to configure PostgreSQL systemd script. Exiting.')
+            return False
+        if tools.exec_command('mkdir /var/lib/postgres/data', as_root=True):
+            _logger.error('Failed to create PostgreSQL data directory. Exiting.')
+            return False
+        if tools.exec_command('chown -c postgres:postgres /var/lib/postgres/data', as_root=True):
+            _logger.error('Failed to set PostgreSQL data directory permisions. Exiting.')
+            return False
+        if tools.exec_command('sudo -i -u postgres initdb -D \'/var/lib/postgres/data\'', as_root=True):
+            _logger.error('Failed to init PostgreSQL database. Exiting.')
+            return False
+        if tools.exec_command('systemctl enable postgresql', as_root=True):
+            _logger.error('Failed to enable PostgreSQL init script. Exiting.')
+            return False
+        if tools.exec_command('systemctl start postgresql', as_root=True):
+            _logger.error('Failed to start PostgreSQL. Exiting.')
+            return False
+        return True
+        
+    
+    def _update_postgres_hba(self, os_version):
+        _logger.info('Updating PostgreSQL pg_hba.conf file.')
+        # Test distro and call appropriate function
+        if os_version and os_version['os'] == 'Linux':
+            if os_version['version'][0] == 'Ubuntu':
+                return _ubuntu_update_postgres_hba()
+            elif os_version['version'][0] == 'arch':
+                return _arch_update_postgres_hba()
+        _logger.error('Can\'t update PostgreSQL pg_hba.conf in this OS: %s. Exiting.' % os_version['version'][0])
+        return False
+    
+    def _ubuntu_update_postgres_hba(self):
+        #TODO: change sed command with python lib to do the change (be carefull with the user perms)
+        sed -i 's/\(local[[:space:]]*all[[:space:]]*all[[:space:]]*\)\(ident[[:space:]]*sameuser\)/\1md5/g' /etc/postgresql/$posgresql_rel/main/pg_hba.conf
+        /etc/init.d/postgresql$posgresql_init restart >> $INSTALL_LOG_FILE
     
     def install(self):
         _logger.info('OpenERP server installation started.')
         
         os_info = tools.get_os()
         #Old Ubuntu versions have a suffix in postgresql init script
-        posgresql_init_suffix = ''
+        postgresql_init_suffix = ''
+        postgresql_version = ''
         if os_info['os'] == 'Linux' and os_info['version'][0] == 'Ubuntu':
             if os_info['version'][1] in ('10.04','10.10'):
                 postgresql_init_suffix = '-8.4'
+            if os_info['version'][1] < '11.10':
+                postgresql_version = '8.4'
+            else:
+                postgresql_version = '9.1'
         
         branch = config.params['branch'] or '7.0'
-        installation_type = config.params[branch+'_installation_type'] or 'dev'
-        user = config.params[branch+'_user']
-        install_openobject_addons = config.params[branch+'_install_openobject_addons'] or True
-        install_openerp_ccorp_addons = config.params[branch+'_install_openerp_ccorp_addons'] or True
-        install_openerp_costa_rica = config.params[branch+'_install_openerp_costa_rica'] or True
+        installation_type = config.params[branch+'_installation_type'] or config.params['installation_type'] or'dev'
+        user = config.params[branch+'_user'] or config.params['user']
+        install_openobject_addons = config.params[branch+'_install_openobject_addons'] or config.params['install_openobject_addons'] or True
+        install_openerp_ccorp_addons = config.params[branch+'_install_openerp_ccorp_addons'] or config.params['install_openerp_ccorp_addons'] or True
+        install_openerp_costa_rica = config.params[branch+'_install_openerp_costa_rica'] or config.params['install_openerp_costa_rica'] or True
+        update_postgres_hba = config.params[branch+'_update_postgres_hba'] or config.params['update_postgres_hba'] or True
         
         _logger.info('')
         _logger.info('Please check the following information before continuing.')
@@ -565,13 +611,11 @@ class oerpServer(object):
         self._add_openerp_user(user)
         self._install_python_libs(branch, os_info)
         
-        result = bzr.bzr_install()
-        if result != 0:
+        if not bzr.bzr_install():
             _logger.error('Failed to install bzr (Bazaar VCS). Exiting.')
             return False
         
-        result = self._install_postgresql()
-        if result != 0:
+        if not self._install_postgresql():
             _logger.error('Failed to install PostgreSQL. Exiting.')
             return False
         

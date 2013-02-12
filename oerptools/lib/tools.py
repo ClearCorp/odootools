@@ -121,29 +121,33 @@ def ubuntu_install_package(packages, update=False):
     _logger.info('Installing packages with apt-get.')
     _logger.debug('Packages: %s' % str(packages))
     if update:
-        result = exec_command('apt-get -qy update', as_root=True)
-    result = exec_command('apt-get -qy install %s' % ' '.join(packages), as_root=True)
-    return result
+        if exec_command('apt-get -qy update', as_root=True):
+            _logger.warning('Failed to update apt-get database.')
+    if exec_command('apt-get -qy install %s' % ' '.join(packages), as_root=True):
+        _logger.error('Failed to install packages.')
+        return False
+    else:
+        return True
 
 def arch_install_repo_package(packages):
     _logger.info('Installing packages with pacman.')
     _logger.debug('Packages: %s' % str(packages))
-    result = exec_command('pacman -Sq --noconfirm --needed %s' % ' '.join(packages), as_root=True)
-    return result
+    if exec_command('pacman -Sq --noconfirm --needed %s' % ' '.join(packages), as_root=True):
+        return False
+    else:
+        return True
 
 def arch_install_aur_package(packages):
     _logger.info('Installing packages from AUR.')
     _logger.debug('Packages: %s' % str(packages))
     
     #TODO: check if base-devel group is installed
-    result = exec_command('pacman -Sq --noconfirm --needed base-devel', as_root=True)
-    if result != 0:
+    if exec_command('pacman -Sq --noconfirm --needed base-devel', as_root=True):
         _logger.error('Error installing base-devel package group. Exiting.')
         return False
     
     if not arch_check_package_installed('wget'):        
-        result = exec_command('pacman -Sq --noconfirm --needed wget', as_root=True)
-        if result != 0:
+        if exec_command('pacman -Sq --noconfirm --needed wget', as_root=True):
             _logger.error('Error installing wget package. Exiting.')
             return False
     
@@ -158,8 +162,7 @@ def arch_install_aur_package(packages):
     while loop_packages:
         os.chdir(temp_dir)
         for package in loop_packages:
-            result = exec_command('wget https://aur.archlinux.org/packages/%s/%s/%s.tar.gz' % [package[0:2], package, package])
-            if result != 0:
+            if exec_command('wget https://aur.archlinux.org/packages/%s/%s/%s.tar.gz' % [package[0:2], package, package]):
                 _logger.error('Failed to download AUR package: %s' % package)
                 error = True
                 continue
@@ -173,8 +176,7 @@ def arch_install_aur_package(packages):
                 error = True
                 continue
             
-            result = exec_command('makepkg -s PKGBUILD', as_root=True)
-            if result != 0:
+            if exec_command('makepkg -s PKGBUILD', as_root=True):
                 _logger.warning('Failed to build AUR package: %s. Retrying later.' % package)
                 retry_packages.append(package)
                 continue
@@ -186,8 +188,7 @@ def arch_install_aur_package(packages):
                 error = True
                 continue
                 
-            result = exec_command('pacman -U %s*' % package, as_root=True)
-            if result != 0:
+            if exec_command('pacman -U %s*' % package, as_root=True):
                 _logger.error('Failed to install AUR package: %s' % package)
                 error = True
                 continue
@@ -206,8 +207,7 @@ def arch_install_aur_package(packages):
     return not error
 
 def arch_check_package_installed(package):
-    result = exec_command('pacman -Qq %s' % package)
-    if result == 0:
-        return True
-    else:
+    if exec_command('pacman -Qq %s' % package):
         return False
+    else:
+        return True
