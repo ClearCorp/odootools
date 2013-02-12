@@ -9,8 +9,8 @@ Build-Depends: debhelper (>= 7)
 Package-List: 
  openerp-deps-7.0 deb net optional
 Checksums-Sha1: 
- cded708bcb5c4dea3c5221777f1d1b5c837d1ecc 13250 openerp-deps-7.0_1.0.tar.gz
+ 4da570ff74ff9164ef39ab99cdf1e926a0ead056 13329 openerp-deps-7.0_1.0.tar.gz
 Checksums-Sha256: 
- d5da7d7659bf86aaec8a3ca6619070eac365474ac236b005e6c8629479339670 13250 openerp-deps-7.0_1.0.tar.gz
+ ac534c51e4303d57cb3f8df778d57427d3e80c58339b1bfda64ffafb08f37ce1 13329 openerp-deps-7.0_1.0.tar.gz
 Files: 
- 52f7487f71176d0d25714700dd618ba2 13250 openerp-deps-7.0_1.0.tar.gz
+ f372f3a42f1e39d3c4da7c9f16a3a43d 13329 openerp-deps-7.0_1.0.tar.gz
