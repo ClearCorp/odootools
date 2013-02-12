@@ -45,13 +45,12 @@ def ubuntu_webmin_install():
         apt_src.write('deb http://download.webmin.com/download/repository sarge contrib')
         apt_src.close()
     #TODO: logger gets the output of the command
-    tools.exec_command('wget -q http://www.webmin.com/jcameron-key.asc -O - | apt-key add -')
-    tools.exec_command('apt-get -y update')
-    tools.exec_command('apt-get -y install webmin')
+    tools.exec_command('wget -q http://www.webmin.com/jcameron-key.asc -O - | apt-key add -', as_root=True)
+    tools.ubuntu_install_package(['webmin'], update=True)
     return
 
 def arch_webmin_install():
     #TODO: logger gets the output of the command
-    tools.exec_command('pacman -Sy --noconfirm webmin')
+    tools.arch_install_repo_package(['webmin'])
     return
 

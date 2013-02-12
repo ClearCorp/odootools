@@ -300,7 +300,6 @@ echo "install_extra_addons=$install_extra_addons" >> /etc/openerp/$branch/instal
 echo "install_magentoerpconnect=$install_magentoerpconnect" >> /etc/openerp/$branch/install.cfg
 echo "install_nantic=$install_nantic" >> /etc/openerp/$branch/install.cfg
 
-################DONE################
 #Preparing installation
 #----------------------
 log_echo "Preparing installation"
@@ -316,6 +315,7 @@ if [ ! $rc -eq 0 ]; then
     echo "Couldn't install the required packages, please check your reporsitories."
     exit
 fi
+################DONE################
 # Install bazaar.
 install_bzr
 rc=$?

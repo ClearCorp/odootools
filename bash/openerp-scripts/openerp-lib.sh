@@ -106,7 +106,6 @@ function update_system {
     log_echo ""
 }
 
-################DONE################
 function install_python_lib {
     # Install the required packages and python libraries for openerp.
     echo "Installing the required packages and python libraries for openerp..."
@@ -216,6 +215,7 @@ function install_python_lib {
     fi
 }
 
+################DONE################
 function install_bzr {
     # Install bazaar.
     log_echo "Installing bazaar..."

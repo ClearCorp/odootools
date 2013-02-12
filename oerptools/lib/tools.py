@@ -117,9 +117,11 @@ def command_not_available():
     _logger.error('The command %s is not implemented yet.' % oerptools.lib.config.params['command'])
     return
 
-def ubuntu_install_package(packages):
+def ubuntu_install_package(packages, update=False):
     _logger.info('Installing packages with apt-get.')
     _logger.debug('Packages: %s' % str(packages))
+    if update:
+        result = exec_command('apt-get -qy update', as_root=True)
     result = exec_command('apt-get -qy install %s' % ' '.join(packages), as_root=True)
     return result
 

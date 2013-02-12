@@ -547,6 +547,7 @@ class oerpServer(object):
         _logger.info('')
         
         self._add_openerp_user(user)
+        self._install_python_libs(branch)
         
     
         return True

@@ -43,14 +43,13 @@ def bzr_install():
 def ubuntu_bzr_install():
     #TODO: logger gets the output of the command
     _logger.info('Installing bzr...')
-    tools.exec_command('apt-get -y update')
-    tools.exec_command('apt-get -y install bzr python-bzrlib')
+    tools.ubuntu_install_package(['bzr', 'python-bzrlib'], update=True)
     return
 
 def arch_bzr_install():
     #TODO: logger gets the output of the command
     _logger.info('Installing bzr...')
-    tools.exec_command('pacman -Sy --noconfirm bzr')
+    tools.arch_install_repo_package(['bzr'])
     return
 
 def bzr_initialize():
