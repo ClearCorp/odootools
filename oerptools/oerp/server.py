@@ -51,14 +51,339 @@ class oerpServer(object):
         
         return True
     
+    def get_packages_distro_match(self, distro):
+        match = {
+            'ubuntu' = {
+                'ghostscript':              'ghostscript',
+                'graphviz':                 'graphviz',
+                'libjs-mochikit':           'libjs-mochikit',
+                'libjs-mootools':           'libjs-mootools',
+                'python-beaker':            'python-beaker',
+                'python-cherrypy3':         'python-cherrypy3',
+                'python-dateutil':          'python-dateutil',
+                'python-docutils':          'python-docutils',
+                'python-egenix':            'python-egenix-mxdatetime',
+                'python-feedparser':        'python-feedparser',
+                'python-formencode':        'python-formencode',
+                'python-gdata':             'python-gdata',
+                'python-imaging':           'python-imaging',
+                'python-jinja2':            'python-jinja2',
+                'python-ldap':              'python-ldap',
+                'python-libxslt1':          'python-libxslt1',
+                'python-lxml':              'python-lxml',
+                'python-mako':              'python-mako',
+                'python-matplotlib':        'python-matplotlib',
+                'python-mock':              'python-mock',
+                'python-openid':            'python-openid',
+                'python-openssl':           'python-openssl',
+                'python-psutil':            'python-psutil',
+                'python-psycopg2':          'python-psycopg2',
+                'python-pybabel':           'python-pybabel',
+                'python-pychart':           'python-pychart',
+                'python-pydot':             'python-pydot',
+                'python-pyparsing':         'python-pyparsing',
+                'python-reportlab':         'python-reportlab',
+                'python-setuptools':        'python-setuptools',
+                'python-simplejson':        'python-simplejson',
+                'python-tz':                'python-tz',
+                'python-unittest2':         'python-unittest2',
+                'python-vatnumber':         'python-vatnumber',
+                'python-vobject':           'python-vobject',
+                'python-webdav':            'python-webdav',
+                'python-werkzeug':          'python-werkzeug',
+                'python-xlwt':              'python-xlwt',
+                'python-yaml':              'python-yaml',
+                'python-zsi':               'python-zsi',
+                'tinymce':                  'tinymce',
+            },
+            
+            'arch' = {
+                'repo' = {
+                    'ghostscript':              'ghostscript',
+                    'graphviz':                 'graphviz',
+                    'libjs-mochikit':           None,
+                    'libjs-mootools':           'pycow',
+                    'python-beaker':            'python2-beaker',
+                    'python-cherrypy3':         'python2-cherrypy',
+                    'python-dateutil':          'python2-dateutil',
+                    'python-docutils':          'python2-docutils',
+                    'python-egenix':            'python2-egenix-mx-base',
+                    'python-feedparser':        'python2-feedparser',
+                    'python-formencode':        'python2-formencode',
+                    'python-gdata':             'python2-gdata',
+                    'python-imaging':           'python2-imaging',
+                    'python-jinja2':            'python2-jinja',
+                    'python-ldap':              'python2-ldap',
+                    'python-libxslt1':          'python2-lxml',
+                    'python-lxml':              'python2-lxml',
+                    'python-mako':              'python2-mako',
+                    'python-matplotlib':        'python2-matplotlib',
+                    'python-openssl':           'python2-pyopenssl',
+                    'python-psutil':            'python2-psutil',
+                    'python-psycopg2':          'python2-psycopg2',
+                    'python-pybabel':           'python2-babel',
+                    'python-pychart':           'python2-pychart',
+                    'python-pyparsing':         'python2-pyparsing',
+                    'python-reportlab':         'python2-reportlab',
+                    'python-setuptools':        'python2-distribute',
+                    'python-simplejson':        'python2-simplejson',
+                    'python-tz':                'python2-pytz', 
+                    'python-vobject':           'python2-vobject',
+                    'python-werkzeug':          'python2-werkzeug',
+                    'python-yaml':              'python2-yaml',
+                    'tinymce':                  None,
+                },
+                'aur' = {
+                    'python-mock':              'python2-mock',
+                    'python-openid':            'python2-openid',
+                    'python-pydot':             'pydot',
+                    'python-unittest2':         'python2-unittest2',
+                    'python-vatnumber':         'python2-vatnumber',
+                    'python-webdav':            'python2-pywebdav',
+                    'python-xlwt':              'python2-xlwt',
+                    'python-zsi':               'zsi',
+                }
+            }
+        }
+        
+        if distro in match:
+            return match[distro]
+        else:
+            return False
+    
     def _install_python_libs(self, branch):
+        _logger.info('Installing the required packages and python libraries for OpenERP.')
         
-        Depends: adduser, python, postgresql-client, python-dateutil, python-docutils, python-feedparser, python-gdata, python-jinja2, python-ldap, python-libxslt1, python-lxml, python-mako, python-mock, python-openid, python-psutil, python-psycopg2, python-pybabel, python-pychart, python-pydot, python-pyparsing, python-reportlab, python-simplejson, python-tz, python-unittest2, python-vatnumber, python-vobject, python-webdav, python-werkzeug, python-xlwt, python-yaml, python-zsi
-Recommends: graphviz, ghostscript, postgresql, python-imaging, python-matplotlib
+        packages = []
+        
+        # Packages need by the installer
+        packages.append('python-setuptools')
 
+        # Packages for 5.0
+        if branch == '5.0':
+            packages.join([
+                # Server
+                # Dependencies
+                'python-lxml',
+                'python-psycopg2',
+                'python-pychart',
+                'python-pydot',
+                'python-reportlab',
+                'python-tz',
+                'python-vobject',
+                'python-egenix',
+                # Recomended
+                'graphviz',
+                'ghostscript',
+                'python-imaging',
+                'python-libxslt1',      #Excel spreadsheets
+                'python-matplotlib',
+                'python-openssl',       #Extra for ssl ports
+                'python-xlwt',          #Excel spreadsheets
+                'python-pyparsing',
+                # Web client
+                # Dependencies
+                'python-formencode',
+                'python-pybabel',
+                'python-simplejson',
+                'python-pyparsing',
+                'python2-cherrypy',
+                #Recommended
+                'libjs-mochikit',
+                'libjs-mootools',
+                'python-beaker',
+                'tinymce',
+            ])
         
+        # Packages for 6.0
+        if branch == '6.0':
+            packages.join([
+                # Server
+                # Dependencies
+                'python-lxml',
+                'python-psycopg2',
+                'python-pychart',
+                'python-pydot',
+                'python-reportlab',
+                'python-tz',
+                'python-vobject',
+                'python-dateutil',
+                'python-feedparser',
+                'python-mako',
+                'python-pyparsing',
+                'python-yaml',
+                # Recomended
+                'graphviz',
+                'ghostscript',
+                'python-imaging',
+                'python-libxslt1',      #Excel spreadsheets
+                'python-matplotlib',
+                'python-openssl',       #Extra for ssl ports
+                'python-xlwt',          #Excel spreadsheets
+                'python-webdav',        #For document-webdav
+                # Web client
+                # Dependencies
+                'python-formencode',
+                'python-pybabel',
+                'python-simplejson',
+                'python-pyparsing',
+                'python2-cherrypy',
+                #Recommended
+            ])
         
+        # Packages for 6.1
+        if branch == '6.1':
+            packages.join([
+                # Server
+                # Dependencies
+                'python-lxml',
+                'python-psycopg2',
+                'python-pychart',
+                'python-pydot',
+                'python-reportlab',
+                'python-tz',
+                'python-vobject',
+                'python-dateutil',
+                'python-feedparser',
+                'python-mako',
+                'python-pyparsing',
+                'python-yaml',
+                'python-werkzeug',
+                'python-zsi',
+                # Recomended
+                'graphviz',
+                'ghostscript',
+                'python-imaging',
+                'python-libxslt1',      #Excel spreadsheets
+                'python-matplotlib',
+                'python-openssl',       #Extra for ssl ports
+                'python-xlwt',          #Excel spreadsheets
+                'python-webdav',        #For document-webdav
+                'python-gdata',         #Google data parser
+                'python-ldap',
+                'python-openid',
+                'python-vatnumber',
+                'python-mock',          #For testing
+                'python-unittest2',     #For testing
+                # Web client
+                # Dependencies
+                'python-formencode',
+                'python-pybabel',
+                'python-simplejson',
+                'python-pyparsing',
+                # Recommended
+            ])
         
+        # Packages for 7.0
+        if branch == '7.0' or branch == 'trunk':
+            packages.join([
+                # Dependencies
+                'python-dateutil',
+                'python-docutils',
+                'python-feedparser',
+                'python-gdata',         #Google data parser
+                'python-jinja2',
+                'python-ldap',
+                'python-libxslt1',      #Excel spreadsheets
+                'python-lxml',
+                'python-mako',
+                'python-mock',          #For testing
+                'python-openid',
+                'python-psutil',
+                'python-psycopg2',
+                'python-pybabel',
+                'python-pychart',
+                'python-pydot',
+                'python-pyparsing',
+                'python-reportlab',
+                'python-simplejson',
+                'python-tz',
+                'python-unittest2',     #For testing
+                'python-vatnumber',
+                'python-vobject',
+                'python-webdav',        #For document-webdav
+                'python-werkzeug',
+                'python-xlwt',          #Excel spreadsheets
+                'python-yaml',
+                'python-zsi',
+                
+                # Recomended
+                'graphviz',
+                'ghostscript',
+                'python-imaging',
+                'python-matplotlib',
+            ])
+        
+        # Test distro and call appropriate function
+        os_version = tools.get_os()
+        if os_version and os_version['os'] == 'Linux':
+            if os_version['version'][0] == 'Ubuntu':
+                return _ubuntu_install_python_libs(branch, packages)
+            elif os_version['version'][0] == 'arch':
+                return _arch_install_python_libs(branch, packages)
+        _logger.error('Can\'t install python libraries in this OS: %s. Exiting.' % os_version['version'][0])
+        return False
+    
+    def _ubuntu_install_python_libs(self, branch, packages):
+        #Initialize packages match
+        distro_match_packages = get_packages_distro_match('ubuntu')
+        
+        #Build definitive package list
+        distro_packages = []
+        for package in packages:
+            if package in distro_match_packages:
+                if distro_match_packages[package]:
+                    distro_packages.append(distro_match_packages[package])
+                #No package for this distro available
+                else:
+                    _logger.warning('No installable package for %s in Ubuntu. Please install it manually.' % package)
+            else:
+                _logger.warning('Package unknown: %s. Exiting.' % package)
+        
+        # Install packages
+        result = tools.ubuntu_install_package(distro_packages)
+        return result
+    
+    def _arch_install_python_libs(self, branch, packages):
+        #Initialize packages match
+        distro_match_packages = get_packages_distro_match('arch')
+        
+        #Build definitive package list
+        distro_packages = []
+        aur_packages = []
+        for package in packages:
+            if package in distro_match_packages['repo']:
+                if distro_match_packages['repo'][package]:
+                    distro_packages.append(distro_match_packages['repo'][package])
+                #No package for this distro available
+                else:
+                    _logger.warning('No installable package for %s in Arch. Please install it manually.' % package)
+            elif package in distro_match_packages['aur']:
+                if distro_match_packages['aur'][package]:
+                    aur_packages.append(distro_match_packages['aur'][package])
+                #No package for this distro available
+                else:
+                    _logger.warning('No installable package for %s in Arch. Please install it manually.' % package)
+            else:
+                _logger.warning('Package unknown: %s. Exiting.' % package)
+        
+        # Install packages
+        _logger.info('Installing packages with pacman.')
+        _logger.debug('Packages: %s' % str(distro_packages))
+        result = tools.arch_install_repo_package(distro_packages)
+        error = False
+        if != result:
+            _logger.warning('Failed to install some repo packages. This can render the OpenERP installation unusable.')
+            error = True
+        
+        _logger.info('Installing packages from AUR.')
+        _logger.debug('Packages: %s' % str(aur_packages))
+        result = tools.arch_install_repo_package(aur_packages)
+        if not result:
+            _logger.warning('Failed to install some AUR packages. This can render the OpenERP installation unusable.')
+            error = True
+        
+        return not error
     
     def install(self):
         _logger.info('OpenERP server installation started.')

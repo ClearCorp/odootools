@@ -21,7 +21,7 @@
 #
 ########################################################################
 
-import os
+import os, shutil
 import platform
 import subprocess
 import sys
@@ -116,3 +116,96 @@ def exec_command(command, as_root=False):
 def command_not_available():
     _logger.error('The command %s is not implemented yet.' % oerptools.lib.config.params['command'])
     return
+
+def ubuntu_install_package(packages):
+    _logger.info('Installing packages with apt-get.')
+    _logger.debug('Packages: %s' % str(packages))
+    result = exec_command('apt-get -qy install %s' % ' '.join(packages), as_root=True)
+    return result
+
+def arch_install_repo_package(packages):
+    _logger.info('Installing packages with pacman.')
+    _logger.debug('Packages: %s' % str(packages))
+    result = exec_command('pacman -Sq --noconfirm --needed %s' % ' '.join(packages), as_root=True)
+    return result
+
+def arch_install_aur_package(packages):
+    _logger.info('Installing packages from AUR.')
+    _logger.debug('Packages: %s' % str(packages))
+    
+    #TODO: check if base-devel group is installed
+    result = exec_command('pacman -Sq --noconfirm --needed base-devel', as_root=True)
+    if result != 0:
+        _logger.error('Error installing base-devel package group. Exiting.')
+        return False
+    
+    if not arch_check_package_installed('wget'):        
+        result = exec_command('pacman -Sq --noconfirm --needed wget', as_root=True)
+        if result != 0:
+            _logger.error('Error installing wget package. Exiting.')
+            return False
+    
+    import tempfile, tarfile, copy
+    temp_dir = tempfile.mkdtemp(prefix='oerptools-')
+    cwd = os.getcwd()
+    
+    error = False
+    
+    loop_packages = copy.copy(packages)
+    retry_packages = []
+    while loop_packages:
+        os.chdir(temp_dir)
+        for package in loop_packages:
+            result = exec_command('wget https://aur.archlinux.org/packages/%s/%s/%s.tar.gz' % [package[0:2], package, package])
+            if result != 0:
+                _logger.error('Failed to download AUR package: %s' % package)
+                error = True
+                continue
+            try:
+                tar = tarfile.open(package, 'r')
+                tar.extractall()
+                tar.close()
+                os.chdir(package)
+            except:
+                _logger.error('Failed to extract AUR package: %s' % package)
+                error = True
+                continue
+            
+            result = exec_command('makepkg -s PKGBUILD', as_root=True)
+            if result != 0:
+                _logger.warning('Failed to build AUR package: %s. Retrying later.' % package)
+                retry_packages.append(package)
+                continue
+            
+            try:
+                os.chdir(package)
+            except:
+                _logger.error('Failed to install AUR package: %s' % package)
+                error = True
+                continue
+                
+            result = exec_command('pacman -U %s*' % package, as_root=True)
+            if result != 0:
+                _logger.error('Failed to install AUR package: %s' % package)
+                error = True
+                continue
+            os.chdir('..')
+        
+        if retry_packages and len(loop_packages) != len(retry_packages):
+            loop_packages = retry_packages
+            retry_packages = []
+        elif retry_packages:
+            _logger.error('Failed to install AUR packages: %s' % ', '.join(retry_packages))
+            error = True
+        else:
+            loop_packages = []
+    os.chdir(cwd)
+    shutil.rmtree(temp_dir)
+    return not error
+
+def arch_check_package_installed(package):
+    result = exec_command('pacman -Qq %s' % package)
+    if result == 0:
+        return True
+    else:
+        return False
