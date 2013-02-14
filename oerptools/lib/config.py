@@ -267,15 +267,22 @@ class configParameters(object):
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
         
-        #oerp-repo-make
-        subparser = subparsers.add_parser('oerp-repo-make', help='Make the OpenERP bzr repository in ~/Development/openerp.', add_help=False)
+        #dev-repo-make
+        subparser = subparsers.add_parser('dev-repo-make', help='Make the OpenERP development bzr repository.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
+        group.add_argument('--repo-dir', '-d', type=str, default=argparse.SUPPRESS,
+                            help='Directory for the dev repository (default: ~/Development/openerp).')
+        subgroup = group.add_mutually_exclusive_group()
+        subgroup.add_argument('--trees', dest='no_trees', action='store_false',
+                            help='Create bzr repositories with trees (default).')
+        subgroup.add_argument('--no-trees', dest='no_trees', action='store_true',
+                            help='Create bzr repositories without trees.')
         
-        #oerp-repo-update
-        subparser = subparsers.add_parser('oerp-repo-update', help='Update the OpenERP bzr repository in ~/Development/openerp.', add_help=False)
+        #dev-repo-update
+        subparser = subparsers.add_parser('dev-repo-update', help='Update the OpenERP development bzr repository.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
