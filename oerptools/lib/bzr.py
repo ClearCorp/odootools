@@ -68,10 +68,12 @@ def bzr_initialize():
 def bzr_init_repo(target, no_trees=False):
     #TODO: do this with the python library
     if no_trees:
+        print 'no-trees'
         if tools.exec_command('bzr init-repo --no-tree %s' % target):
             _logger.error('Failed to create repository in: %s. Exiting.' % target)
             return False
     else:
+        print 'trees'
         if tools.exec_command('bzr init-repo %s' % target):
             _logger.error('Failed to create repository in: %s. Exiting.' % target)
             return False
@@ -122,8 +124,30 @@ def bzr_pull(target, source=None):
     
     return True
 
-def bzr_push():
-    return
+def bzr_push(source, target=None):
+    from bzrlib.branch import Branch
+    try:
+        branch = Branch.open(source)
+    except:
+        _logger.error('Bzr push: The provided source branch (%s) can\'t be opened.' % source)
+        return False
+    
+    if target:
+        try:
+            target = Branch.open(target)
+        except:
+            _logger.error('Bzr push: The provided target branch (%s) can\'t be opened.' % target)
+            return False
+        try:
+            return branch.push(target)
+        except:
+            _logger.error('Bzr push: failed. Exiting.')
+    else:
+        try:
+            return branch.push()
+        except:
+            _logger.error('Bzr push: failed. Exiting.')
+    return False
 
 def bzr_set_parent(branch, parent):
     from bzrlib.branch import Branch
@@ -142,3 +166,12 @@ def bzr_set_push_location(branch, location):
         _logger.error('Bzr set_push_location: The provided target branch (%s) can\'t be opened.' % branch)
         return False
     return branch.set_push_location(location)
+
+def bzr_get_push_location(branch):
+    from bzrlib.branch import Branch
+    try:
+        branch = Branch.open(branch)
+    except:
+        _logger.error('Bzr get_push_location: The provided target branch (%s) can\'t be opened.' % branch)
+        return False
+    return branch.get_push_location(location)

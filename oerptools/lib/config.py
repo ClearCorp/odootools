@@ -207,35 +207,35 @@ class configParameters(object):
         # Addons
         group = subparser.add_argument_group('Addons', 'Addons to install')
         subgroup = group.add_mutually_exclusive_group()
-        subgroup.add_argument('--openobject-addons', dest='install_openobject_addons', action='store_true',
+        subgroup.add_argument('--openobject-addons', dest='install_openobject_addons', action='store_true', default=argparse.SUPPRESS,
                             help='Install openobject-addons modules branch (lp:openobject-addons).')
-        subgroup.add_argument('--no-openobject-addons', dest='install_openobject_addons', action='store_false',
+        subgroup.add_argument('--no-openobject-addons', dest='install_openobject_addons', action='store_false', default=argparse.SUPPRESS,
                             help='Don\'t install openobject-addons modules branch (lp:openobject-addons).')
         subgroup = group.add_mutually_exclusive_group()
-        subgroup.add_argument('--openerp-ccorp-addons', '--ccorp', dest='install_openerp_ccorp_addons', action='store_true',
+        subgroup.add_argument('--openerp-ccorp-addons', '--ccorp', dest='install_openerp_ccorp_addons', action='store_true', default=argparse.SUPPRESS,
                             help='Install openerp-ccorp-addons modules branch (lp:openerp-ccorp-addons).')
-        subgroup.add_argument('--no-openerp-ccorp-addons', '--no-ccorp', dest='install_openerp_ccorp_addons', action='store_false',
+        subgroup.add_argument('--no-openerp-ccorp-addons', '--no-ccorp', dest='install_openerp_ccorp_addons', action='store_false', default=argparse.SUPPRESS,
                             help='Don\'t install openerp-ccorp-addons modules branch (lp:openerp-ccorp-addons).')
         subgroup = group.add_mutually_exclusive_group()
-        subgroup.add_argument('--openerp-costa-rica', '--l10n_cr', '--costa-rica', dest='install_openerp_costa_rica', action='store_true',
+        subgroup.add_argument('--openerp-costa-rica', '--l10n_cr', '--costa-rica', dest='install_openerp_costa_rica', action='store_true', default=argparse.SUPPRESS,
                             help='Install openerp-costa-rica modules branch (lp:openerp-costa-rica).')
-        subgroup.add_argument('--no-openerp-costa-rica', '--no-l10n_cr', '--no-costa-rica', dest='install_openerp_costa_rica', action='store_false',
+        subgroup.add_argument('--no-openerp-costa-rica', '--no-l10n_cr', '--no-costa-rica', dest='install_openerp_costa_rica', action='store_false', default=argparse.SUPPRESS,
                             help='Don\'t install openerp-costa-rica modules branch (lp:openerp-costa-rica).')
         #Advanced
         group = subparser.add_argument_group('Advanced', 'Advanced options')
         subgroup = group.add_mutually_exclusive_group()
-        subgroup.add_argument('--update-postgres-hba', '--hba', dest='update_postgres_hba', action='store_true',
+        subgroup.add_argument('--update-postgres-hba', '--hba', dest='update_postgres_hba', action='store_true', default=argparse.SUPPRESS,
                             help='Update PostgreSQL HBA file (default).')
-        subgroup.add_argument('--no-update-postgres-hba', '--no-hba', dest='update_postgres_hba', action='store_false',
+        subgroup.add_argument('--no-update-postgres-hba', '--no-hba', dest='update_postgres_hba', action='store_false', default=argparse.SUPPRESS,
                             help='Don\'t update PostgreSQL HBA file.')
         subgroup = group.add_mutually_exclusive_group()
-        subgroup.add_argument('--create-postgres-user', '--pg-user', dest='create_postgres_user', action='store_true',
+        subgroup.add_argument('--create-postgres-user', '--pg-user', dest='create_postgres_user', action='store_true', default=argparse.SUPPRESS,
                             help='Create PostgreSQL user (default).')
-        subgroup.add_argument('--no-create-postgres-user', '--no-pg-user', dest='create_postgres_user', action='store_false',
+        subgroup.add_argument('--no-create-postgres-user', '--no-pg-user', dest='create_postgres_user', action='store_false', default=argparse.SUPPRESS,
                             help='Don\'t create PostgreSQL user.')
-        subgroup.add_argument('--install-apache', '--apache', dest='install_apache', action='store_true',
+        subgroup.add_argument('--install-apache', '--apache', dest='install_apache', action='store_true', default=argparse.SUPPRESS,
                             help='Install Apache server (for reverse SSL proxy) (default).')
-        subgroup.add_argument('--no-install-apache', '--no-apache', dest='install_apache', action='store_false',
+        subgroup.add_argument('--no-install-apache', '--no-apache', dest='install_apache', action='store_false', default=argparse.SUPPRESS,
                             help='Don\'t  install Apache server (for reverse SSL proxy) (default).')
         
         #oerp-update
@@ -276,10 +276,15 @@ class configParameters(object):
         group.add_argument('--repo-dir', '-d', type=str, default=argparse.SUPPRESS,
                             help='Directory for the dev repository (default: ~/Development/openerp).')
         subgroup = group.add_mutually_exclusive_group()
-        subgroup.add_argument('--trees', dest='no_trees', action='store_false',
+        subgroup.add_argument('--trees', dest='no_trees', action='store_false', default=argparse.SUPPRESS,
                             help='Create bzr repositories with trees (default).')
-        subgroup.add_argument('--no-trees', dest='no_trees', action='store_true',
+        subgroup.add_argument('--no-trees', dest='no_trees', action='store_true', default=argparse.SUPPRESS,
                             help='Create bzr repositories without trees.')
+        subgroup = group.add_mutually_exclusive_group()
+        subgroup.add_argument('--push', dest='push', action='store_true', default=argparse.SUPPRESS,
+                            help='Push branches to ccorp locations.')
+        subgroup.add_argument('--no-push', dest='push', action='store_false', default=argparse.SUPPRESS,
+                            help='Don\'t push branches to ccorp locations (default).')
         
         #dev-repo-update
         subparser = subparsers.add_parser('dev-repo-update', help='Update the OpenERP development bzr repository.', add_help=False)
@@ -336,10 +341,11 @@ class configParameters(object):
             elif command == 'oerp-server-remove':
                 import oerptools.lib.tools
                 oerptools.lib.tools.command_not_available()
-            elif command == 'oerp-repo-make':
-                import oerptools.lib.tools
-                oerptools.lib.tools.command_not_available()
-            elif command == 'oerp-repo-update':
+            elif command == 'dev-repo-make':
+                import oerptools.dev.repository
+                repo = oerptools.dev.repository.repository()
+                return repo.make()
+            elif command == 'dev-repo-update':
                 import oerptools.lib.tools
                 oerptools.lib.tools.command_not_available()
         else:
