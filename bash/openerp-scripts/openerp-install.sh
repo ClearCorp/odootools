@@ -329,7 +329,6 @@ if [ ! $rc -eq 0 ]; then
     echo "Couldn't install the required packages, please check your reporsitories."
     exit
 fi
-################DONE################
 # Update pg_hba.conf
 if [[ $update_pg_hba =~ ^[Yy]$ ]]; then update_pg_hba; fi
 # Add openerp postgres user
@@ -337,6 +336,7 @@ if [[ $create_pguser =~ ^[Yy]$ ]]; then add_postgres_user; fi
 # Change postgres user password
 if [[ $set_postgres_admin_passwd =~ ^[Yy]$ ]]; then change_postgres_passwd; fi
 
+################DONE################
 # Downloading OpenERP
 #--------------------
 log_echo "Downloading OpenERP"
