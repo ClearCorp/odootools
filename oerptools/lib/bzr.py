@@ -174,4 +174,4 @@ def bzr_get_push_location(branch):
     except:
         _logger.error('Bzr get_push_location: The provided target branch (%s) can\'t be opened.' % branch)
         return False
-    return branch.get_push_location(location)
+    return branch.get_push_location()
