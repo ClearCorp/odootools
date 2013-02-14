@@ -292,6 +292,22 @@ class configParameters(object):
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
+        group.add_argument('--repo-dir', '-d', type=str, default=argparse.SUPPRESS,
+                            help='Directory for the dev repository (default: ~/Development/openerp).')
+        subgroup = group.add_mutually_exclusive_group()
+        subgroup.add_argument('--push', dest='push', action='store_true', default=argparse.SUPPRESS,
+                            help='Push branches to ccorp locations.')
+        subgroup.add_argument('--no-push', dest='push', action='store_false', default=argparse.SUPPRESS,
+                            help='Don\'t push branches to ccorp locations (default).')
+        
+        #dev-repo-update
+        subparser = subparsers.add_parser('dev-repo-reset-locations', help='Reset OpenERP development repository branch locations.', add_help=False)
+        # Main
+        group = subparser.add_argument_group('Main', 'Main parameters')
+        group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
+                            help='Show this help message and exit.')
+        group.add_argument('--repo-dir', '-d', type=str, default=argparse.SUPPRESS,
+                            help='Directory for the dev repository (default: ~/Development/openerp).')
         
         return parser.parse_args()
     
@@ -349,6 +365,10 @@ class configParameters(object):
                 import oerptools.dev.repository
                 repo = oerptools.dev.repository.repository()
                 return repo.update()
+            elif command == 'dev-repo-reset-locations':
+                import oerptools.dev.repository
+                repo = oerptools.dev.repository.repository()
+                return repo.reset_branch_locations()
         else:
             return False
     
