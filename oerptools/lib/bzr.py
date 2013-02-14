@@ -65,6 +65,19 @@ def bzr_initialize():
     
     load_plugins()
 
+def bzr_init_repo(target, no_trees=False):
+    #TODO: do this with the python library
+    if no_trees:
+        if tools.exec_command('bzr init-repo --no-tree %s' % target):
+            _logger.error('Failed to create repository in: %s. Exiting.' % target)
+            return False
+    else:
+        if tools.exec_command('bzr init-repo %s' % target):
+            _logger.error('Failed to create repository in: %s. Exiting.' % target)
+            return False
+    return True
+    
+
 def bzr_branch(source, target):
     from bzrlib.branch import Branch
     
@@ -108,7 +121,24 @@ def bzr_pull(target, source=None):
             return False
     
     return True
-    
 
 def bzr_push():
     return
+
+def bzr_set_parent(branch, parent):
+    from bzrlib.branch import Branch
+    try:
+        branch = Branch.open(branch)
+    except:
+        _logger.error('Bzr set_parent: The provided target branch (%s) can\'t be opened.' % branch)
+        return False
+    return branch.set_parent(parent)
+
+def bzr_set_push_location(branch, location):
+    from bzrlib.branch import Branch
+    try:
+        branch = Branch.open(branch)
+    except:
+        _logger.error('Bzr set_push_location: The provided target branch (%s) can\'t be opened.' % branch)
+        return False
+    return branch.set_push_location(location)
