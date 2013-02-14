@@ -176,7 +176,7 @@ class repository(object):
         self._branch_project('openerp-costa-rica',    False, ['6.0', '6.1', '7.0', 'trunk'])
         self._branch_project('oerptools',             False, ['stable', '1.0', '2.0', 'trunk'])
         
-        self._branch_project('banking-addons',        True,  ['5.0', '6.0', '6.1', '7.0', 'trunk'])
+        self._branch_project('banking-addons',        True,  ['5.0', '6.0', '6.1', 'trunk'])
         
         return True
     
@@ -198,7 +198,7 @@ class repository(object):
         self._update_project('openerp-costa-rica',    False, ['6.0', '6.1', '7.0', 'trunk'])
         self._update_project('oerptools',             False, ['stable', '1.0', '2.0', 'trunk'])
         
-        self._update_project('banking-addons',        True,  ['5.0', '6.0', '6.1', '7.0', 'trunk'])
+        self._update_project('banking-addons',        True,  ['5.0', '6.0', '6.1', 'trunk'])
         
         return True
     
@@ -220,7 +220,7 @@ class repository(object):
         self._reset_project_locations('openerp-costa-rica',    False, ['6.0', '6.1', '7.0', 'trunk'])
         self._reset_project_locations('oerptools',             False, ['stable', '1.0', '2.0', 'trunk'])
         
-        self._reset_project_locations('banking-addons',        True,  ['5.0', '6.0', '6.1', '7.0', 'trunk'])
+        self._reset_project_locations('banking-addons',        True,  ['5.0', '6.0', '6.1', 'trunk'])
         
         return True
         
