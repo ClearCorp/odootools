@@ -346,8 +346,9 @@ class configParameters(object):
                 repo = oerptools.dev.repository.repository()
                 return repo.make()
             elif command == 'dev-repo-update':
-                import oerptools.lib.tools
-                oerptools.lib.tools.command_not_available()
+                import oerptools.dev.repository
+                repo = oerptools.dev.repository.repository()
+                return repo.update()
         else:
             return False
     
