@@ -137,6 +137,27 @@ class repository(object):
                         _logger.error('Push ERROR: %s/%s.' % (name, branch))
         return True
     
+    def _reset_project_locations(self, name, ccorp, branches):
+        _logger.info('Reseting branch locations for development repository %s, branches: %s.' % (name, branches))
+        
+        project_dir = os.path.abspath(self._repo_dir) + '/%s' % name
+        
+        if not os.path.isdir(project_dir):
+            _logger.error('Repository %s doesn\'t exists. Exiting.' % name)
+            return False
+        
+        for branch in branches:
+            official_branch = 'lp:%s/%s' % (name, branch)
+            ccorp_branch = 'lp:~clearcorp-drivers/%s/%s-ccorp' % (name, branch)
+            _logger.info('Reseting locations for %s/%s.' % (name, branch))
+            bzr.bzr_set_parent('%s/main/%s' % (project_dir, branch), official_branch)
+            bzr.bzr_set_push_location('%s/main/%s' % (project_dir, branch), official_branch)
+            if ccorp:
+                bzr.bzr_set_parent('%s/main/%s-ccorp' % (project_dir, branch), official_branch)
+                bzr.bzr_set_push_location('%s/main/%s-ccorp' % (project_dir, branch), ccorp_branch)
+            
+        return True
+    
     def make(self):
         bzr.bzr_initialize()
         _logger.info('Making new OpenERP development repository.')
@@ -152,7 +173,7 @@ class repository(object):
         self._branch_project('openobject-doc',        True,  ['5.0', '6.0', '6.1'])
         
         self._branch_project('openerp-ccorp-addons',  False, ['5.0', '6.0', '6.1', '7.0', 'trunk'])
-        self._branch_project('openerp-costa-rica',    False, ['5.0', '6.0', '6.1', '7.0', 'trunk'])
+        self._branch_project('openerp-costa-rica',    False, ['6.0', '6.1', '7.0', 'trunk'])
         self._branch_project('oerptools',             False, ['stable', '1.0', '2.0', 'trunk'])
         
         self._branch_project('banking-addons',        True,  ['5.0', '6.0', '6.1', '7.0', 'trunk'])
@@ -174,9 +195,32 @@ class repository(object):
         self._update_project('openobject-doc',        True,  ['5.0', '6.0', '6.1'])
         
         self._update_project('openerp-ccorp-addons',  False, ['5.0', '6.0', '6.1', '7.0', 'trunk'])
-        self._update_project('openerp-costa-rica',    False, ['5.0', '6.0', '6.1', '7.0', 'trunk'])
+        self._update_project('openerp-costa-rica',    False, ['6.0', '6.1', '7.0', 'trunk'])
         self._update_project('oerptools',             False, ['stable', '1.0', '2.0', 'trunk'])
         
         self._update_project('banking-addons',        True,  ['5.0', '6.0', '6.1', '7.0', 'trunk'])
         
         return True
+    
+    def reset_branch_locations(self):
+        bzr.bzr_initialize()
+        _logger.info('Reseting OpenERP development repository branch locations.')
+        if not self._repo_exists:
+            _logger.info('Repository doesn\'t exist in: %s. Exiting.' % self._repo_dir)
+            return False
+        
+        self._reset_project_locations('openobject-server',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk'])
+        self._reset_project_locations('openobject-addons',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk', 'extra-5.0', 'extra-6.0', 'extra-trunk'])
+        self._reset_project_locations('openobject-client',     True,  ['5.0', '6.0', '6.1', 'trunk'])
+        self._reset_project_locations('openobject-client-web', True,  ['5.0', '6.0', 'trunk'])
+        self._reset_project_locations('openerp-web',           True,  ['6.1', '7.0', 'trunk'])
+        self._reset_project_locations('openobject-doc',        True,  ['5.0', '6.0', '6.1'])
+        
+        self._reset_project_locations('openerp-ccorp-addons',  False, ['5.0', '6.0', '6.1', '7.0', 'trunk'])
+        self._reset_project_locations('openerp-costa-rica',    False, ['6.0', '6.1', '7.0', 'trunk'])
+        self._reset_project_locations('oerptools',             False, ['stable', '1.0', '2.0', 'trunk'])
+        
+        self._reset_project_locations('banking-addons',        True,  ['5.0', '6.0', '6.1', '7.0', 'trunk'])
+        
+        return True
+        
