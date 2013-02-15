@@ -80,8 +80,9 @@ def bzr_init_repo(target, no_trees=False):
     return True
     
 
-def bzr_branch(source, target):
+def bzr_branch(source, target, no_tree=False):
     from bzrlib.branch import Branch
+    from bzrlib.transport import get_transport
     
     try:
         source_branch = Branch.open(source)
@@ -90,7 +91,9 @@ def bzr_branch(source, target):
         return False
 
     try:
-        branch = source_branch.bzrdir.sprout(target).open_branch()
+        #branch = source_branch.bzrdir.sprout(target).open_branch()
+        transport = get_transport(target)
+        branch = source_branch.create_clone_on_transport(transport, no_tree=no_tree)
     except:
         _logger.error('Bzr branch: The branch to %s failed.' % target)
         return False

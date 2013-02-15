@@ -300,8 +300,17 @@ class configParameters(object):
         subgroup.add_argument('--no-push', dest='push', action='store_false', default=argparse.SUPPRESS,
                             help='Don\'t push branches to ccorp locations (default).')
         
-        #dev-repo-update
+        #dev-repo-reset-locations
         subparser = subparsers.add_parser('dev-repo-reset-locations', help='Reset OpenERP development repository branch locations.', add_help=False)
+        # Main
+        group = subparser.add_argument_group('Main', 'Main parameters')
+        group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
+                            help='Show this help message and exit.')
+        group.add_argument('--repo-dir', '-d', type=str, default=argparse.SUPPRESS,
+                            help='Directory for the dev repository (default: ~/Development/openerp).')
+        
+        #dev-repo-src-make
+        subparser = subparsers.add_parser('dev-repo-src-make', help='Make the OpenERP development bzr source repository.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
@@ -369,6 +378,10 @@ class configParameters(object):
                 import oerptools.dev.repository
                 repo = oerptools.dev.repository.repository()
                 return repo.reset_branch_locations()
+            elif command == 'dev-repo-src-make':
+                import oerptools.dev.repository
+                repo = oerptools.dev.repository.repository()
+                return repo.src_make()
         else:
             return False
     

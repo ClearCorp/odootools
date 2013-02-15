@@ -174,7 +174,7 @@ class repository(object):
         
         self._branch_project('openerp-ccorp-addons',  False, ['5.0', '6.0', '6.1', '7.0', 'trunk'])
         self._branch_project('openerp-costa-rica',    False, ['6.0', '6.1', '7.0', 'trunk'])
-        self._branch_project('oerptools',             False, ['stable', '1.0', '2.0', 'trunk'])
+        self._branch_project('oerptools',             False, ['1.0', '2.0', 'trunk'])
         
         self._branch_project('banking-addons',        True,  ['5.0', '6.0', '6.1', 'trunk'])
         
@@ -196,7 +196,7 @@ class repository(object):
         
         self._update_project('openerp-ccorp-addons',  False, ['5.0', '6.0', '6.1', '7.0', 'trunk'])
         self._update_project('openerp-costa-rica',    False, ['6.0', '6.1', '7.0', 'trunk'])
-        self._update_project('oerptools',             False, ['stable', '1.0', '2.0', 'trunk'])
+        self._update_project('oerptools',             False, ['1.0', '2.0', 'trunk'])
         
         self._update_project('banking-addons',        True,  ['5.0', '6.0', '6.1', 'trunk'])
         
@@ -218,9 +218,62 @@ class repository(object):
         
         self._reset_project_locations('openerp-ccorp-addons',  False, ['5.0', '6.0', '6.1', '7.0', 'trunk'])
         self._reset_project_locations('openerp-costa-rica',    False, ['6.0', '6.1', '7.0', 'trunk'])
-        self._reset_project_locations('oerptools',             False, ['stable', '1.0', '2.0', 'trunk'])
+        self._reset_project_locations('oerptools',             False, ['1.0', '2.0', 'trunk'])
         
         self._reset_project_locations('banking-addons',        True,  ['5.0', '6.0', '6.1', 'trunk'])
         
         return True
+    
+    def _src_branch_project(self, name, ccorp, branches):
+        _logger.info('Creating sources repository for %s, branches: %s.' % (name, branches))
         
+        project_dir = os.path.abspath(self._repo_dir) + '/%s' % name
+        src_dir = os.path.abspath(self._repo_dir) + '/openerp-src/src'
+        
+        for branch in branches
+            _logger.info('Creating branch for %s/%s.' % (name, branch))
+            
+            if ccorp:
+                project_branch_dir = '%s/main/%s-ccorp' % (project_dir, branch)
+            else:
+                project_branch_dir = '%s/main/%s' % (project_dir, branch)
+            
+            src_branch_dir = '%s/%s/%s' % (src_dir, branch, name)
+            repo_branch_dir = '%s/openerp/%s/%s' % (src_dir, branch, name)
+            
+            if not os.path.isdir('%s/openerp' % src_dir):
+                _logger.info('Creating OpenERP sources main repository.')
+                bzr.bzr_init_repo('%s/openerp' % src_dir, no_trees=True)
+            
+            _logger.info('Source branch: %s.' % project_branch_dir)
+            if os.path.isdir(src_branch_dir):
+                _logger.info('Branch at %s alredy exists. Delete it before running the script to recreate.' % src_branch_dir)
+            else:
+                if not os.path.isdir('%s/%s' % (src_dir, branch)):
+                    os.makedirs('%s/%s' % (src_dir, branch))
+                bzr.bzr_branch(project_branch_dir, src_branch_dir, no_tree=True)
+            if os.path.isdir(repo_branch_dir):
+                _logger.info('Branch at %s alredy exists. Delete it before running the script to recreate.' % repo_branch_dir)
+            else:
+                if not os.path.isdir('%s/openerp/%s' % (src_dir, branch)):
+                    os.makedirs('%s/openerp/%s' % (src_dir, branch))
+                bzr.bzr_branch(project_branch_dir, repo_branch_dir, no_tree=True)
+        return True
+    
+    def src_make(self):
+        bzr.bzr_initialize()
+        _logger.info('Making new OpenERP sources repository.')
+        if not self._repo_exists:
+            _logger.info('Repository doesn\'t exist in: %s. Exiting.' % self._repo_dir)
+            return False
+        
+        self._src_branch_project('openobject-server',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk'])
+        self._src_branch_project('openobject-addons',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk',])
+        self._src_branch_project('openerp-web',           True,  ['6.1', '7.0', 'trunk'])
+        
+        self._src_branch_project('openerp-ccorp-addons',  False, ['5.0', '6.0', '6.1', '7.0', 'trunk'])
+        self._src_branch_project('openerp-costa-rica',    False, ['6.0', '6.1', '7.0', 'trunk'])
+        
+        self._src_branch_project('banking-addons',        True,  ['5.0', '6.0', '6.1', 'trunk'])
+        
+        return True
