@@ -299,6 +299,8 @@ class repository(object):
             if not os.path.isdir(src_branch_dir):
                 _logger.error('Branch at %s doesn\'t exist. Skipping.' % src_branch_dir)
             else:
+                if not os.path.isdir('%s/%s' % (bin_dir, branch)):
+                    os.makedirs('%s/%s' % (bin_dir, branch))
                 tar = tarfile.open('%s/%s/%s.tgz' % (bin_dir, branch, name), "w:gz")
                 tar.add(src_branch_dir, arcname='%s/%s' % (branch, name))
                 tar.close()
@@ -314,6 +316,8 @@ class repository(object):
         if not os.path.isdir('%s/openerp' % src_dir):
             _logger.error('Repository at %s doesn\'t exist. Exiting.' % src_dir)
             return False
+        if not os.path.isdir(bin_dir):
+            os.makedirs(bin_dir)
         tar = tarfile.open('%s/openerp.tgz' % bin_dir, "w:gz")
         tar.add('%s/openerp/.bzr' % src_dir, arcname='openerp/.bzr')
         tar.close()
