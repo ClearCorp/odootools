@@ -230,7 +230,7 @@ class repository(object):
         project_dir = os.path.abspath(self._repo_dir) + '/%s' % name
         src_dir = os.path.abspath(self._repo_dir) + '/openerp-src/src'
         
-        for branch in branches
+        for branch in branches:
             _logger.info('Creating branch for %s/%s.' % (name, branch))
             
             if ccorp:
