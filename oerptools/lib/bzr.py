@@ -103,22 +103,27 @@ def bzr_pull(target, source=None):
     from bzrlib.workingtree import WorkingTree
     try:
         branch = Branch.open(target)
-        tree = WorkingTree.open(target)
     except:
         _logger.error('Bzr pull: The provided target branch (%s) can\'t be opened.' % target)
         return False
+    try:
+        tree = WorkingTree.open(target)
+    except:
+        tree = False
     
     if source:
         try:
             branch.pull(Branch.open(source))
-            tree.update()
+            if tree:
+                tree.update()
         except:
             _logger.error('Bzr pull: The provided source branch (%s) can\'t be opened.' % source)
             return False
     else:
         try:
             branch.pull(Branch.open(branch.get_parent()))
-            tree.update()
+            if tree:
+                tree.update()
         except:
             _logger.error('Bzr pull: The provided source branch (%s) can\'t be opened.' % branch.get_parent())
             return False
