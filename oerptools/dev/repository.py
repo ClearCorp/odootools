@@ -270,7 +270,7 @@ class repository(object):
             
             src_branch_dir = '%s/%s/%s' % (src_dir, branch, name)
             repo_branch_dir = '%s/openerp/%s/%s' % (src_dir, branch, name)
-            _logger.info('Source branch: %s.' % project_branch_dir)
+            _logger.info('Source branch: %s.' % src_branch_dir)
             
             if not os.path.isdir(src_branch_dir):
                 _logger.error('Branch at %s doesn\'t exist. Skipping.' % src_branch_dir)
