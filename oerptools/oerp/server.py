@@ -529,6 +529,8 @@ class oerpServer(object):
         if tools.exec_command('tar xzf /usr/local/src/oerptools/oerp/openerp.tgz', as_root=True):
             _logger.error('Failed to extract repo tgz file. Exiting.')
             return False
+        if os.path.exists('/srv/openerp/.bzr/repository/no-working-trees'):
+            os.remove('/srv/openerp/.bzr/repository/no-working-trees')
         
         os.chdir(cwd)
         return True
@@ -537,7 +539,7 @@ class oerpServer(object):
         bzr.bzr_initialize()
         _logger.info('Downloading %s latest %s release.' % (name, branch))
         
-        if tools.exec_command('mkdir -p /srv/openerp/%s/src' % branch, as_root=True):
+        if tools.exec_command('mkdir -p /srv/openerp/%s/src' % branch):
             _logger.error('Failed to make branch directory. Exiting.')
             return False
         
@@ -560,9 +562,6 @@ class oerpServer(object):
                 _logger.error('Failed to extract branch. Exiting.')
                 return False
             bzr.bzr_branch('/usr/local/src/oerptools/oerp/%s' % branch, '/srv/openerp/%s/src/%s' % (branch, name))
-            if tools.exec_command('/usr/local/src/oerptools/oerp/%s/%s' % (branch, name), as_root=True):
-                _logger.error('Failed to extract branch. Exiting.')
-                return False
             bzr.bzr_set_parent('/srv/openerp/%s/src/%s' % (branch, name), 'http://bazaar.launchpad.net/~clearcorp-drivers/%s/%s' % (lp_project, lp_branch))
             bzr.bzr_pull('/srv/openerp/%s/src/%s' % (branch, name))
         return True
@@ -570,7 +569,7 @@ class oerpServer(object):
     def _download_other_lp_branch(self, branch, name, lp_project, lp_branch):
         bzr.bzr_initialize()
         _logger.info('Downloading %s latest %s release.' % (name, branch))
-        if tools.exec_command('mkdir -p /srv/openerp/%s/src' % branch, as_root=True):
+        if tools.exec_command('mkdir -p /srv/openerp/%s/src' % branch):
             _logger.error('Failed to make branch directory. Exiting.')
             return False
         if os.path.exists('/srv/openerp/%s/src/%s' % (branch, name)):
@@ -680,6 +679,15 @@ class oerpServer(object):
         if not user:
             _logger.error('User unknown. Exiting.')
             return False
+        elif pwd.getpwuid(os.getuid()).pw_name not in (user, 'root'):
+            try:
+                group = grp.getgrnam('openerp')
+                if not pwd.getpwuid(os.getuid()).pw_name in group['gr_mem']:
+                    _logger.error('Your user must be the user of installation (%s), root, or be part of openerp group. Exiting.')
+                    return False
+            except:
+                _logger.error('Your user must be the user of installation (%s), root, or be part of openerp group. Exiting.')
+                return False
         
         _logger.info('')
         _logger.info('Addons installation:')
