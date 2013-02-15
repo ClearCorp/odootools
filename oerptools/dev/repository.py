@@ -252,14 +252,14 @@ class repository(object):
                 if not os.path.isdir('%s/%s' % (src_dir, branch)):
                     os.makedirs('%s/%s' % (src_dir, branch))
                 bzr.bzr_branch(project_branch_dir, src_branch_dir, no_tree=True)
-                bzr.bzr_set_parent(src_branch_dir, project_branch_dir)
+            bzr.bzr_set_parent(src_branch_dir, project_branch_dir)
             if os.path.isdir(repo_branch_dir):
                 _logger.warning('Branch at %s alredy exists. Delete it before running the script to recreate.' % repo_branch_dir)
             else:
                 if not os.path.isdir('%s/openerp/%s' % (src_dir, branch)):
                     os.makedirs('%s/openerp/%s' % (src_dir, branch))
                 bzr.bzr_branch(project_branch_dir, repo_branch_dir, no_tree=True)
-                bzr.bzr_set_parent(repo_branch_dir, project_branch_dir)
+            bzr.bzr_set_parent(repo_branch_dir, project_branch_dir)
         return True
     
     def _src_update_project(self, name, ccorp, branches):
