@@ -308,7 +308,7 @@ class repository(object):
     
     def _src_compress_repo(self):
         import tarfile
-        _logger.info('Compressing main sources repository.' % (name, branches))
+        _logger.info('Compressing main sources repository.')
         
         src_dir = os.path.abspath(self._repo_dir) + '/openerp-src/src'
         bin_dir = os.path.abspath(self._repo_dir) + '/openerp-src/bin'
