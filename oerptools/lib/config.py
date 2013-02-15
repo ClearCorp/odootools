@@ -318,6 +318,15 @@ class configParameters(object):
         group.add_argument('--repo-dir', '-d', type=str, default=argparse.SUPPRESS,
                             help='Directory for the dev repository (default: ~/Development/openerp).')
         
+        #dev-repo-src-update
+        subparser = subparsers.add_parser('dev-repo-src-update', help='Update the OpenERP development bzr source repository.', add_help=False)
+        # Main
+        group = subparser.add_argument_group('Main', 'Main parameters')
+        group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
+                            help='Show this help message and exit.')
+        group.add_argument('--repo-dir', '-d', type=str, default=argparse.SUPPRESS,
+                            help='Directory for the dev repository (default: ~/Development/openerp).')
+        
         return parser.parse_args()
     
     def _read_config_files(self, file_list):
@@ -382,6 +391,10 @@ class configParameters(object):
                 import oerptools.dev.repository
                 repo = oerptools.dev.repository.repository()
                 return repo.src_make()
+            elif command == 'dev-repo-src-update':
+                import oerptools.dev.repository
+                repo = oerptools.dev.repository.repository()
+                return repo.src_update()
         else:
             return False
     
