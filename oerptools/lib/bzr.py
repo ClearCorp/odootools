@@ -68,12 +68,10 @@ def bzr_initialize():
 def bzr_init_repo(target, no_trees=False):
     #TODO: do this with the python library
     if no_trees:
-        print 'no-trees'
         if tools.exec_command('bzr init-repo --no-tree %s' % target):
             _logger.error('Failed to create repository in: %s. Exiting.' % target)
             return False
     else:
-        print 'trees'
         if tools.exec_command('bzr init-repo %s' % target):
             _logger.error('Failed to create repository in: %s. Exiting.' % target)
             return False

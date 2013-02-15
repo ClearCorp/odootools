@@ -247,17 +247,76 @@ class repository(object):
             
             _logger.info('Source branch: %s.' % project_branch_dir)
             if os.path.isdir(src_branch_dir):
-                _logger.info('Branch at %s alredy exists. Delete it before running the script to recreate.' % src_branch_dir)
+                _logger.warning('Branch at %s alredy exists. Delete it before running the script to recreate.' % src_branch_dir)
             else:
                 if not os.path.isdir('%s/%s' % (src_dir, branch)):
                     os.makedirs('%s/%s' % (src_dir, branch))
                 bzr.bzr_branch(project_branch_dir, src_branch_dir, no_tree=True)
             if os.path.isdir(repo_branch_dir):
-                _logger.info('Branch at %s alredy exists. Delete it before running the script to recreate.' % repo_branch_dir)
+                _logger.warning('Branch at %s alredy exists. Delete it before running the script to recreate.' % repo_branch_dir)
             else:
                 if not os.path.isdir('%s/openerp/%s' % (src_dir, branch)):
                     os.makedirs('%s/openerp/%s' % (src_dir, branch))
                 bzr.bzr_branch(project_branch_dir, repo_branch_dir, no_tree=True)
+        return True
+    
+    def _src_update_project(self, name, ccorp, branches):
+        _logger.info('Updating sources repository for %s, branches: %s.' % (name, branches))
+        
+        src_dir = os.path.abspath(self._repo_dir) + '/openerp-src/src'
+        
+        for branch in branches:
+            _logger.info('Updating branch for %s/%s.' % (name, branch))
+            
+            src_branch_dir = '%s/%s/%s' % (src_dir, branch, name)
+            repo_branch_dir = '%s/openerp/%s/%s' % (src_dir, branch, name)
+            _logger.info('Source branch: %s.' % project_branch_dir)
+            
+            if not os.path.isdir(src_branch_dir):
+                _logger.error('Branch at %s doesn\'t exist. Skipping.' % src_branch_dir)
+            else:
+                bzr.bzr_pull(src_branch_dir)
+            if not os.path.isdir(repo_branch_dir):
+                _logger.error('Branch at %s doesn\'t exist. Skipping.' % repo_branch_dir)
+            else:
+                bzr.bzr_pull(repo_branch_dir)
+        return True
+    
+    def _src_compress_project(self, name, ccorp, branches):
+        import tarfile
+        _logger.info('Compressing sources repository for %s, branches: %s.' % (name, branches))
+        
+        src_dir = os.path.abspath(self._repo_dir) + '/openerp-src/src'
+        bin_dir = os.path.abspath(self._repo_dir) + '/openerp-src/bin'
+        
+        for branch in branches:
+            _logger.info('Compressing branch for %s/%s.' % (name, branch))
+            
+            src_branch_dir = '%s/%s/%s' % (src_dir, branch, name)
+            repo_branch_dir = '%s/openerp/%s/%s' % (src_dir, branch, name)
+            _logger.info('Source branch: %s.' % project_branch_dir)
+            
+            if not os.path.isdir(src_branch_dir):
+                _logger.error('Branch at %s doesn\'t exist. Skipping.' % src_branch_dir)
+            else:
+                tar = tarfile.open('%s/%s/%s.tgz' % (bin_dir, branch, name), "w:gz")
+                tar.add(src_branch_dir, arcname='%s/%s' % (branch, name))
+                tar.close()
+        return True
+    
+    def _src_compress_repo(self):
+        import tarfile
+        _logger.info('Compressing main sources repository.' % (name, branches))
+        
+        src_dir = os.path.abspath(self._repo_dir) + '/openerp-src/src'
+        bin_dir = os.path.abspath(self._repo_dir) + '/openerp-src/bin'
+        
+        if not os.path.isdir('%s/openerp' % src_dir):
+            _logger.error('Repository at %s doesn\'t exist. Exiting.' % src_dir)
+            return False
+        tar = tarfile.open('%s/openerp.tgz' % bin_dir, "w:gz")
+        tar.add('%s/openerp/.bzr' % src_dir, arcname='openerp/.bzr')
+        tar.close()
         return True
     
     def src_make(self):
@@ -275,5 +334,45 @@ class repository(object):
         self._src_branch_project('openerp-costa-rica',    False, ['6.0', '6.1', '7.0', 'trunk'])
         
         self._src_branch_project('banking-addons',        True,  ['5.0', '6.0', '6.1', 'trunk'])
+        
+        self._src_compress_project('openobject-server',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk'])
+        self._src_compress_project('openobject-addons',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk',])
+        self._src_compress_project('openerp-web',           True,  ['6.1', '7.0', 'trunk'])
+        
+        self._src_compress_project('openerp-ccorp-addons',  False, ['5.0', '6.0', '6.1', '7.0', 'trunk'])
+        self._src_compress_project('openerp-costa-rica',    False, ['6.0', '6.1', '7.0', 'trunk'])
+        
+        self._src_compress_project('banking-addons',        True,  ['5.0', '6.0', '6.1', 'trunk'])
+        
+        self._src_compress_repo()
+        
+        return True
+    
+    def src_update(self):
+        bzr.bzr_initialize()
+        _logger.info('Updating OpenERP sources repository.')
+        if not self._repo_exists:
+            _logger.info('Repository doesn\'t exist in: %s. Exiting.' % self._repo_dir)
+            return False
+        
+        self._src_update_project('openobject-server',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk'])
+        self._src_update_project('openobject-addons',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk',])
+        self._src_update_project('openerp-web',           True,  ['6.1', '7.0', 'trunk'])
+        
+        self._src_update_project('openerp-ccorp-addons',  False, ['5.0', '6.0', '6.1', '7.0', 'trunk'])
+        self._src_update_project('openerp-costa-rica',    False, ['6.0', '6.1', '7.0', 'trunk'])
+        
+        self._src_update_project('banking-addons',        True,  ['5.0', '6.0', '6.1', 'trunk'])
+        
+        self._src_compress_project('openobject-server',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk'])
+        self._src_compress_project('openobject-addons',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk',])
+        self._src_compress_project('openerp-web',           True,  ['6.1', '7.0', 'trunk'])
+        
+        self._src_compress_project('openerp-ccorp-addons',  False, ['5.0', '6.0', '6.1', '7.0', 'trunk'])
+        self._src_compress_project('openerp-costa-rica',    False, ['6.0', '6.1', '7.0', 'trunk'])
+        
+        self._src_compress_project('banking-addons',        True,  ['5.0', '6.0', '6.1', 'trunk'])
+        
+        self._src_compress_repo()
         
         return True
