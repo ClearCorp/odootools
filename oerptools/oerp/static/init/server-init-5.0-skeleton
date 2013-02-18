@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ### BEGIN INIT INFO
-# Provides:				openerp-server-[NAME]
+# Provides:				openerp-server-@NAME@
 # Required-Start:		$syslog
 # Required-Stop:		$syslog
 # Should-Start:			$network
@@ -12,14 +12,14 @@
 # Description:			OpenERP is a complete ERP and CRM software.
 ### END INIT INFO
 
-SERVERNAME=[NAME]
-BASE_PATH=[PATH]
+SERVERNAME=@NAME@
+BASE_PATH=@PATH@
+USER=@USER@
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin
 DAEMON=${BASE_PATH}/bin/openerp-server-${SERVERNAME}
 NAME=openerp-server-${SERVERNAME}
 DESC="OpenERP server"
-USER=[USER]
 PIDDIR=/var/run/openerp
 PIDFILE=${PIDDIR}/${SERVERNAME}/server.pid
 CONFIGFILE=/etc/openerp/5.0/server/${SERVERNAME}.conf
@@ -47,7 +47,7 @@ PROCNAME=${PROCNAME:0:15}
 
 if [ ! -d $PIDDIR/$SERVERNAME ]; then
 	mkdir -p $PIDDIR/$SERVERNAME
-	chown -R openerp:openerp $PIDDIR
+	chown -R ${USER}:openerp $PIDDIR
 fi
 
 check_process() {
@@ -68,7 +68,7 @@ check_process() {
 
 do_start() {
 	mkdir -p /var/run/openerp/${SERVERNAME}
-	chown -R openerp:openerp /var/run/openerp/${SERVERNAME}
+	chown -R ${USER}:openerp /var/run/openerp/${SERVERNAME}
 	chmod g+w /var/run/openerp/${SERVERNAME}
 	
 	start-stop-daemon --start --quiet  --background \

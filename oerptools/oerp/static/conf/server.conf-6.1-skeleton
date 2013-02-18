@@ -6,20 +6,20 @@
 ########################################################################
 
 # (char) The file where the server pid will be stored (default False).
-pidfile = /var/run/openerp/[NAME]/server.pid
+pidfile = /var/run/openerp/@NAME@/server.pid
 
 # (char) Specify the path of the OpenERP server (default None).
 #root_path = 
 
 # (char) Specify additional addons paths (separated by commas)
 # (default None).
-addons_path = [ADDONS]
+addons_path = @ADDONS@
 
 # (char) Comma-separated list of server-wide modules (default web).
 #server_wide_modules = web
 
 # (char) Specify the path of the OpenERP server filestore (default None).
-filestore = /srv/openerp/[BRANCH]/instances/[NAME]/filestore
+filestore = /srv/openerp/@BRANCH@/instances/@NAME@/filestore
 
 # (bool) Stop the server after it initializes (default False).
 #stop_after_init = False
@@ -106,7 +106,7 @@ publisher_warranty_url = http://clearcorp.co.cr
 xmlrpc = True
 
 # (int) Specify the TCP port for the XML-RPC protocol (default 8069).
-xmlrpc_port = 20[PORT]
+xmlrpc_port = 20@PORT@
 
 # (char) Specify the TCP IP address for the XML-RPC protocol
 # (default blank).
@@ -121,7 +121,7 @@ proxy_mode = True
 netrpc = True
 
 # (int) Specify the TCP port for the NET-RPC protocol (default 8070).
-netrpc_port = 21[PORT]
+netrpc_port = 21@PORT@
 
 # (char) Specify the TCP IP address for the NET-RPC protocol
 # (default blank).
@@ -134,7 +134,7 @@ netrpc_interface = localhost
 
 # (int) Specify the TCP port for the XML-RPC secure protocol
 # (default 8071).
-#xmlrpcs_port = 22[PORT]
+#xmlrpcs_port = 22@PORT@
 
 # (char) Specify the TCP IP address for the XML-RPC secure protocol
 # (default blank).
@@ -142,11 +142,11 @@ netrpc_interface = localhost
 
 # (char) Specify the certificate file for the SSL connection
 # (default server.cert).
-#secure_cert_file = /etc/openerp/ssl/servers/[NAME]_crt.pem
+#secure_cert_file = /etc/openerp/ssl/servers/@NAME@_crt.pem
 
 # (char) Specify the private key file for the SSL connection
 # (default server.key).
-#secure_pkey_file = /etc/openerp/ssl/servers/[NAME]_key.pem
+#secure_pkey_file = /etc/openerp/ssl/servers/@NAME@_key.pem
 
 # (char) Specify the host for the FTP DMS server (default localhost).
 ftp_server_host = 0.0.0.0
@@ -156,16 +156,16 @@ ftp_server_host = 0.0.0.0
 ftp_server_passive_ports = 30000:31000
 
 # (int) Specify the TCP port for the FTP DMS server (default 8021).
-ftp_server_port = 24[PORT]
+ftp_server_port = 24@PORT@
 
 # (int) Specify the TCP port for the Pyro protocol (no default).
-pyroport = 25[PORT]
+pyroport = 25@PORT@
 
 # LOGGING
 ########################################################################
 
 # (char) The file where the server log will be stored (default None).
-logfile = /var/log/openerp/[NAME]/server.log
+logfile = /var/log/openerp/@NAME@/server.log
 
 # (bool) Rotate the log file (default True).
 #logrotate = True
@@ -177,7 +177,7 @@ logfile = /var/log/openerp/[NAME]/server.log
 # openerp.netsvc.rpc.response:DEBUG
 # openerp.addons.web.common.http:DEBUG
 # openerp.sql_db:DEBUG
-#log_handler = [':INFO']
+log_handler = :INFO,werkzeug:CRITICAL
 
 # (bool) Enable debug mode (default False).
 #debug_mode = False

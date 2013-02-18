@@ -590,6 +590,10 @@ class oerpServer(object):
         self.change_perms(user)
         
         self._download_openerp_lp_branch(branch, repo_downloaded, 'openobject-server', 'openobject-server', '%s-ccorp' % branch)
+        if branch in ('5.0', '6.0'):
+            self._download_openerp_lp_branch(branch, repo_downloaded, 'openobject-client-web', 'openobject-client-web', '%s-ccorp' % branch)
+        else:
+            self._download_openerp_lp_branch(branch, repo_downloaded, 'openerp-web', 'openerp-web', '%s-ccorp' % branch)
         if 'openobject-addons' in modules_to_install and modules_to_install['openobject-addons']:
             self._download_openerp_lp_branch(branch, repo_downloaded, 'openobject-addons', 'openobject-addons', '%s-ccorp' % branch)
         if 'openerp-ccorp-addons' in modules_to_install and modules_to_install['openerp-ccorp-addons']:
@@ -597,6 +601,45 @@ class oerpServer(object):
         if 'openerp-costa-rica' in modules_to_install and modules_to_install['openerp-costa-rica']:
             self._download_other_lp_branch(branch, 'openerp-costa-rica', 'openerp-costa-rica', '%s' % branch)
         self.change_perms(user)
+        return True
+    
+    def _config_openerp_version(self, branch, installation_type, user):
+        _logger.info('Configuring OpenERP %s' % branch)
+        
+        # OpenERP Server bin
+        _logger.debug('Copy bin script skeleton to /etc')
+        if tools.exec_command('mkdir -p /etc/openerp/%s/server/' % branch, as_root=True)
+            _logger.error('Failed to make /etc/openerp/%s/server/ directory. Exiting.' % branch)
+            return False
+        if tools.exec_command('cp %s/oerptools/oerp/static/bin/server-bin-%s-skeleton /etc/openerp/%s/server/bin-skeleton' % (config.params['oerptools-path'], branch, branch), as_root=True)
+            _logger.error('Failed to copy bin skeleton. Exiting.')
+            return False
+        if tools.exec_command('sed -i "s#@BRANCH@#%s#g" /etc/openerp/%s/server/bin-skeleton' % (branch, branch), as_root=True)
+            _logger.error('Failed to config bin skeleton. Exiting.')
+            return False
+        
+        # OpenERP Server init
+        if tools.exec_command('cp %s/oerptools/oerp/static/init/server-init-%s-skeleton /etc/openerp/%s/server/init-skeleton' % (config.params['oerptools-path'], branch, branch), as_root=True)
+            _logger.error('Failed to copy init skeleton. Exiting.')
+            return False
+        if tools.exec_command('sed -i "s#@PATH@#/usr/local#g" /etc/openerp/%s/server/init-skeleton' % branch, as_root=True)
+            _logger.error('Failed to config init skeleton. Exiting.')
+            return False
+        if tools.exec_command('sed -i "s#@USER@#%s#g" /etc/openerp/%s/server/init-skeleton' % (user, branch), as_root=True)
+            _logger.error('Failed to config init skeleton. Exiting.')
+            return False
+        # OpenERP Server config
+        if tools.exec_command('cp %s/oerptools/oerp/static/conf/server.conf-%s-skeleton /etc/openerp/%s/server/conf-skeleton' % (config.params['oerptools-path'], branch, branch), as_root=True)
+            _logger.error('Failed to copy conf skeleton. Exiting.')
+            return False
+        if tools.exec_command('sed -i "s#@BRANCH@#%s#g" /etc/openerp/%s/server/conf-skeleton' % (branch, branch), as_root=True)
+            _logger.error('Failed to config init skeleton. Exiting.')
+            return False
+        
+        if tools.exec_command('mkdir -p /var/run/openerp', as_root=True)
+            _logger.error('Failed to create /var/run/openerp. Exiting.')
+            return False
+        
         return True
     
     def install(self):
@@ -800,6 +843,10 @@ class oerpServer(object):
             'openerp-costa-rica': install_openerp_costa_rica,
         }
         self._download_openerp(branch, modules_to_install, user)
+        
+        self._config_openerp_version(branch, installation_type, user)
+        
+        self.change_perms(user)
         
         return True
 

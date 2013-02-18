@@ -342,7 +342,6 @@ function download_openerp {
     fi
 }
 
-################DONE################
 function install_openerp_server {
     # Install OpenERP server
     log_echo "Installing OpenERP Server..."
@@ -418,6 +417,7 @@ function download_openerp_web {
     fi
 }
 
+################DONE################
 function install_openerp_web_client {
     # Install OpenERP Web client
     log_echo "Installing OpenERP Web client..."

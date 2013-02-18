@@ -2,23 +2,23 @@
 
 [options]
 # The file where the server log will be stored (default False).
-logfile = /var/log/openerp/[NAME]/server.log
-log_level = [LOGLEVEL]
+logfile = /var/log/openerp/@NAME@/server.log
+log_level = INFO
 
 # Enable the debugging mode (default False).
-verbose = [DEBUGMODE]
+verbose = False
 
 # The file where the server pid will be stored (default False).
-pidfile = /var/run/openerp/[NAME]/server.pid
+pidfile = /var/run/openerp/@NAME@/server.pid
 
 # The IP address on which the server will bind.
 # If empty, it will bind on all interfaces (default empty).
 #interface = localhost
 interface = 
 # The TCP port on which the server will listen (default 8069).
-port = [XMLPORT]
-netport = [NETPORT]
-pyroport = [PYROPORT]
+port = @XMLPORT@
+netport = @NETPORT@
+pyroport = @PYROPORT@
 
 # Enable debug mode (default False).
 debug_mode = True 
@@ -61,7 +61,7 @@ db_user = [DB_USER]
 # This is the password that allows database operations:
 admin_passwd = [ADMIN_PASSWD]
 
-addons_path = /srv/openerp/[BRANCH]/instances/[NAME]/addons
+addons_path = /srv/openerp/@BRANCH@/instances/@NAME@/addons
 
 
 #~ without_demo = True
