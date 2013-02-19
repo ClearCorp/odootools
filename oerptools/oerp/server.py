@@ -29,8 +29,31 @@ import os, datetime, pwd, grp, getpass, re, tempfile
 from oerptools.lib import config, bzr, tools
 
 class oerpServer(object):
+    def __init__(self):
+        self._os_info = tools.get_os()
+        #Old Ubuntu versions have a suffix in postgresql init script
+        self._postgresql_init_suffix = ''
+        self._postgresql_version = ''
+        if self._os_info['os'] == 'Linux' and self._os_info['version'][0] == 'Ubuntu':
+            if self._os_info['version'][1] in ('10.04','10.10'):
+                self._postgresql_init_suffix = '-8.4'
+            if self._os_info['version'][1] < '11.10':
+                self._postgresql_version = '8.4'
+            else:
+                self._postgresql_version = '9.1'
+        
+        self._branch = config.params['branch'] or '7.0'
+        self._installation_type = config.params[self._branch+'_installation_type'] or config.params['installation_type'] or'dev'
+        self._user = config.params[self._branch+'_user'] or config.params['user'] or None
+        self._install_openobject_addons = config.params[self._branch+'_install_openobject_addons'] or config.params['install_openobject_addons'] or True
+        self._install_openerp_ccorp_addons = config.params[self._branch+'_install_openerp_ccorp_addons'] or config.params['install_openerp_ccorp_addons'] or True
+        self._install_openerp_costa_rica = config.params[self._branch+'_install_openerp_costa_rica'] or config.params['install_openerp_costa_rica'] or True
+        self._update_postgres_hba = config.params[self._branch+'_update_postgres_hba'] or config.params['update_postgres_hba'] or True
+        self._admin_password = config.params[self._branch+'_admin_password'] or config.params['admin_password'] or None
+        self._postgresql_password = config.params[self._branch+'_postgresql_password'] or config.params['postgresql_password'] or None
+        return super(oerpServer, self).__init__()
     
-    def _add_openerp_user(self, user):
+    def _add_openerp_user(self):
         try:
             group = grp.getgrnam('openerp')
         except:
@@ -41,13 +64,13 @@ class oerpServer(object):
             _logger.debug('openerp group already exists.')
         
         try:
-            pw = pwd.getpwnam(user)
+            pw = pwd.getpwnam(self._user)
         except:
-            _logger.info('Creating user: (%s)' % user)
-            tools.exec_command('adduser --system --home /var/run/openerp --no-create-home --ingroup openerp %s' % user, as_root=True)
+            _logger.info('Creating user: (%s)' % self._user)
+            tools.exec_command('adduser --system --home /var/run/openerp --no-create-home --ingroup openerp %s' % self._user, as_root=True)
         else:
-            _logger.info('User %s already exists, adding to openerp group.' % user)
-            tools.exec_command('adduser %s openerp' % user, as_root=True)
+            _logger.info('User %s already exists, adding to openerp group.' % self._user)
+            tools.exec_command('adduser %s openerp' % self._user, as_root=True)
         
         return True
     
@@ -153,7 +176,7 @@ class oerpServer(object):
         else:
             return False
     
-    def _install_python_libs(self, branch, os_version):
+    def _install_python_libs(self):
         _logger.info('Installing the required packages and python libraries for OpenERP.')
         
         packages = []
@@ -163,7 +186,7 @@ class oerpServer(object):
         packages.append('wget')
 
         # Packages for 5.0
-        if branch == '5.0':
+        if self._branch == '5.0':
             packages += [
                 # Server
                 # Dependencies
@@ -199,7 +222,7 @@ class oerpServer(object):
             ]
         
         # Packages for 6.0
-        if branch == '6.0':
+        if self._branch == '6.0':
             packages += [
                 # Server
                 # Dependencies
@@ -235,7 +258,7 @@ class oerpServer(object):
             ]
         
         # Packages for 6.1
-        if branch == '6.1':
+        if self._branch == '6.1':
             packages += [
                 # Server
                 # Dependencies
@@ -278,7 +301,7 @@ class oerpServer(object):
             ]
         
         # Packages for 7.0
-        if branch == '7.0' or branch == 'trunk':
+        if self._branch == '7.0' or self._branch == 'trunk':
             packages += [
                 # Dependencies
                 'python-dateutil',
@@ -318,15 +341,15 @@ class oerpServer(object):
             ]
         
         # Test distro and call appropriate function
-        if os_version and os_version['os'] == 'Linux':
-            if os_version['version'][0] == 'Ubuntu':
-                return self._ubuntu_install_python_libs(branch, packages)
-            elif os_version['version'][0] == 'arch':
-                return self._arch_install_python_libs(branch, packages)
-        _logger.error('Can\'t install python libraries in this OS: %s. Exiting.' % os_version['version'][0])
+        if self._os_info and self._os_info['os'] == 'Linux':
+            if self._os_info['version'][0] == 'Ubuntu':
+                return self._ubuntu_install_python_libs(packages)
+            elif self._os_info['version'][0] == 'arch':
+                return self._arch_install_python_libs(packages)
+        _logger.error('Can\'t install python libraries in this OS: %s. Exiting.' % self._os_info['version'][0])
         return False
     
-    def _ubuntu_install_python_libs(self, branch, packages):
+    def _ubuntu_install_python_libs(self, packages):
         #Initialize packages match
         distro_match_packages = self.get_packages_distro_match('ubuntu')
         
@@ -345,7 +368,7 @@ class oerpServer(object):
         # Install packages
         return tools.ubuntu_install_package(distro_packages)
     
-    def _arch_install_python_libs(self, branch, packages):
+    def _arch_install_python_libs(self, packages):
         #Initialize packages match
         distro_match_packages = get_packages_distro_match('arch')
         
@@ -384,15 +407,15 @@ class oerpServer(object):
         
         return not error
     
-    def _install_postgresql(self, os_version):
+    def _install_postgresql(self):
         _logger.info('Installing PostgreSQL.')
         # Test distro and call appropriate function
-        if os_version and os_version['os'] == 'Linux':
-            if os_version['version'][0] == 'Ubuntu':
+        if self._os_info and self._os_info['os'] == 'Linux':
+            if self._os_info['version'][0] == 'Ubuntu':
                 return self._ubuntu_install_postgresql()
-            elif os_version['version'][0] == 'arch':
+            elif self._os_info['version'][0] == 'arch':
                 return self._arch_install_postgresql()
-        _logger.error('Can\'t install python libraries in this OS: %s. Exiting.' % os_version['version'][0])
+        _logger.error('Can\'t install python libraries in this OS: %s. Exiting.' % self._os_info['version'][0])
         return False
     
     def _ubuntu_install_postgresql(self):
@@ -427,72 +450,72 @@ class oerpServer(object):
             return False
         return True
     
-    def _update_postgres_hba(self, os_version, postgresql_version, postgresql_init_suffix):
+    def _do_update_postgres_hba(self):
         _logger.info('Updating PostgreSQL pg_hba.conf file.')
         # Test distro and call appropriate function
-        if os_version and os_version['os'] == 'Linux':
-            if os_version['version'][0] == 'Ubuntu':
-                return self._ubuntu_update_postgres_hba(postgresql_version, postgresql_init_suffix)
-            elif os_version['version'][0] == 'arch':
-                return self._arch_update_postgres_hba()
-        _logger.error('Can\'t update PostgreSQL pg_hba.conf in this OS: %s. Exiting.' % os_version['version'][0])
+        if self._os_info and self._os_info['os'] == 'Linux':
+            if self._os_info['version'][0] == 'Ubuntu':
+                return self._ubuntu_do_update_postgres_hba()
+            elif self._os_info['version'][0] == 'arch':
+                return self._arch_do_update_postgres_hba()
+        _logger.error('Can\'t update PostgreSQL pg_hba.conf in this OS: %s. Exiting.' % self._os_info['version'][0])
         return False
     
-    def _ubuntu_update_postgres_hba(self, postgresql_version, postgresql_init_suffix):
+    def _ubuntu_do_update_postgres_hba(self):
         #TODO: change sed command with python lib to do the change (be carefull with the user perms)
-        if tools.exec_command("sed -i 's/\(local[[:space:]]*all[[:space:]]*all[[:space:]]*\)\(ident[[:space:]]*sameuser\)/\1md5/g' /etc/postgresql/%s/main/pg_hba.conf" % postgresql_version, as_root=True):
+        if tools.exec_command("sed -i 's/\(local[[:space:]]*all[[:space:]]*all[[:space:]]*\)\(ident[[:space:]]*sameuser\)/\1md5/g' /etc/postgresql/%s/main/pg_hba.conf" % self._postgresql_version, as_root=True):
             _logger.error('Failed to set PostgreSQL pg_hba.conf file. Exiting.')
             return False
-        if tools.exec_command('/etc/init.d/postgresql%s restart' % postgresql_init_suffix, as_root=True):
+        if tools.exec_command('/etc/init.d/postgresql%s restart' % self._postgresql_init_suffix, as_root=True):
             _logger.error('Failed to start PostgreSQL. Exiting.')
             return False
         return True
     
-    def _arch_update_postgres_hba(self):
+    def _arch_do_update_postgres_hba(self):
         #TODO: change sed command with python lib to do the change (be carefull with the user perms)
-        #if tools.exec_command("sed -i 's/\(local[[:space:]]*all[[:space:]]*all[[:space:]]*\)\(ident[[:space:]]*sameuser\)/\1md5/g' /etc/postgresql/%s/main/pg_hba.conf" % postgresql_version, as_root=True):
+        #if tools.exec_command("sed -i 's/\(local[[:space:]]*all[[:space:]]*all[[:space:]]*\)\(ident[[:space:]]*sameuser\)/\1md5/g' /etc/postgresql/%s/main/pg_hba.conf" % self._postgresql_version, as_root=True):
         #    _logger.error('Failed to set PostgreSQL pg_hba.conf file. Exiting.')
         #    return False
-        #if tools.exec_command('/etc/init.d/postgresql%s restart' % postgresql_init_suffix, as_root=True)
+        #if tools.exec_command('/etc/init.d/postgresql%s restart' % self._postgresql_init_suffix, as_root=True)
         #    _logger.error('Failed to start PostgreSQL. Exiting.')
         #    return False
         return True
     
-    def _add_postgresql_user(self, user, password):
-        _logger.info('Adding PostgreSQL user: %s.' % user)
-        if tools.exec_command('sudo -u postgres createuser %s --superuser --createdb --no-createrole' % user):
+    def _add_postgresql_user(self):
+        _logger.info('Adding PostgreSQL user: %s.' % self._user)
+        if tools.exec_command('sudo -u postgres createuser %s --superuser --createdb --no-createrole' % self._user):
             _logger.error('Failed to add PostgreSQL user. Exiting.')
             return False
-        if tools.exec_command('sudo -u postgres psql template1 -U postgres -c "alter user \\"%s\\" with password \'%s\'"' % (user, password)):
+        if tools.exec_command('sudo -u postgres psql template1 -U postgres -c "alter user \\"%s\\" with password \'%s\'"' % (self._user, self._admin_password)):
             _logger.error('Failed to set PostgreSQL user password. Exiting.')
             return False
         return True
     
-    def _change_postgresql_admin_password(self, password):
+    def _change_postgresql_admin_password(self):
         _logger.info('Changing PostgreSQL admin password.')
-        if tools.exec_command('sudo -u postgres psql template1 -U postgres -c "alter user postgres with password \'%s\'"' % password):
+        if tools.exec_command('sudo -u postgres psql template1 -U postgres -c "alter user postgres with password \'%s\'"' % self._postgresql_password):
             _logger.error('Failed to set PostgreSQL admin password. Exiting.')
             return False
         return True
     
-    def change_perms(self, user):
+    def change_perms(self):
         if os.path.isdir('/srv/openerp'):
-            if tools.exec_command('chown -R %s:openerp /srv/openerp' % user, as_root=True):
+            if tools.exec_command('chown -R %s:openerp /srv/openerp' % self._user, as_root=True):
                 _logger.warning('Failed to set /srv/openerp owner. Skipping.')
             if tools.exec_command('chmod -R g+w /srv/openerp', as_root=True):
                 _logger.warning('Failed to set /srv/openerp perms. Skipping.')
         if os.path.isdir('/var/log/openerp'):
-            if tools.exec_command('chown -R %s:openerp /var/log/openerp' % user, as_root=True):
+            if tools.exec_command('chown -R %s:openerp /var/log/openerp' % self._user, as_root=True):
                 _logger.warning('Failed to set /var/log/openerp owner. Skipping.')
             if tools.exec_command('chmod -R g+w /var/log/openerp', as_root=True):
                 _logger.warning('Failed to set /var/log/openerp perms. Skipping.')
         if os.path.isdir('/var/run/openerp'):
-            if tools.exec_command('chown -R %s:openerp /var/run/openerp' % user, as_root=True):
+            if tools.exec_command('chown -R %s:openerp /var/run/openerp' % self._user, as_root=True):
                 _logger.warning('Failed to set /var/run/openerp owner. Skipping.')
             if tools.exec_command('chmod -R g+w /var/run/openerp', as_root=True):
                 _logger.warning('Failed to set /var/run/openerp perms. Skipping.')
         if os.path.isdir('/etc/openerp'):
-            if tools.exec_command('chown -R %s:openerp /etc/openerp' % user, as_root=True):
+            if tools.exec_command('chown -R %s:openerp /etc/openerp' % self._user, as_root=True):
                 _logger.warning('Failed to set /etc/openerp owner. Skipping.')
         
         #TODO: set instances addons dirs as executable, (really necessary?)
@@ -535,137 +558,147 @@ class oerpServer(object):
         os.chdir(cwd)
         return True
     
-    def _download_openerp_lp_branch(self, branch, repo_downloaded, name, lp_project, lp_branch):
+    def _download_openerp_lp_branch(self, repo_downloaded, name, lp_project, lp_branch):
         bzr.bzr_initialize()
-        _logger.info('Downloading %s latest %s release.' % (name, branch))
+        _logger.info('Downloading %s latest %s release.' % (name, self._branch))
         
-        if tools.exec_command('mkdir -p /srv/openerp/%s/src' % branch):
+        if tools.exec_command('mkdir -p /srv/openerp/%s/src' % self._branch):
             _logger.error('Failed to make branch directory. Exiting.')
             return False
         
-        if os.path.exists('/srv/openerp/%s/src/%s' % (branch, name)):
-            _logger.info('%s/%s exists. Updating.' % (name, branch))
-            bzr.bzr_pull('/srv/openerp/%s/src/%s' % (branch, name))
+        if os.path.exists('/srv/openerp/%s/src/%s' % (self._branch, name)):
+            _logger.info('%s/%s exists. Updating.' % (name, self._branch))
+            bzr.bzr_pull('/srv/openerp/%s/src/%s' % (self._branch, name))
         elif repo_downloaded and name in ('openobject-server', 'openerp-web', 'openobject-addons'):
-            bzr.bzr_branch('lp:~clearcorp-drivers/%s/%s' % (lp_project, lp_branch), '/srv/openerp/%s/src/%s' % (branch, name))
+            bzr.bzr_branch('lp:~clearcorp-drivers/%s/%s' % (lp_project, lp_branch), '/srv/openerp/%s/src/%s' % (self._branch, name))
         else:
             cwd = os.getcwd()
-            if tools.exec_command('mkdir -p /usr/local/src/oerptools/oerp/%s' % branch, as_root=True):
+            if tools.exec_command('mkdir -p /usr/local/src/oerptools/oerp/%s' % self._branch, as_root=True):
                 _logger.error('Failed to make branch download directory. Exiting.')
                 return False
-            if not os.path.exists('/usr/local/src/oerptools/oerp/%s/%s.tgz' % (branch, name)):
-                if tools.exec_command('wget http://code.clearcorp.co.cr/bzr/openerp/openerp-src/bin/%s/%s.tgz' % (branch, name), as_root=True):
+            if not os.path.exists('/usr/local/src/oerptools/oerp/%s/%s.tgz' % (self._branch, name)):
+                if tools.exec_command('wget http://code.clearcorp.co.cr/bzr/openerp/openerp-src/bin/%s/%s.tgz' % (self._branch, name), as_root=True):
                     _logger.error('Failed to download branch. Exiting.')
                     return False
             os.chdir('/usr/local/src/oerptools/oerp')
-            if tools.exec_command('tar xzf %s/%s.tgz' % (branch, name), as_root=True):
+            if tools.exec_command('tar xzf %s/%s.tgz' % (self._branch, name), as_root=True):
                 _logger.error('Failed to extract branch. Exiting.')
                 return False
-            bzr.bzr_branch('/usr/local/src/oerptools/oerp/%s' % branch, '/srv/openerp/%s/src/%s' % (branch, name))
-            bzr.bzr_set_parent('/srv/openerp/%s/src/%s' % (branch, name), 'http://bazaar.launchpad.net/~clearcorp-drivers/%s/%s' % (lp_project, lp_branch))
-            bzr.bzr_pull('/srv/openerp/%s/src/%s' % (branch, name))
+            bzr.bzr_branch('/usr/local/src/oerptools/oerp/%s' % self._branch, '/srv/openerp/%s/src/%s' % (self._branch, name))
+            bzr.bzr_set_parent('/srv/openerp/%s/src/%s' % (self._branch, name), 'http://bazaar.launchpad.net/~clearcorp-drivers/%s/%s' % (lp_project, lp_branch))
+            bzr.bzr_pull('/srv/openerp/%s/src/%s' % (self._branch, name))
         return True
     
-    def _download_other_lp_branch(self, branch, name, lp_project, lp_branch):
+    def _download_other_lp_branch(self, name, lp_project, lp_branch):
         bzr.bzr_initialize()
-        _logger.info('Downloading %s latest %s release.' % (name, branch))
-        if tools.exec_command('mkdir -p /srv/openerp/%s/src' % branch):
+        _logger.info('Downloading %s latest %s release.' % (name, self._branch))
+        if tools.exec_command('mkdir -p /srv/openerp/%s/src' % self._branch):
             _logger.error('Failed to make branch directory. Exiting.')
             return False
-        if os.path.exists('/srv/openerp/%s/src/%s' % (branch, name)):
-            _logger.info('%s/%s exists. Updating.' % (name, branch))
-            bzr.bzr_pull('/srv/openerp/%s/src/%s' % (branch, name))
+        if os.path.exists('/srv/openerp/%s/src/%s' % (self._branch, name)):
+            _logger.info('%s/%s exists. Updating.' % (name, self._branch))
+            bzr.bzr_pull('/srv/openerp/%s/src/%s' % (self._branch, name))
         else:
-            bzr.bzr_branch('lp:%s/%s' % (lp_project, lp_branch), '/srv/openerp/%s/src/%s' % (branch, name))
+            bzr.bzr_branch('lp:%s/%s' % (lp_project, lp_branch), '/srv/openerp/%s/src/%s' % (self._branch, name))
         return True
     
-    def _download_openerp(self, branch, modules_to_install, user):
-        _logger.info('Downloading latest OpenERP %s release.' % branch)
+    def _download_openerp(self, modules_to_install):
+        _logger.info('Downloading latest OpenERP %s release.' % self._branch)
         if os.path.isdir('/srv/openerp'):
             _logger.info('OpenERP repo already exists.')
             repo_downloaded = True
         else:
             repo_downloaded = self._download_openerp_repo()
         
-        self.change_perms(user)
+        self.change_perms()
         
-        self._download_openerp_lp_branch(branch, repo_downloaded, 'openobject-server', 'openobject-server', '%s-ccorp' % branch)
-        if branch in ('5.0', '6.0'):
-            self._download_openerp_lp_branch(branch, repo_downloaded, 'openobject-client-web', 'openobject-client-web', '%s-ccorp' % branch)
+        self._download_openerp_lp_branch(repo_downloaded, 'openobject-server', 'openobject-server', '%s-ccorp' % self._branch)
+        if self._branch in ('5.0', '6.0'):
+            self._download_openerp_lp_branch(repo_downloaded, 'openobject-client-web', 'openobject-client-web', '%s-ccorp' % self._branch)
         else:
-            self._download_openerp_lp_branch(branch, repo_downloaded, 'openerp-web', 'openerp-web', '%s-ccorp' % branch)
+            self._download_openerp_lp_branch(repo_downloaded, 'openerp-web', 'openerp-web', '%s-ccorp' % self._branch)
         if 'openobject-addons' in modules_to_install and modules_to_install['openobject-addons']:
-            self._download_openerp_lp_branch(branch, repo_downloaded, 'openobject-addons', 'openobject-addons', '%s-ccorp' % branch)
+            self._download_openerp_lp_branch(repo_downloaded, 'openobject-addons', 'openobject-addons', '%s-ccorp' % self._branch)
         if 'openerp-ccorp-addons' in modules_to_install and modules_to_install['openerp-ccorp-addons']:
-            self._download_other_lp_branch(branch, 'openerp-ccorp-addons', 'openerp-ccorp-addons', '%s' % branch)
+            self._download_other_lp_branch('openerp-ccorp-addons', 'openerp-ccorp-addons', '%s' % self._branch)
         if 'openerp-costa-rica' in modules_to_install and modules_to_install['openerp-costa-rica']:
-            self._download_other_lp_branch(branch, 'openerp-costa-rica', 'openerp-costa-rica', '%s' % branch)
-        self.change_perms(user)
+            self._download_other_lp_branch('openerp-costa-rica', 'openerp-costa-rica', '%s' % self._branch)
+        self.change_perms()
         return True
     
-    def _config_openerp_version(self, branch, installation_type, user):
-        _logger.info('Configuring OpenERP %s' % branch)
+    def _config_openerp_version(self):
+        _logger.info('Configuring OpenERP %s' % self._branch)
+        cwd = os.getcwd()
         
         # OpenERP Server bin
         _logger.debug('Copy bin script skeleton to /etc')
-        if tools.exec_command('mkdir -p /etc/openerp/%s/server/' % branch, as_root=True)
-            _logger.error('Failed to make /etc/openerp/%s/server/ directory. Exiting.' % branch)
+        if tools.exec_command('mkdir -p /etc/openerp/%s/server/' % self._branch, as_root=True):
+            _logger.error('Failed to make /etc/openerp/%s/server/ directory. Exiting.' % self._branch)
             return False
-        if tools.exec_command('cp %s/oerptools/oerp/static/bin/server-bin-%s-skeleton /etc/openerp/%s/server/bin-skeleton' % (config.params['oerptools-path'], branch, branch), as_root=True)
+        if tools.exec_command('cp %s/oerptools/oerp/static/bin/server-bin-%s-skeleton /etc/openerp/%s/server/bin-skeleton' % (config.params['oerptools_path'], self._branch, self._branch), as_root=True):
             _logger.error('Failed to copy bin skeleton. Exiting.')
             return False
-        if tools.exec_command('sed -i "s#@BRANCH@#%s#g" /etc/openerp/%s/server/bin-skeleton' % (branch, branch), as_root=True)
+        if tools.exec_command('sed -i "s#@BRANCH@#%s#g" /etc/openerp/%s/server/bin-skeleton' % (self._branch, self._branch), as_root=True):
             _logger.error('Failed to config bin skeleton. Exiting.')
             return False
         
         # OpenERP Server init
-        if tools.exec_command('cp %s/oerptools/oerp/static/init/server-init-%s-skeleton /etc/openerp/%s/server/init-skeleton' % (config.params['oerptools-path'], branch, branch), as_root=True)
+        if tools.exec_command('cp %s/oerptools/oerp/static/init/server-init-%s-skeleton /etc/openerp/%s/server/init-skeleton' % (config.params['oerptools_path'], self._branch, self._branch), as_root=True):
             _logger.error('Failed to copy init skeleton. Exiting.')
             return False
-        if tools.exec_command('sed -i "s#@PATH@#/usr/local#g" /etc/openerp/%s/server/init-skeleton' % branch, as_root=True)
+        if tools.exec_command('sed -i "s#@PATH@#/usr/local#g" /etc/openerp/%s/server/init-skeleton' % self._branch, as_root=True):
             _logger.error('Failed to config init skeleton. Exiting.')
             return False
-        if tools.exec_command('sed -i "s#@USER@#%s#g" /etc/openerp/%s/server/init-skeleton' % (user, branch), as_root=True)
+        if tools.exec_command('sed -i "s#@USER@#%s#g" /etc/openerp/%s/server/init-skeleton' % (self._user, self._branch), as_root=True):
             _logger.error('Failed to config init skeleton. Exiting.')
             return False
         # OpenERP Server config
-        if tools.exec_command('cp %s/oerptools/oerp/static/conf/server.conf-%s-skeleton /etc/openerp/%s/server/conf-skeleton' % (config.params['oerptools-path'], branch, branch), as_root=True)
+        if tools.exec_command('cp %s/oerptools/oerp/static/conf/server.conf-%s-skeleton /etc/openerp/%s/server/conf-skeleton' % (config.params['oerptools_path'], self._branch, self._branch), as_root=True):
             _logger.error('Failed to copy conf skeleton. Exiting.')
             return False
-        if tools.exec_command('sed -i "s#@BRANCH@#%s#g" /etc/openerp/%s/server/conf-skeleton' % (branch, branch), as_root=True)
+        if tools.exec_command('sed -i "s#@BRANCH@#%s#g" /etc/openerp/%s/server/conf-skeleton' % (self._branch, self._branch), as_root=True):
             _logger.error('Failed to config init skeleton. Exiting.')
             return False
         
-        if tools.exec_command('mkdir -p /var/run/openerp', as_root=True)
+        if tools.exec_command('mkdir -p /var/run/openerp', as_root=True):
             _logger.error('Failed to create /var/run/openerp. Exiting.')
             return False
         
+        if self._branch in ('5.0', '6.0'):
+            # Make SSL certificates
+            if tools.exec_command('mkdir -p /etc/openerp/ssl/private', as_root=True):
+                _logger.error('Failed to create /etc/openerp/ssl/private. Exiting.')
+                return False
+            if tools.exec_command('mkdir -p /etc/openerp/ssl/signedcerts', as_root=True):
+                _logger.error('Failed to create /etc/openerp/ssl/signedcerts. Exiting.')
+                return False
+            if tools.exec_command('mkdir -p /etc/openerp/ssl/servers', as_root=True):
+                _logger.error('Failed to create /etc/openerp/ssl/servers. Exiting.')
+                return False
+            
+            os.chdir('/etc/openerp/ssl')
+            
+            if tools.exec_command("echo '01' > serial  && touch index.txt", as_root=True):
+                _logger.error('Failed to create SSL serial and index. Exiting.')
+                return False
+            if tools.exec_command('cp %s/oerptools/oerp/static/ssl/ca.cnf /etc/openerp/ssl/ca.cnf' % config.params['oerptools_path'], as_root=True):
+                _logger.error('Failed to copy ca.cnf. Exiting.')
+                return False
+            if tools.exec_command('cp %s/oerptools/oerp/static/ssl/server.cnf /etc/openerp/ssl/server.cnf-skeleton' % config.params['oerptools_path'], as_root=True):
+                _logger.error('Failed to copy server.cnf. Exiting.')
+                return False
+            if tools.exec_command('openssl req -x509 -newkey rsa:2048 -out cacert.pem -outform PEM -days 1825 -config ca.cnf -passout pass:%s' % self._admin_password, as_root=True):
+                _logger.error('Failed to generate cacert.pem key. Exiting.')
+                return False
+            if tools.exec_command('openssl x509 -in cacert.pem -out cacert.crt', as_root=True):
+                _logger.error('Failed to generate cacert.crt. Exiting.')
+                return False
+            
+            os.chdir(cwd)
         return True
     
     def install(self):
         _logger.info('OpenERP server installation started.')
-        
-        os_info = tools.get_os()
-        #Old Ubuntu versions have a suffix in postgresql init script
-        postgresql_init_suffix = ''
-        postgresql_version = ''
-        if os_info['os'] == 'Linux' and os_info['version'][0] == 'Ubuntu':
-            if os_info['version'][1] in ('10.04','10.10'):
-                postgresql_init_suffix = '-8.4'
-            if os_info['version'][1] < '11.10':
-                postgresql_version = '8.4'
-            else:
-                postgresql_version = '9.1'
-        
-        branch = config.params['branch'] or '7.0'
-        installation_type = config.params[branch+'_installation_type'] or config.params['installation_type'] or'dev'
-        user = config.params[branch+'_user'] or config.params['user'] or None
-        install_openobject_addons = config.params[branch+'_install_openobject_addons'] or config.params['install_openobject_addons'] or True
-        install_openerp_ccorp_addons = config.params[branch+'_install_openerp_ccorp_addons'] or config.params['install_openerp_ccorp_addons'] or True
-        install_openerp_costa_rica = config.params[branch+'_install_openerp_costa_rica'] or config.params['install_openerp_costa_rica'] or True
-        update_postgres_hba = config.params[branch+'_update_postgres_hba'] or config.params['update_postgres_hba'] or True
-        admin_password = config.params[branch+'_admin_password'] or config.params['admin_password'] or None
-        postgresql_password = config.params[branch+'_postgresql_password'] or config.params['postgresql_password'] or None
         
         _logger.info('')
         _logger.info('Please check the following information before continuing.')
@@ -689,40 +722,40 @@ class oerpServer(object):
         _logger.info('Installation info')
         _logger.info('-----------------')
         
-        _logger.info('OpenERP version (branch) to install: %s' % branch)
+        _logger.info('OpenERP version (branch) to install: %s' % self._branch)
         
-        if installation_type == 'dev':
+        if self._installation_type == 'dev':
             _logger.info('Installation type: development station')
-        elif installation_type == 'server':
+        elif self._installation_type == 'server':
             _logger.info('Installation type: production server')
         else:
-            _logger.error('Installation type unknown: %s' % installation_type)
+            _logger.error('Installation type unknown: %s' % self._installation_type)
             return False
         
-        if installation_type == 'dev':
-            if not user:
-                user = pwd.getpwuid(os.getuid()).pw_name
-                if user == 'root':
+        if self._installation_type == 'dev':
+            if not self._user:
+                self._user = pwd.getpwuid(os.getuid()).pw_name
+                if self._user == 'root':
                     _logger.error('No user specified for dev intallation, current user is root, can\'t install with root. Exiting.')
                     return False
                 else:
-                    _logger.warning('No user specified for dev intallation, using current user: %s' % user)
+                    _logger.warning('No user specified for dev intallation, using current user: %s' % self._user)
             else:
                 try:
-                    pw = pwd.getpwnam(user)
+                    pw = pwd.getpwnam(self._user)
                 except:
-                    _logger.error('User unknown (%s). Exiting.' % user)
+                    _logger.error('User unknown (%s). Exiting.' % self._user)
                     return False
                 else:
-                    _logger.info('User: %s' % user)
+                    _logger.info('User: %s' % self._user)
                 
-        elif not user and installation_type == 'server':
-            user = 'openerp'
+        elif not self._user and self._installation_type == 'server':
+            self._user = 'openerp'
         
-        if not user:
+        if not self._user:
             _logger.error('User unknown. Exiting.')
             return False
-        elif pwd.getpwuid(os.getuid()).pw_name not in (user, 'root'):
+        elif pwd.getpwuid(os.getuid()).pw_name not in (self._user, 'root'):
             try:
                 group = grp.getgrnam('openerp')
                 if not pwd.getpwuid(os.getuid()).pw_name in group['gr_mem']:
@@ -736,15 +769,15 @@ class oerpServer(object):
         _logger.info('Addons installation:')
         _logger.info('--------------------')
         
-        if install_openobject_addons:
+        if self._install_openobject_addons:
             _logger.info('Install openobject-addons: YES')
         else:
             _logger.info('Install openobject-addons: NO')
-        if install_openerp_ccorp_addons:
+        if self._install_openerp_ccorp_addons:
             _logger.info('Install openerp-ccorp-addons: YES')
         else:
             _logger.info('Install openerp-ccorp-addons: NO')
-        if install_openerp_costa_rica:
+        if self._install_openerp_costa_rica:
             _logger.info('Install openerp-costa-rica: YES')
         else:
             _logger.info('Install openerp-costa-rica: NO')
@@ -765,15 +798,15 @@ class oerpServer(object):
         
         _logger.info('Setting the OpenERP admin password.')
         # Get admin password
-        while not admin_password:
-            admin_password = getpass.getpass('Enter OpenERP admin password: ')
-            if not admin_password == getpass.getpass('Confirm OpenERP admin password: '):
+        while not self._admin_password:
+            self._admin_password = getpass.getpass('Enter OpenERP admin password: ')
+            if not self._admin_password == getpass.getpass('Confirm OpenERP admin password: '):
                 _logger.error('Passwords don\'t match. Try again.')
-                admin_password = False
+                self._admin_password = False
         
         _logger.info('Setting the PostgreSQL admin password.')
         # Set postgres admin password
-        if not postgresql_password and installation_type == 'dev':
+        if not self._postgresql_password and self._installation_type == 'dev':
             answer = False
             while not answer:
                 answer = raw_input('Do you want to change PostgreSQL admin password (Y/n)? ')
@@ -786,22 +819,22 @@ class oerpServer(object):
                 else:
                     answer = False
             if answer == 'y':
-                while not postgresql_password:
-                    postgresql_password = getpass.getpass('Enter PostgreSQL\'s admin password: ')
-                    if not postgresql_password == getpass.getpass('Confirm PostgreSQL\'s admin password: '):
+                while not self._postgresql_password:
+                    self._postgresql_password = getpass.getpass('Enter PostgreSQL\'s admin password: ')
+                    if not self._postgresql_password == getpass.getpass('Confirm PostgreSQL\'s admin password: '):
                         _logger.error('Passwords don\'t match. Try again.')
-                        postgresql_password  = False
+                        self._postgresql_password  = False
         
         #Update config file with new values
         values = {
             'oerp-install': {
-                branch+'_installation_type': installation_type,
-                branch+'_user': user,
-                branch+'_install_openobject_addons': install_openobject_addons,
-                branch+'_install_openerp_ccorp_addons': install_openerp_ccorp_addons,
-                branch+'_install_openerp_costa_rica': install_openerp_costa_rica,
-                branch+'_admin_password': admin_password,
-                branch+'_postgresql_password': postgresql_password,
+                self._branch+'_installation_type': self._installation_type,
+                self._branch+'_user': self._user,
+                self._branch+'_install_openobject_addons': self._install_openobject_addons,
+                self._branch+'_install_openerp_ccorp_addons': self._install_openerp_ccorp_addons,
+                self._branch+'_install_openerp_costa_rica': self._install_openerp_costa_rica,
+                self._branch+'_admin_password': self._admin_password,
+                self._branch+'_postgresql_password': self._postgresql_password,
             },
         }
         
@@ -818,35 +851,35 @@ class oerpServer(object):
         _logger.info('==============================')
         _logger.info('')
         
-        self._add_openerp_user(user)
-        self._install_python_libs(branch, os_info)
+        self._add_openerp_user()
+        self._install_python_libs()
         
         if not bzr.bzr_install():
             _logger.error('Failed to install bzr (Bazaar VCS). Exiting.')
             return False
         
-        if not self._install_postgresql(os_info):
+        if not self._install_postgresql():
             _logger.error('Failed to install PostgreSQL. Exiting.')
             return False
         
-        if update_postgres_hba:
-            self._update_postgres_hba(os_info, postgresql_version, postgresql_init_suffix)
+        if self._update_postgres_hba:
+            self._do_update_postgres_hba()
         
-        self._add_postgresql_user(user, admin_password)
+        self._add_postgresql_user()
         
-        if postgresql_password:
-            self._change_postgresql_admin_password(postgresql_password)
+        if self._postgresql_password:
+            self._change_postgresql_admin_password()
         
         modules_to_install = {
-            'openobject-addons': install_openobject_addons,
-            'openerp-ccorp-addons': install_openerp_ccorp_addons,
-            'openerp-costa-rica': install_openerp_costa_rica,
+            'openobject-addons': self._install_openobject_addons,
+            'openerp-ccorp-addons': self._install_openerp_ccorp_addons,
+            'openerp-costa-rica': self._install_openerp_costa_rica,
         }
-        self._download_openerp(branch, modules_to_install, user)
+        self._download_openerp(modules_to_install)
         
-        self._config_openerp_version(branch, installation_type, user)
+        self._config_openerp_version()
         
-        self.change_perms(user)
+        self.change_perms()
         
         return True
 

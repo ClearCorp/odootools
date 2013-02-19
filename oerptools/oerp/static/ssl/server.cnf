@@ -1,5 +1,5 @@
 #
-# [NAME].cnf
+# @NAME@.cnf
 #
 
 [ req ]
@@ -7,7 +7,7 @@ prompt                  = no
 distinguished_name      = server_distinguished_name
 
 [ server_distinguished_name ]
-commonName              = [NAME] certificate
+commonName              = @NAME@ certificate
 stateOrProvinceName     = CR
 countryName             = SJ
 emailAddress            = openerp@clearcorp.co.cr

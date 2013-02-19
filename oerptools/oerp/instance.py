@@ -29,4 +29,27 @@ import os
 from oerptools.lib import config, bzr, tools
 
 class oerpInstance(object):
+    def __init__(self):
+        os_info = tools.get_os()
+        #Old Ubuntu versions have a suffix in postgresql init script
+        self._postgresql_init_suffix = ''
+        self._postgresql_version = ''
+        if os_info['os'] == 'Linux' and os_info['version'][0] == 'Ubuntu':
+            if os_info['version'][1] in ('10.04','10.10'):
+                self._postgresql_init_suffix = '-8.4'
+            if os_info['version'][1] < '11.10':
+                self._postgresql_version = '8.4'
+            else:
+                self._postgresql_version = '9.1'
+        
+        self._branch = config.params['branch'] or '7.0'
+        self._installation_type = config.params[branch+'_installation_type'] or config.params['installation_type'] or'dev'
+        self._user = config.params[branch+'_user'] or config.params['user'] or None
+        self._install_openobject_addons = config.params[branch+'_install_openobject_addons'] or config.params['install_openobject_addons'] or True
+        self._install_openerp_ccorp_addons = config.params[branch+'_install_openerp_ccorp_addons'] or config.params['install_openerp_ccorp_addons'] or True
+        self._install_openerp_costa_rica = config.params[branch+'_install_openerp_costa_rica'] or config.params['install_openerp_costa_rica'] or True
+        self._admin_password = config.params[branch+'_admin_password'] or config.params['admin_password'] or None
+        self._postgresql_password = config.params[branch+'_postgresql_password'] or config.params['postgresql_password'] or None
+        return super(oerpInstance, self).__init__()
+    
     
