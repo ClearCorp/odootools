@@ -106,7 +106,7 @@ xmlrpc_port = 20@PORT@
 
 # (char) Specify the TCP IP address for the XML-RPC protocol
 # (default blank).
-xmlrpc_interface = localhost
+xmlrpc_interface = @INTERFACE@
 
 # NET-RPC
 # (bool) Enable the NET-RPC protocol (default True).
@@ -117,7 +117,7 @@ netrpc_port = 21@PORT@
 
 # (char) Specify the TCP IP address for the NET-RPC protocol
 # (default blank).
-netrpc_interface = localhost
+netrpc_interface = @INTERFACE@
 
 # XML-RPC secure
 # (bool) Enable the XML-RPC secure protocol (default True).

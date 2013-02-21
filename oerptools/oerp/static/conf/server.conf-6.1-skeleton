@@ -110,7 +110,7 @@ xmlrpc_port = 20@PORT@
 
 # (char) Specify the TCP IP address for the XML-RPC protocol
 # (default blank).
-xmlrpc_interface = localhost
+xmlrpc_interface = @INTERFACE@
 
 # (bool) Enable correct behavior when behind a reverse proxy
 # (default False).
@@ -125,28 +125,7 @@ netrpc_port = 21@PORT@
 
 # (char) Specify the TCP IP address for the NET-RPC protocol
 # (default blank).
-netrpc_interface = localhost
-
-# XML-RPC secure
-# NOT USED SINCE 6.1
-# (bool) Enable the XML-RPC secure protocol (default True).
-#xmlrpcs = True
-
-# (int) Specify the TCP port for the XML-RPC secure protocol
-# (default 8071).
-#xmlrpcs_port = 22@PORT@
-
-# (char) Specify the TCP IP address for the XML-RPC secure protocol
-# (default blank).
-#xmlrpcs_interface = 
-
-# (char) Specify the certificate file for the SSL connection
-# (default server.cert).
-#secure_cert_file = /etc/openerp/ssl/servers/@NAME@_crt.pem
-
-# (char) Specify the private key file for the SSL connection
-# (default server.key).
-#secure_pkey_file = /etc/openerp/ssl/servers/@NAME@_key.pem
+netrpc_interface = @INTERFACE@
 
 # (char) Specify the host for the FTP DMS server (default localhost).
 ftp_server_host = 0.0.0.0
@@ -157,9 +136,6 @@ ftp_server_passive_ports = 30000:31000
 
 # (int) Specify the TCP port for the FTP DMS server (default 8021).
 ftp_server_port = 24@PORT@
-
-# (int) Specify the TCP port for the Pyro protocol (no default).
-pyroport = 25@PORT@
 
 # LOGGING
 ########################################################################
