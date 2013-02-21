@@ -253,19 +253,23 @@ class configParameters(object):
                             help='Show this help message and exit.')
         
         
-        #oerp-server-make
-        subparser = subparsers.add_parser('oerp-server-make', help='Make an OpenERP instance.', add_help=False)
+        #oerp-instance-make
+        subparser = subparsers.add_parser('oerp-instance-make', help='Make an OpenERP instance.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
+        group.add_argument('--name', '-n', type=str, required=True,
+                            help='Name for the instance.')
         
-        #oerp-server-remove
-        subparser = subparsers.add_parser('oerp-server-remove', help='Remove an OpenERP instance.', add_help=False)
+        #oerp-instance-remove
+        subparser = subparsers.add_parser('oerp-instance-remove', help='Remove an OpenERP instance.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
+        group.add_argument('--name', '-n', type=str, required=True,
+                            help='Name for the instance.')
         
         #dev-repo-make
         subparser = subparsers.add_parser('dev-repo-make', help='Make the OpenERP development bzr repository.', add_help=False)

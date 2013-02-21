@@ -43,6 +43,7 @@ class oerpInstance(object):
                 self._postgresql_version = '9.1'
         
         self._branch = config.params['branch'] or '7.0'
+        self._name = config.params['name']
         self._installation_type = config.params[branch+'_installation_type'] or config.params['installation_type'] or'dev'
         self._user = config.params[branch+'_user'] or config.params['user'] or None
         self._install_openobject_addons = config.params[branch+'_install_openobject_addons'] or config.params['install_openobject_addons'] or True
@@ -52,4 +53,38 @@ class oerpInstance(object):
         self._postgresql_password = config.params[branch+'_postgresql_password'] or config.params['postgresql_password'] or None
         return super(oerpInstance, self).__init__()
     
-    
+    def make_addons_links(self):
+        _logger.info('Creating symbolic links for %s' % self._name)
+        
+
+
+function mkserver_install_addons {
+    if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then mkserver_addons_mk_links openobject-addons; fi
+    if [[ $install_ccorp_addons =~ ^[Yy]$ ]]; then mkserver_addons_mk_links openerp-ccorp-addons; fi
+    if [[ $install_costa_rica_addons =~ ^[Yy]$ ]]; then mkserver_addons_mk_links openerp-costa-rica; fi
+    if [[ $install_extra_addons =~ ^[Yy]$ ]]; then mkserver_addons_mk_links openobject-addons-extra; fi
+    if [[ $install_magentoerpconnect =~ ^[Yy]$ ]]; then mkserver_addons_mk_links magentoerpconnect; fi
+    if [[ $install_nantic =~ ^[Yy]$ ]]; then mkserver_addons_mk_links nantic; fi
+}
+
+function mkserver_addons_config {
+    # Create config line for addons
+    log_echo "Creating config addons settings line..."
+    if [[ $branch == "6.1" ]] || [[ $branch == "trunk" ]]; then
+        cd /srv/openerp/$branch/instances/$name/addons >> $INSTALL_LOG_FILE
+        if [[ $addons_config == "" ]]; then
+            addons_config="/srv/openerp/$branch/instances/$name/web/addons"
+        else
+            addons_config="$addons_config,/srv/openerp/$branch/instances/$name/web/addons"
+        fi
+        for x in $(ls -d *); do
+            addons_config="$addons_config,/srv/openerp/$branch/instances/$name/addons/$x"
+        done
+    else
+        if [[ $addons_config == "" ]]; then
+            addons_config="/srv/openerp/$branch/instances/$name/addons"
+        else
+            addons_config="$addons_config,/srv/openerp/$branch/instances/$name/addons"
+        fi
+    fi
+}
