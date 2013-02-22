@@ -202,7 +202,8 @@ class configParameters(object):
                             help='Server type (default: dev).')
         group.add_argument('--user', '-u', type=str, default=argparse.SUPPRESS,
                             help='User for development station installation.')
-        group.add_argument('--branch', '-b', choices=['5.0','6.0', '6.1', '7.0', 'trunk'], default=argparse.SUPPRESS,
+        # TODO: remove all 5.0 and 6.0 support
+        group.add_argument('--branch', '-b', choices=['6.1', '7.0', 'trunk'], default=argparse.SUPPRESS,
                             help='OpenERP branch to install (default: 7.0).')
         # Addons
         group = subparser.add_argument_group('Addons', 'Addons to install')
@@ -261,6 +262,20 @@ class configParameters(object):
                             help='Show this help message and exit.')
         group.add_argument('--name', '-n', type=str, required=True,
                             help='Name for the instance.')
+        group.add_argument('--port', '-p', type=int, default=argparse.SUPPRESS,
+                            help='Port number for the instance.')
+        #Advanced
+        group = subparser.add_argument_group('Advanced', 'Advanced options')
+        subgroup = group.add_mutually_exclusive_group()
+        subgroup.add_argument('--start-now', '--start', dest='start_now', action='store_true', default=argparse.SUPPRESS,
+                            help='Start the instance now (default for server installation).')
+        subgroup.add_argument('--no-start-now', '--no-start', dest='start_now', action='store_false', default=argparse.SUPPRESS,
+                            help='Don\'t start the instance now (default for dev installation).')
+        subgroup = group.add_mutually_exclusive_group()
+        subgroup.add_argument('--on-boot', '--boot', dest='on_boot', action='store_true', default=argparse.SUPPRESS,
+                            help='Start the instance on boot (default for server installation).')
+        subgroup.add_argument('--no-on-boot', '--no-boot', dest='on_boot', action='store_false', default=argparse.SUPPRESS,
+                            help='Don\'t start the instance on boot (default for dev installation).')
         
         #oerp-instance-remove
         subparser = subparsers.add_parser('oerp-instance-remove', help='Remove an OpenERP instance.', add_help=False)
