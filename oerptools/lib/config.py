@@ -64,8 +64,15 @@ class configParameters(object):
         # Read config files from list
         config_files_params = self._read_config_files(self.config_files)
         
-        # Add main sections config params from files to memory
-        for section in self.param_sections:
+        # Add command config params from files to memory
+        commands = []
+        if 'command' in cmdline_args and cmdline_args.command:
+            commands.append(cmdline_args.command)
+        if 'additional_commands' in cmdline_args and cmdline_args.additional_commands:
+            commands += cmdline_args.additional_commands
+        
+        # Add main sections and commands config params from files to memory
+        for section in self.param_sections + commands:
             if section in config_files_params:
                 for key, value in config_files_params[section].items():
                     #check if value should be a list
@@ -86,10 +93,6 @@ class configParameters(object):
                             self.params[key] = ast.literal_eval(value)
                         except:
                             self.params[key] = value
-        # Add command config params from files to memory
-        if 'command' in cmdline_args and cmdline_args.command and cmdline_args.command in config_files_params:
-            for key, value in config_files_params[cmdline_args.command].items():
-                self.params[key] = value
         
         # Read params from command line (overwrite params from files)
         for key, arg in cmdline_args.__dict__.iteritems():
@@ -202,7 +205,6 @@ class configParameters(object):
                             help='Server type (default: dev).')
         group.add_argument('--user', '-u', type=str, default=argparse.SUPPRESS,
                             help='User for development station installation.')
-        # TODO: remove all 5.0 and 6.0 support
         group.add_argument('--branch', '-b', choices=['6.1', '7.0', 'trunk'], default=argparse.SUPPRESS,
                             help='OpenERP branch to install (default: 7.0).')
         # Addons
@@ -276,7 +278,7 @@ class configParameters(object):
                             help='Start the instance on boot (default for server installation).')
         subgroup.add_argument('--no-on-boot', '--no-boot', dest='on_boot', action='store_false', default=argparse.SUPPRESS,
                             help='Don\'t start the instance on boot (default for dev installation).')
-        
+        group.set_defaults(additional_commands=['oerp-install']
         #oerp-instance-remove
         subparser = subparsers.add_parser('oerp-instance-remove', help='Remove an OpenERP instance.', add_help=False)
         # Main
