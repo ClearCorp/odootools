@@ -120,10 +120,6 @@ class oerpInstance(object):
                 return False
         
         installed_branches = []
-        if os.path.isdir('/etc/openerp/5.0'):
-            installed_branches.append('5.0')
-        if os.path.isdir('/etc/openerp/6.0'):
-            installed_branches.append('6.0')
         if os.path.isdir('/etc/openerp/6.1'):
             installed_branches.append('6.1')
         if os.path.isdir('/etc/openerp/7.0'):
@@ -222,24 +218,13 @@ class oerpInstance(object):
         os.makedirs('/srv/openerp/%s/instances/%s/filestore' % (self._branch, self._name))
         os.symlink('/srv/openerp/%s/src/openobject-server' % self._branch, '/srv/openerp/%s/instances/%s/server' % (self._branch, self._name))
         
-        if self._branch in ['5.0', '6.0']:
-            installled_addons = '/srv/openerp/%s/instances/%s/addons' % (self._branch, self._name)
-            os.symlink('/srv/openerp/%s/src/openobject-client-web' % self._branch, '/srv/openerp/%s/instances/%s/web' % (self._branch, self._name))
-            for path in os.listdir('/srv/openerp/%s/src' % self._branch):
-                if path not in ('openobject-server', 'openobject-client', 'openobject-client-web', 'openerp-web'):
-                    for module in os.listdir('/srv/openerp/%s/src/%s' % (self._branch, path)):
-                        if not os.path.exists('/srv/openerp/%s/instances/%s/addons/%s' % (self._branch, self._name, module))
-                            os.symlink('/srv/openerp/%s/src/%s/%s' % (self._branch, path, module), '/srv/openerp/%s/instances/%s/addons/%s' % (self._branch, self._name, module))
-                        else:
-                            _logger.warning('Repeated module: %s, skipping %s version' % (module, path))
-        else:
-            installed_addons=[]
-            os.symlink('/srv/openerp/%s/src/openerp-web' % self._branch, '/srv/openerp/%s/instances/%s/addons/openerp-web' % (self._branch, self._name))
-            for path in os.listdir('/srv/openerp/%s/src' % self._branch):
-                if path not in ('openobject-server', 'openobject-client', 'openobject-client-web', 'openerp-web'):
-                    os.symlink('/srv/openerp/%s/src/%s' % (self._branch, path), '/srv/openerp/%s/instances/%s/addons/%s' % (self._branch, self._name, path))
-                    installed_addons.append('/srv/openerp/%s/instances/%s/addons/%s' % (self._branch, self._name, path))
-            installed_addons = ','.join(installed_addons)
+        installed_addons=[]
+        os.symlink('/srv/openerp/%s/src/openerp-web' % self._branch, '/srv/openerp/%s/instances/%s/addons/openerp-web' % (self._branch, self._name))
+        for path in os.listdir('/srv/openerp/%s/src' % self._branch):
+            if path not in ('openobject-server', 'openobject-client', 'openobject-client-web', 'openerp-web'):
+                os.symlink('/srv/openerp/%s/src/%s' % (self._branch, path), '/srv/openerp/%s/instances/%s/addons/%s' % (self._branch, self._name, path))
+                installed_addons.append('/srv/openerp/%s/instances/%s/addons/%s' % (self._branch, self._name, path))
+        installed_addons = ','.join(installed_addons)
         
         # TODO: archlinux init
         if not tools.exec_command('cp -a /etc/openerp/%s/server/init-skeleton /etc/init.d/openerp-server-%s' % (self._branch, self._name), as_root=True):

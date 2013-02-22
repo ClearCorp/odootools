@@ -186,78 +186,6 @@ class oerpServer(object):
         # Packages need by the installer
         packages.append('python-setuptools')
         packages.append('wget')
-
-        # Packages for 5.0
-        if self._branch == '5.0':
-            packages += [
-                # Server
-                # Dependencies
-                'python-lxml',
-                'python-psycopg2',
-                'python-pychart',
-                'python-pydot',
-                'python-reportlab',
-                'python-tz',
-                'python-vobject',
-                'python-egenix',
-                # Recomended
-                'graphviz',
-                'ghostscript',
-                'python-imaging',
-                'python-libxslt1',      #Excel spreadsheets
-                'python-matplotlib',
-                'python-openssl',       #Extra for ssl ports
-                'python-xlwt',          #Excel spreadsheets
-                'python-pyparsing',
-                # Web client
-                # Dependencies
-                'python-formencode',
-                'python-pybabel',
-                'python-simplejson',
-                'python-pyparsing',
-                'python2-cherrypy',
-                #Recommended
-                'libjs-mochikit',
-                'libjs-mootools',
-                'python-beaker',
-                'tinymce',
-            ]
-        
-        # Packages for 6.0
-        if self._branch == '6.0':
-            packages += [
-                # Server
-                # Dependencies
-                'python-lxml',
-                'python-psycopg2',
-                'python-pychart',
-                'python-pydot',
-                'python-reportlab',
-                'python-tz',
-                'python-vobject',
-                'python-dateutil',
-                'python-feedparser',
-                'python-mako',
-                'python-pyparsing',
-                'python-yaml',
-                # Recomended
-                'graphviz',
-                'ghostscript',
-                'python-imaging',
-                'python-libxslt1',      #Excel spreadsheets
-                'python-matplotlib',
-                'python-openssl',       #Extra for ssl ports
-                'python-xlwt',          #Excel spreadsheets
-                'python-webdav',        #For document-webdav
-                # Web client
-                # Dependencies
-                'python-formencode',
-                'python-pybabel',
-                'python-simplejson',
-                'python-pyparsing',
-                'python2-cherrypy',
-                #Recommended
-            ]
         
         # Packages for 6.1
         if self._branch == '6.1':
@@ -615,10 +543,7 @@ class oerpServer(object):
         self.change_perms()
         
         self._download_openerp_lp_branch(repo_downloaded, 'openobject-server', 'openobject-server', '%s-ccorp' % self._branch)
-        if self._branch in ('5.0', '6.0'):
-            self._download_openerp_lp_branch(repo_downloaded, 'openobject-client-web', 'openobject-client-web', '%s-ccorp' % self._branch)
-        else:
-            self._download_openerp_lp_branch(repo_downloaded, 'openerp-web', 'openerp-web', '%s-ccorp' % self._branch)
+        self._download_openerp_lp_branch(repo_downloaded, 'openerp-web', 'openerp-web', '%s-ccorp' % self._branch)
         if 'openobject-addons' in modules_to_install and modules_to_install['openobject-addons']:
             self._download_openerp_lp_branch(repo_downloaded, 'openobject-addons', 'openobject-addons', '%s-ccorp' % self._branch)
         if 'openerp-ccorp-addons' in modules_to_install and modules_to_install['openerp-ccorp-addons']:
@@ -674,37 +599,6 @@ class oerpServer(object):
             _logger.error('Failed to create /var/run/openerp. Exiting.')
             return False
         
-        if self._branch in ('5.0', '6.0'):
-            # Make SSL certificates
-            if tools.exec_command('mkdir -p /etc/openerp/ssl/private', as_root=True):
-                _logger.error('Failed to create /etc/openerp/ssl/private. Exiting.')
-                return False
-            if tools.exec_command('mkdir -p /etc/openerp/ssl/signedcerts', as_root=True):
-                _logger.error('Failed to create /etc/openerp/ssl/signedcerts. Exiting.')
-                return False
-            if tools.exec_command('mkdir -p /etc/openerp/ssl/servers', as_root=True):
-                _logger.error('Failed to create /etc/openerp/ssl/servers. Exiting.')
-                return False
-            
-            os.chdir('/etc/openerp/ssl')
-            
-            if tools.exec_command("echo '01' > serial  && touch index.txt", as_root=True):
-                _logger.error('Failed to create SSL serial and index. Exiting.')
-                return False
-            if tools.exec_command('cp %s/oerptools/oerp/static/ssl/ca.cnf /etc/openerp/ssl/ca.cnf' % config.params['oerptools_path'], as_root=True):
-                _logger.error('Failed to copy ca.cnf. Exiting.')
-                return False
-            if tools.exec_command('cp %s/oerptools/oerp/static/ssl/server.cnf /etc/openerp/ssl/server.cnf-skeleton' % config.params['oerptools_path'], as_root=True):
-                _logger.error('Failed to copy server.cnf. Exiting.')
-                return False
-            if tools.exec_command('openssl req -x509 -newkey rsa:2048 -out cacert.pem -outform PEM -days 1825 -config ca.cnf -passout pass:%s' % self._admin_password, as_root=True):
-                _logger.error('Failed to generate cacert.pem key. Exiting.')
-                return False
-            if tools.exec_command('openssl x509 -in cacert.pem -out cacert.crt', as_root=True):
-                _logger.error('Failed to generate cacert.crt. Exiting.')
-                return False
-            
-            os.chdir(cwd)
         return True
 
     def _do_install_apache():

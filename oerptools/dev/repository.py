@@ -165,18 +165,17 @@ class repository(object):
             _logger.info('Repository exists in: %s. Exiting.' % self._repo_dir)
             return False
         
-        self._branch_project('openobject-server',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk'])
-        self._branch_project('openobject-addons',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk', 'extra-5.0', 'extra-6.0', 'extra-trunk'])
-        self._branch_project('openobject-client',     True,  ['5.0', '6.0', '6.1', 'trunk'])
-        self._branch_project('openobject-client-web', True,  ['5.0', '6.0', 'trunk'])
+        self._branch_project('openobject-server',     True,  ['6.1', '7.0', 'trunk'])
+        self._branch_project('openobject-addons',     True,  ['6.1', '7.0', 'trunk', 'extra-trunk'])
+        self._branch_project('openobject-client',     True,  ['6.1', 'trunk'])
         self._branch_project('openerp-web',           True,  ['6.1', '7.0', 'trunk'])
-        self._branch_project('openobject-doc',        True,  ['5.0', '6.0', '6.1'])
+        self._branch_project('openobject-doc',        True,  ['6.1'])
         
-        self._branch_project('openerp-ccorp-addons',  False, ['5.0', '6.0', '6.1', '7.0', 'trunk'])
-        self._branch_project('openerp-costa-rica',    False, ['6.0', '6.1', '7.0', 'trunk'])
+        self._branch_project('openerp-ccorp-addons',  False, ['6.1', '7.0', 'trunk'])
+        self._branch_project('openerp-costa-rica',    False, ['6.1', '7.0', 'trunk'])
         self._branch_project('oerptools',             False, ['1.0', '2.0', 'trunk'])
         
-        self._branch_project('banking-addons',        True,  ['5.0', '6.0', '6.1', 'trunk'])
+        self._branch_project('banking-addons',        True,  ['6.1', 'trunk'])
         
         return True
     
@@ -187,18 +186,17 @@ class repository(object):
             _logger.info('Repository doesn\'t exist in: %s. Exiting.' % self._repo_dir)
             return False
         
-        self._update_project('openobject-server',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk'])
-        self._update_project('openobject-addons',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk', 'extra-5.0', 'extra-6.0', 'extra-trunk'])
-        self._update_project('openobject-client',     True,  ['5.0', '6.0', '6.1', 'trunk'])
-        self._update_project('openobject-client-web', True,  ['5.0', '6.0', 'trunk'])
+        self._update_project('openobject-server',     True,  ['6.1', '7.0', 'trunk'])
+        self._update_project('openobject-addons',     True,  ['6.1', '7.0', 'trunk', 'extra-trunk'])
+        self._update_project('openobject-client',     True,  ['6.1', 'trunk'])
         self._update_project('openerp-web',           True,  ['6.1', '7.0', 'trunk'])
-        self._update_project('openobject-doc',        True,  ['5.0', '6.0', '6.1'])
+        self._update_project('openobject-doc',        True,  ['6.1'])
         
-        self._update_project('openerp-ccorp-addons',  False, ['5.0', '6.0', '6.1', '7.0', 'trunk'])
-        self._update_project('openerp-costa-rica',    False, ['6.0', '6.1', '7.0', 'trunk'])
+        self._update_project('openerp-ccorp-addons',  False, ['6.1', '7.0', 'trunk'])
+        self._update_project('openerp-costa-rica',    False, ['6.1', '7.0', 'trunk'])
         self._update_project('oerptools',             False, ['1.0', '2.0', 'trunk'])
         
-        self._update_project('banking-addons',        True,  ['5.0', '6.0', '6.1', 'trunk'])
+        self._update_project('banking-addons',        True,  ['6.1', 'trunk'])
         
         return True
     
@@ -209,18 +207,17 @@ class repository(object):
             _logger.info('Repository doesn\'t exist in: %s. Exiting.' % self._repo_dir)
             return False
         
-        self._reset_project_locations('openobject-server',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk'])
-        self._reset_project_locations('openobject-addons',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk', 'extra-5.0', 'extra-6.0', 'extra-trunk'])
-        self._reset_project_locations('openobject-client',     True,  ['5.0', '6.0', '6.1', 'trunk'])
-        self._reset_project_locations('openobject-client-web', True,  ['5.0', '6.0', 'trunk'])
+        self._reset_project_locations('openobject-server',     True,  ['6.1', '7.0', 'trunk'])
+        self._reset_project_locations('openobject-addons',     True,  ['6.1', '7.0', 'trunk', 'extra-trunk'])
+        self._reset_project_locations('openobject-client',     True,  ['6.1', 'trunk'])
         self._reset_project_locations('openerp-web',           True,  ['6.1', '7.0', 'trunk'])
-        self._reset_project_locations('openobject-doc',        True,  ['5.0', '6.0', '6.1'])
+        self._reset_project_locations('openobject-doc',        True,  ['6.1'])
         
-        self._reset_project_locations('openerp-ccorp-addons',  False, ['5.0', '6.0', '6.1', '7.0', 'trunk'])
-        self._reset_project_locations('openerp-costa-rica',    False, ['6.0', '6.1', '7.0', 'trunk'])
+        self._reset_project_locations('openerp-ccorp-addons',  False, ['6.1', '7.0', 'trunk'])
+        self._reset_project_locations('openerp-costa-rica',    False, ['6.1', '7.0', 'trunk'])
         self._reset_project_locations('oerptools',             False, ['1.0', '2.0', 'trunk'])
         
-        self._reset_project_locations('banking-addons',        True,  ['5.0', '6.0', '6.1', 'trunk'])
+        self._reset_project_locations('banking-addons',        True,  ['6.1', 'trunk'])
         
         return True
     
@@ -332,23 +329,23 @@ class repository(object):
             _logger.info('Repository doesn\'t exist in: %s. Exiting.' % self._repo_dir)
             return False
         
-        self._src_branch_project('openobject-server',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk'])
-        self._src_branch_project('openobject-addons',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk',])
+        self._src_branch_project('openobject-server',     True,  ['6.1', '7.0', 'trunk'])
+        self._src_branch_project('openobject-addons',     True,  ['6.1', '7.0', 'trunk'])
         self._src_branch_project('openerp-web',           True,  ['6.1', '7.0', 'trunk'])
         
-        self._src_branch_project('openerp-ccorp-addons',  False, ['5.0', '6.0', '6.1', '7.0', 'trunk'])
-        self._src_branch_project('openerp-costa-rica',    False, ['6.0', '6.1', '7.0', 'trunk'])
+        self._src_branch_project('openerp-ccorp-addons',  False, ['6.1', '7.0', 'trunk'])
+        self._src_branch_project('openerp-costa-rica',    False, ['6.1', '7.0', 'trunk'])
         
-        self._src_branch_project('banking-addons',        True,  ['5.0', '6.0', '6.1', 'trunk'])
+        self._src_branch_project('banking-addons',        True,  ['6.1', 'trunk'])
         
-        self._src_compress_project('openobject-server',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk'])
-        self._src_compress_project('openobject-addons',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk',])
+        self._src_compress_project('openobject-server',     True,  ['6.1', '7.0', 'trunk'])
+        self._src_compress_project('openobject-addons',     True,  ['6.1', '7.0', 'trunk'])
         self._src_compress_project('openerp-web',           True,  ['6.1', '7.0', 'trunk'])
         
-        self._src_compress_project('openerp-ccorp-addons',  False, ['5.0', '6.0', '6.1', '7.0', 'trunk'])
-        self._src_compress_project('openerp-costa-rica',    False, ['6.0', '6.1', '7.0', 'trunk'])
+        self._src_compress_project('openerp-ccorp-addons',  False, ['6.1', '7.0', 'trunk'])
+        self._src_compress_project('openerp-costa-rica',    False, ['6.1', '7.0', 'trunk'])
         
-        self._src_compress_project('banking-addons',        True,  ['5.0', '6.0', '6.1', 'trunk'])
+        self._src_compress_project('banking-addons',        True,  ['6.1', 'trunk'])
         
         self._src_compress_repo()
         
@@ -361,23 +358,23 @@ class repository(object):
             _logger.info('Repository doesn\'t exist in: %s. Exiting.' % self._repo_dir)
             return False
         
-        self._src_update_project('openobject-server',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk'])
-        self._src_update_project('openobject-addons',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk',])
+        self._src_update_project('openobject-server',     True,  ['6.1', '7.0', 'trunk'])
+        self._src_update_project('openobject-addons',     True,  ['6.1', '7.0', 'trunk'])
         self._src_update_project('openerp-web',           True,  ['6.1', '7.0', 'trunk'])
         
-        self._src_update_project('openerp-ccorp-addons',  False, ['5.0', '6.0', '6.1', '7.0', 'trunk'])
-        self._src_update_project('openerp-costa-rica',    False, ['6.0', '6.1', '7.0', 'trunk'])
+        self._src_update_project('openerp-ccorp-addons',  False, ['6.1', '7.0', 'trunk'])
+        self._src_update_project('openerp-costa-rica',    False, ['6.1', '7.0', 'trunk'])
         
-        self._src_update_project('banking-addons',        True,  ['5.0', '6.0', '6.1', 'trunk'])
+        self._src_update_project('banking-addons',        True,  ['6.1', 'trunk'])
         
-        self._src_compress_project('openobject-server',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk'])
-        self._src_compress_project('openobject-addons',     True,  ['5.0', '6.0', '6.1', '7.0', 'trunk',])
+        self._src_compress_project('openobject-server',     True,  ['6.1', '7.0', 'trunk'])
+        self._src_compress_project('openobject-addons',     True,  ['6.1', '7.0', 'trunk'])
         self._src_compress_project('openerp-web',           True,  ['6.1', '7.0', 'trunk'])
         
-        self._src_compress_project('openerp-ccorp-addons',  False, ['5.0', '6.0', '6.1', '7.0', 'trunk'])
-        self._src_compress_project('openerp-costa-rica',    False, ['6.0', '6.1', '7.0', 'trunk'])
+        self._src_compress_project('openerp-ccorp-addons',  False, ['6.1', '7.0', 'trunk'])
+        self._src_compress_project('openerp-costa-rica',    False, ['6.1', '7.0', 'trunk'])
         
-        self._src_compress_project('banking-addons',        True,  ['5.0', '6.0', '6.1', 'trunk'])
+        self._src_compress_project('banking-addons',        True,  ['6.1', 'trunk'])
         
         self._src_compress_repo()
         
