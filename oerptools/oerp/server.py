@@ -586,7 +586,7 @@ class oerpServer(object):
             _logger.error('Failed to config init skeleton. Exiting.')
             return False
         if self._installation_type == 'dev':
-            if tools.exec_command('sed -i "s#@DBFILTER@#${SERVERNAME}_.*#g" /etc/openerp/%s/server/init-skeleton' % (self._name, self._branch), as_root=True):
+            if tools.exec_command('sed -i "s#@DBFILTER@#${SERVERNAME}_.*#g" /etc/openerp/%s/server/init-skeleton' % self._branch, as_root=True):
                 _logger.error('Failed to config init skeleton. Exiting.')
                 return False
         else:
