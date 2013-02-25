@@ -177,6 +177,10 @@ class configParameters(object):
                             help='Path for the OERPTools config file in (default: /etc/oerptools/settings.conf).')
         group.add_argument('--source-branch', '-s', type=str, default=argparse.SUPPRESS,
                             help='URL of the OERPTools branch to install from (default: lp:oerptools).')
+        #Advanced
+        group = subparser.add_argument_group('Advanced', 'Advanced options')
+        group.add_argument('--repo-tgz', '-r', type=str, default=argparse.SUPPRESS,
+                            help='Path of the OERPTools repo tgz file (default: None).')
         
         #oerptools-update
         subparser = subparsers.add_parser('oerptools-update', help='Update the installed OERPTools.', add_help=False)

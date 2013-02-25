@@ -469,6 +469,9 @@ class oerpServer(object):
             _logger.error('Failed to create /usr/local/src/oerptools/oerp dir. Exiting.')
             return False
         
+        if 'repo_tgz' in config.params and config.params['repo_tgz'] and os.path.isfile(os.abspath(config.params['repo_tgz'])):
+            if tools.exec_command('cp %s /usr/local/src/oerptools/oerp/openerp.tgz' % os.abspath(config.params['repo_tgz']), as_root=True):
+                _logger.warning('Failed to copy %s to /usr/local/src/oerptools/oerp.')
         cwd = os.getcwd()
         os.chdir('/usr/local/src/oerptools/oerp')
         if not os.path.isfile('openerp.tgz'):
