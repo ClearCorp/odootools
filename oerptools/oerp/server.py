@@ -579,6 +579,17 @@ class oerpServer(object):
         if tools.exec_command('sed -i "s#@USER@#%s#g" /etc/openerp/%s/server/init-skeleton' % (self._user, self._branch), as_root=True):
             _logger.error('Failed to config init skeleton. Exiting.')
             return False
+        if tools.exec_command('sed -i "s#@BRANCH@#%s#g" /etc/openerp/%s/server/init-skeleton' % (self._branch, self._branch), as_root=True):
+            _logger.error('Failed to config init skeleton. Exiting.')
+            return False
+        if self._installation_type == 'dev':
+            if tools.exec_command('sed -i "s#@DBFILTER@#${SERVERNAME}_.*#g" /etc/openerp/%s/server/init-skeleton' % (self._name, self._branch), as_root=True):
+                _logger.error('Failed to config init skeleton. Exiting.')
+                return False
+        else:
+            if tools.exec_command('sed -i "s#@DBFILTER@#.*#g" /etc/openerp/%s/server/init-skeleton' % self._branch, as_root=True):
+                _logger.error('Failed to config init skeleton. Exiting.')
+                return False
         # OpenERP Server config
         if tools.exec_command('cp %s/oerptools/oerp/static/conf/server.conf-%s-skeleton /etc/openerp/%s/server/conf-skeleton' % (config.params['oerptools_path'], self._branch, self._branch), as_root=True):
             _logger.error('Failed to copy conf skeleton. Exiting.')
@@ -587,7 +598,7 @@ class oerpServer(object):
             _logger.error('Failed to config init skeleton. Exiting.')
             return False
         if self._installation_type == 'dev':
-            if tools.exec_command('sed -i "s#@INTERFACE@##g" /etc/openerp/%s/server/conf-skeleton' % (self._branch, self._branch), as_root=True):
+            if tools.exec_command('sed -i "s#@INTERFACE@##g" /etc/openerp/%s/server/conf-skeleton' % self._branch, as_root=True):
                 _logger.error('Failed to set interface in config skeleton. Exiting.')
                 return False
         else:
@@ -601,13 +612,13 @@ class oerpServer(object):
         
         return True
 
-    def _do_install_apache():
+    def _do_install_apache(self):
         os_version = tools.get_os()
         if os_version['os'] == 'Linux':
             if os_version['version'][0] == 'Ubuntu':
-                return _ubuntu_do_install_apache()
+                return self._ubuntu_do_install_apache()
             elif os_version['version'][0] == 'arch':
-                return _arch_do_install_apache()
+                return self._arch_do_install_apache()
         return False
     
     def _ubuntu_do_install_apache(self):
@@ -615,17 +626,17 @@ class oerpServer(object):
             _logger.error('Failed to install Apache. Exiting.')
             return False
         _logger.info('Configuring site config files.')
-        if not tools.exec_command('cp %s/oerptools/oerp/static/apache/apache-erp /etc/apache2/sites-available/erp' % config.params['oerptools_path'], as_root=True)
+        if tools.exec_command('cp %s/oerptools/oerp/static/apache/apache-erp /etc/apache2/sites-available/erp' % config.params['oerptools_path'], as_root=True):
             _logger.warning('Failed copy Apache erp site conf file.')
-        if not tools.exec_command('mkdir -p /etc/openerp/apache2/rewrites', as_root=True)
+        if tools.exec_command('mkdir -p /etc/openerp/apache2/rewrites', as_root=True):
             _logger.warning('Failed make /etc/openerp/apache2/rewrites.')
-        if not tools.exec_command('cp %s/oerptools/oerp/static/apache/apache-ssl-%s-skeleton /etc/openerp/apache2/ssl-%s-skeleton' % (config.params['oerptools_path'], branch, branch), as_root=True)
+        if tools.exec_command('cp %s/oerptools/oerp/static/apache/apache-ssl-%s-skeleton /etc/openerp/apache2/ssl-%s-skeleton' % (config.params['oerptools_path'], self._branch, self._branch), as_root=True):
             _logger.warning('Failed copy Apache rewrite skeleton.')
-        if not tools.exec_command('sed -i "s/ServerAdmin .*$/ServerAdmin support@clearcorp.co.cr\n\n\tInclude \/etc\/apache2\/sites-available\/erp/g" /etc/apache2/sites-available/default', as_root=True)
+        if tools.exec_command('sed -i "s#ServerAdmin .*\\$#ServerAdmin support@clearcorp.co.cr\\n\\n\\tInclude /etc/apache2/sites-available/erp#g" /etc/apache2/sites-available/default', as_root=True):
             _logger.warning('Failed config Apache site.')
-        if not tools.exec_command('sed -i "s/ServerAdmin .*$/ServerAdmin support@clearcorp.co.cr\n\n\tInclude \/etc\/openerp\/apache2\/rewrites/g" /etc/apache2/sites-available/default-ssl', as_root=True)
+        if tools.exec_command('sed -i "s#ServerAdmin .*\\$#ServerAdmin support@clearcorp.co.cr\\n\\n\\tInclude /etc/openerp/apache2/rewrites#g" /etc/apache2/sites-available/default-ssl', as_root=True):
             _logger.warning('Failed config Apache site.')
-        if not apache.apache_restart()
+        if not apache.apache_restart():
             _logger.warning('Failed restart Apache.')
         return True
     
@@ -635,22 +646,22 @@ class oerpServer(object):
             return False
         #TODO: arch configuration of sites
         _logger.info('Configuring site config files.')
-        #if not tools.exec_command('cp %s/oerptools/oerp/static/apache/apache-erp /etc/apache2/sites-available/erp' % config.params['oerptools_path'], as_root=True)
+        #if tools.exec_command('cp %s/oerptools/oerp/static/apache/apache-erp /etc/apache2/sites-available/erp' % config.params['oerptools_path'], as_root=True):
         #    _logger.warning('Failed copy Apache erp site conf file.')
-        if not tools.exec_command('mkdir -p /etc/openerp/apache2/rewrites', as_root=True)
+        if tools.exec_command('mkdir -p /etc/openerp/apache2/rewrites', as_root=True):
             _logger.warning('Failed make /etc/openerp/apache2/rewrites.')
-        if not tools.exec_command('cp %s/oerptools/oerp/static/apache/apache-ssl-%s-skeleton /etc/openerp/apache2/ssl-%s-skeleton' % (config.params['oerptools_path'], branch, branch), as_root=True)
+        if tools.exec_command('cp %s/oerptools/oerp/static/apache/apache-ssl-%s-skeleton /etc/openerp/apache2/ssl-%s-skeleton' % (config.params['oerptools_path'], branch, branch), as_root=True):
             _logger.warning('Failed copy Apache rewrite skeleton.')
-        #if not tools.exec_command('sed -i "s/ServerAdmin .*$/ServerAdmin support@clearcorp.co.cr\n\n\tInclude \/etc\/apache2\/sites-available\/erp/g" /etc/apache2/sites-available/default', as_root=True)
+        #if tools.exec_command('sed -i "s/ServerAdmin .*$/ServerAdmin support@clearcorp.co.cr\n\n\tInclude \/etc\/apache2\/sites-available\/erp/g" /etc/apache2/sites-available/default', as_root=True):
         #    _logger.warning('Failed config Apache site.')
-        #if not tools.exec_command('sed -i "s/ServerAdmin .*$/ServerAdmin support@clearcorp.co.cr\n\n\tInclude \/etc\/openerp\/apache2\/rewrites/g" /etc/apache2/sites-available/default-ssl', as_root=True)
+        #if tools.exec_command('sed -i "s/ServerAdmin .*$/ServerAdmin support@clearcorp.co.cr\n\n\tInclude \/etc\/openerp\/apache2\/rewrites/g" /etc/apache2/sites-available/default-ssl', as_root=True):
         #    _logger.warning('Failed config Apache site.')
-        if not apache.apache_restart()
+        if apache.apache_restart():
             _logger.warning('Failed restart Apache.')
         return True
     
     def _set_logrotation(self):
-        if not tools.exec_command('cp %s/oerptools/oerp/static/log/openerp.logrotate /etc/logrotate.d/', as_root=True)
+        if tools.exec_command('cp %s/oerptools/oerp/static/log/openerp.logrotate /etc/logrotate.d/' % config.params['oerptools_path'], as_root=True):
             _logger.error('Failed to copy logrotate. Exiting.')
             return False
         return True

@@ -21,6 +21,8 @@
 SERVERNAME=@NAME@
 BASE_PATH=@PATH@
 USER=@USER@
+BRANCH=@BRANCH@
+DBFILTER=@DBFILTER@
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin
 DAEMON=${BASE_PATH}/bin/openerp-server-${SERVERNAME}
@@ -29,8 +31,8 @@ DESC="OpenERP server"
 PIDDIR=/var/run/openerp
 PIDFILE=${PIDDIR}/${SERVERNAME}/server.pid
 LOCKFILE=/var/lock/subsys/openerp-server-${SERVERNAME}
-CONFIGFILE=/etc/openerp/6.1/server/${SERVERNAME}.conf
-DAEMON_OPTS="--config=$CONFIGFILE"
+CONFIGFILE=/etc/openerp/${BRANCH}/server/${SERVERNAME}.conf
+DAEMON_OPTS="--config=$CONFIGFILE --db-filter=${DBFILTER}"
 
 # Exit if the package is not installed
 if [ ! -x "$DAEMON" ] ; then
@@ -85,9 +87,8 @@ do_start() {
 	chown -R ${USER}:openerp ${LOGDIR}/${SERVERNAME}
 	chmod g+w ${LOGDIR}/${SERVERNAME}
     
-	sudo -u $USER start-stop-daemon --start --quiet  --background \
-		--pidfile $PIDFILE --group openerp \
-		--startas $DAEMON -- $DAEMON_OPTS
+	sudo -u $USER -g openerp start-stop-daemon --start --quiet  --background \
+		--pidfile $PIDFILE --startas $DAEMON -- $DAEMON_OPTS
 
 	i=10
     while [[ $i > 0 ]]; do

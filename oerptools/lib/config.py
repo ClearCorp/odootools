@@ -266,6 +266,8 @@ class configParameters(object):
                             help='Name for the instance.')
         group.add_argument('--port', '-p', type=int, default=argparse.SUPPRESS,
                             help='Port number for the instance.')
+        group.add_argument('--branch', '-b', choices=['6.1', '7.0', 'trunk'], default=argparse.SUPPRESS,
+                            help='OpenERP branch to install (default: 7.0).')
         #Advanced
         group = subparser.add_argument_group('Advanced', 'Advanced options')
         subgroup = group.add_mutually_exclusive_group()
@@ -278,7 +280,8 @@ class configParameters(object):
                             help='Start the instance on boot (default for server installation).')
         subgroup.add_argument('--no-on-boot', '--no-boot', dest='on_boot', action='store_false', default=argparse.SUPPRESS,
                             help='Don\'t start the instance on boot (default for dev installation).')
-        group.set_defaults(additional_commands=['oerp-install']
+        group.set_defaults(additional_commands=['oerp-install'])
+        
         #oerp-instance-remove
         subparser = subparsers.add_parser('oerp-instance-remove', help='Remove an OpenERP instance.', add_help=False)
         # Main
@@ -390,10 +393,11 @@ class configParameters(object):
             elif command == 'oerp-uninstall':
                 import oerptools.lib.tools
                 oerptools.lib.tools.command_not_available()
-            elif command == 'oerp-server-make':
-                import oerptools.lib.tools
-                oerptools.lib.tools.command_not_available()
-            elif command == 'oerp-server-remove':
+            elif command == 'oerp-instance-make':
+                import oerptools.oerp.instance
+                oerp_instance = oerptools.oerp.instance.oerpInstance()
+                oerp_instance.install()
+            elif command == 'oerp-instance-remove':
                 import oerptools.lib.tools
                 oerptools.lib.tools.command_not_available()
             elif command == 'dev-repo-make':
@@ -456,8 +460,10 @@ class configParameters(object):
         new_file = ""
         section = False
         for line in config_file:
+            _logger.debug('line: %s' % line)
             #Case: new section
             if re.match(r"^\[[^\s]*\]$",line):
+                _logger.debug('New section: %s' % line[1:len(line)-2])
                 #Check to see if there is still values to update in last section
                 if section and section in copy_values and copy_values[section]:
                     new_file += '\n#THE FOLLOWING VALUES WHERE AUTOMATICALLY ADDED\n'
@@ -500,11 +506,13 @@ class configParameters(object):
         
         #Check to see if all copy_values where updated
         if copy_values:
-            for section_key,section in copy_values.items():
-                if section:
+            _logger.debug('Some values remaining, last section: %s' % section)
+            for section_key, section_value in copy_values.items():
+                if section_value:
                     new_file += '\n#THE FOLLOWING SECTION WAS AUTOMATICALLY ADDED\n'
-                    new_file += "\n"+section_key+"\n"
-                    for key,value in section.items():
+                    if not section_key == section:
+                        new_file += "\n["+section_key+"]\n"
+                    for key,value in section_value.items():
                         new_file += key+" = "+str(value)+'\n'
                     new_file += '\n\n'
                 copy_values.pop(section_key)

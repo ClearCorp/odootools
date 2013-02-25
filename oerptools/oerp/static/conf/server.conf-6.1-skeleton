@@ -90,7 +90,7 @@ publisher_warranty_url = http://clearcorp.co.cr
 # (char) Specify the PostgreSQL executable path (default None).
 #pg_path = None
 
-# (regexp) Filter listed database (default .*).
+# (regexp) Filter listed database (default .*). Works only in cmd line for now.
 #dbfilter = .*
 
 # (char) Use this for big data importation, if it crashes you will be
@@ -256,7 +256,7 @@ log_handler = :INFO,werkzeug:CRITICAL
 
 # (char) This is the password that allows database operations
 # (default admin).
-admin_passwd = [ADMIN_PASSWD]
+admin_passwd = @ADMIN_PASSWD@
 
 # Performance
 ########################################################################

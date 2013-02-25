@@ -42,8 +42,8 @@ def apache_install():
 
 def ubuntu_apache_install():
     _logger.info('Installing Apache web server')
-    if tools.ubuntu_install_package(['apache2']):
-        _logger.error('Failed to install phppgadmin package. Exiting.')
+    if not tools.ubuntu_install_package(['apache2']):
+        _logger.error('Failed to install apache package. Exiting.')
         return False
     _logger.info('Making SSL certificate for Apache')
     if tools.exec_command('make-ssl-cert generate-default-snakeoil', as_root=True):
