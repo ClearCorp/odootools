@@ -57,42 +57,42 @@ class oerpServer(object):
         elif 'install_openobject_addons' in config.params:
             self._install_openobject_addons = config.params['install_openobject_addons']
         else:
-            self._install_openobject_addons = False
+            self._install_openobject_addons = True
             
         if self._branch+'_install_openerp_ccorp_addons' in config.params:
             self._install_openerp_ccorp_addons = config.params[self._branch+'_install_openerp_ccorp_addons']
         elif 'install_openerp_ccorp_addons' in config.params:
             self._install_openerp_ccorp_addons = config.params['install_openerp_ccorp_addons']
         else:
-            self._install_openerp_ccorp_addons = False
+            self._install_openerp_ccorp_addons = True
             
         if self._branch+'_install_openerp_costa_rica' in config.params:
             self._install_openerp_costa_rica = config.params[self._branch+'_install_openerp_costa_rica']
         elif 'install_openerp_costa_rica' in config.params:
             self._install_openerp_costa_rica = config.params['install_openerp_costa_rica']
         else:
-            self._install_openerp_costa_rica = False
+            self._install_openerp_costa_rica = True
             
         if self._branch+'_update_postgres_hba' in config.params:
             self._update_postgres_hba = config.params[self._branch+'_update_postgres_hba']
         elif 'update_postgres_hba' in config.params:
             self._update_postgres_hba = config.params['update_postgres_hba']
         else:
-            self._update_postgres_hba = False
+            self._update_postgres_hba = True
             
         if self._branch+'_create_postgres_user' in config.params:
             self._create_postgres_user = config.params[self._branch+'_create_postgres_user']
         elif 'create_postgres_user' in config.params:
             self._create_postgres_user = config.params['create_postgres_user']
         else:
-            self._create_postgres_user = False
+            self._create_postgres_user = True
             
         if self._branch+'_install_apache' in config.params:
             self._install_apache = config.params[self._branch+'_install_apache']
         elif 'install_apache' in config.params:
             self._install_apache = config.params['install_apache']
         else:
-            self._install_apache = False
+            self._install_apache = True
             
         self._admin_password = config.params[self._branch+'_admin_password'] or config.params['admin_password'] or None
         self._postgresql_password = config.params[self._branch+'_postgresql_password'] or config.params['postgresql_password'] or None
