@@ -140,8 +140,8 @@ class oerpInstance(object):
             return False
         elif len(installed_branches) == 1:
             if self._branch not in installed_branches:
-                _logger.warning('Selected branch (%s) not installed. Using %s instead.' % (self._branch, installed_branch[0]))
-                self._branch = installed_branch[0]
+                _logger.warning('Selected branch (%s) not installed. Using %s instead.' % (self._branch, installed_branches[0]))
+                self._branch = installed_branches[0]
         else:
             if self._branch not in installed_branches:
                 _logger.error('Selected branch (%s) not installed. Exiting.' % self._branch)
