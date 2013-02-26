@@ -47,9 +47,8 @@ def make_installer():
     
     _logger.info("Starting OERPTools make process")
     
-    #TODO: enable the user to choose the oerptools path
+    #TODO: lp:1133407 enable the user to choose the oerptools path
     _logger.debug("Getting this oerptools dir absolute path")
-    #TODO: Remove one ../ when moving oerptools to the root.
     scripts_path =  os.path.abspath(os.path.dirname(__file__)+'../../..')
     
     _logger.debug("Opening this bzr branch: %s" % scripts_path)
@@ -74,7 +73,7 @@ def make_installer():
     _logger.debug('Branching this branch to target branch: %s' % build_path)
     target_branch = this_branch.bzrdir.sprout(build_path).open_branch()
     
-    # TODO: Let the user choose the parent branch.
+    # TODO: lp:1133410 Let the user choose the parent branch.
     parent_path = 'lp:oerptools/2.0'
     _logger.debug('Set parent location for target branch: %s' % parent_path)
     target_branch.set_parent(parent_path)

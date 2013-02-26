@@ -402,7 +402,7 @@ class oerpServer(object):
         return True
     
     def _arch_do_update_postgres_hba(self):
-        #TODO: change sed command with python lib to do the change (be carefull with the user perms)
+        #TODO: lp:1133383 change sed command with python lib to do the change (be carefull with the user perms)
         #if tools.exec_command("sed -i 's/\(local[[:space:]]*all[[:space:]]*all[[:space:]]*\)\(ident[[:space:]]*sameuser\)/\1md5/g' /etc/postgresql/%s/main/pg_hba.conf" % self._postgresql_version, as_root=True):
         #    _logger.error('Failed to set PostgreSQL pg_hba.conf file. Exiting.')
         #    return False
@@ -448,13 +448,6 @@ class oerpServer(object):
             if tools.exec_command('chown -R %s:openerp /etc/openerp' % self._user, as_root=True):
                 _logger.warning('Failed to set /etc/openerp owner. Skipping.')
         
-        #TODO: set instances addons dirs as executable, (really necessary?)
-        #Old bash code:
-        #if ls /srv/openerp/$branch/instances/*/addons > /dev/null 1>&2; then
-        #    for x in $(ls -d /srv/openerp/$branch/instances/*/addons); do
-        #        chmod +x $x >> $INSTALL_LOG_FILE;
-        #    done
-        #fi
         return True
     
     def _download_openerp_repo(self):
@@ -647,7 +640,7 @@ class oerpServer(object):
         if not apache.apache_install():
             _logger.error('Failed to install Apache. Exiting.')
             return False
-        #TODO: arch configuration of sites
+        #TODO: lp:1133385 arch configuration of sites
         _logger.info('Configuring site config files.')
         #if tools.exec_command('cp %s/oerptools/oerp/static/apache/apache-erp /etc/apache2/sites-available/erp' % config.params['oerptools_path'], as_root=True):
         #    _logger.warning('Failed copy Apache erp site conf file.')
@@ -688,7 +681,7 @@ class oerpServer(object):
             _logger.info('FQDN: %s' % hostname[1])
         
         _logger.info('Time and date: %s' % datetime.datetime.today().strftime('%Y/%m/%d %H:%M:%S'))
-        #TODO: list installed and default locale
+        #TODO: lp:1133388 list installed and default locale
         
         _logger.info('')
         _logger.info('Installation info')

@@ -243,7 +243,7 @@ class oerpInstance(object):
                 installed_addons.append('/srv/openerp/%s/instances/%s/addons/%s' % (self._branch, self._name, path))
         installed_addons = ','.join(installed_addons)
         
-        # TODO: archlinux init
+        # TODO: lp:1133399 archlinux init
         if tools.exec_command('cp -a /etc/openerp/%s/server/init-skeleton /etc/init.d/openerp-server-%s' % (self._branch, self._name), as_root=True):
             _logger.warning('Failed to copy init script.')
         else:
@@ -277,7 +277,7 @@ class oerpInstance(object):
             tools.exec_command('chown -R openerp_%s:openerp /var/log/openerp/%s' % (self._name, self._name), as_root=True)
             tools.exec_command('chmod 664 /var/log/openerp/%s/*.log' % self._name, as_root=True)
         
-        #TODO: archlinux apache configurations
+        #TODO: lp:1133403 archlinux apache configurations
         if tools.exec_command('cp -a /etc/openerp/apache2/ssl-%s-skeleton /etc/openerp/apache2/rewrites/%s' % (self._branch, self._name), as_root=True):
             _logger.warning('Failed copy apache rewrite file.')
         else:
@@ -288,7 +288,7 @@ class oerpInstance(object):
         if tools.exec_command('mkdir -p /var/run/openerp/%s' % self._name, as_root=True):
             _logger.warning('Failed to make pid dir.')
         
-        #TODO: archlinux init server
+        #TODO: lp:1133399 archlinux init server
         if self._start_now:
             tools.exec_command('service postgresql%s start' % self._postgresql_init_suffix, as_root=True)
             tools.exec_command('service apache2 restart', as_root=True)

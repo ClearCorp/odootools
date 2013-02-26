@@ -67,5 +67,5 @@ def arch_phppgadmin_install():
     if tools.arch_install_repo_package(['phppgadmin']):
         _logger.error('Failed to install phppgadmin package. Exiting.')
         return False
-    #TODO: configuration for phppgadmin in arch
+    #TODO: lp:1133345 configuration for phppgadmin in arch
 

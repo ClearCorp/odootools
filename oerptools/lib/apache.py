@@ -70,7 +70,7 @@ def arch_apache_install():
         _logger.error('Failed to install apache package. Exiting.')
         return False
     return True
-    #TODO: configuration for apache in arch
+    #TODO: lp:1133347 configuration for apache in arch
 
 def apache_restart():
     os_version = tools.get_os()

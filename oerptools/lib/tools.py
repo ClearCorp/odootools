@@ -141,7 +141,7 @@ def arch_install_aur_package(packages):
     _logger.info('Installing packages from AUR.')
     _logger.debug('Packages: %s' % str(packages))
     
-    #TODO: check if base-devel group is installed
+    #TODO: lp:1133341 check if base-devel group is installed
     if exec_command('pacman -Sq --noconfirm --needed base-devel', as_root=True):
         _logger.error('Error installing base-devel package group. Exiting.')
         return False
