@@ -109,7 +109,7 @@ class oerpInstance(object):
             self._start_now = config.params[self._branch+'_start_now']
         elif 'start_now' in config.params:
             self._start_now = config.params['start_now']
-        elif self._installation_type == 'server'
+        elif self._installation_type == 'server':
             self._start_now = True
         else:
             self._start_now = False
@@ -120,7 +120,7 @@ class oerpInstance(object):
             self._on_boot = config.params[self._branch+'_on_boot']
         elif 'on_boot' in config.params:
             self._on_boot = config.params['on_boot']
-        elif self._installation_type == 'server'
+        elif self._installation_type == 'server':
             self._on_boot = True
         else:
             self._on_boot = False
