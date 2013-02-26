@@ -29,7 +29,7 @@ import os, datetime, pwd, grp, getpass, re, tempfile
 from oerptools.lib import config, bzr, tools, apache
 
 class oerpServer(object):
-    def __init__(self):
+    def __init__(self, instance=None):
         self._os_info = tools.get_os()
         #Old Ubuntu versions have a suffix in postgresql init script
         self._postgresql_init_suffix = ''
@@ -42,15 +42,58 @@ class oerpServer(object):
             else:
                 self._postgresql_version = '9.1'
         
-        self._branch = config.params['branch'] or '7.0'
+        if instance:
+            _logger.debug('Server initialized with instance: %s' % instance)
+            _logger.debug('Branch: %s' % instance._branch)
+            self._branch = instance._branch
+        else:
+            _logger.debug('Server initialized without instance: %s' % instance)
+            self._branch = config.params['branch'] or '7.0'
         self._installation_type = config.params[self._branch+'_installation_type'] or config.params['installation_type'] or'dev'
         self._user = config.params[self._branch+'_user'] or config.params['user'] or None
-        self._install_openobject_addons = config.params[self._branch+'_install_openobject_addons'] or config.params['install_openobject_addons'] or True
-        self._install_openerp_ccorp_addons = config.params[self._branch+'_install_openerp_ccorp_addons'] or config.params['install_openerp_ccorp_addons'] or True
-        self._install_openerp_costa_rica = config.params[self._branch+'_install_openerp_costa_rica'] or config.params['install_openerp_costa_rica'] or True
-        self._update_postgres_hba = config.params[self._branch+'_update_postgres_hba'] or config.params['update_postgres_hba'] or True
-        self._create_postgres_user = config.params[self._branch+'_create_postgres_user'] or config.params['create_postgres_user'] or True
-        self._install_apache = config.params[self._branch+'_install_apache'] or config.params['install_apache'] or True
+        
+        if self._branch+'_install_openobject_addons' in config.params:
+            self._install_openobject_addons = config.params[self._branch+'_install_openobject_addons']
+        elif 'install_openobject_addons' if config.params:
+            self._install_openobject_addons = config.params['install_openobject_addons']
+        else:
+            self._install_openobject_addons = False
+            
+        if self._branch+'_install_openerp_ccorp_addons' in config.params:
+            self._install_openerp_ccorp_addons = config.params[self._branch+'_install_openerp_ccorp_addons']
+        elif 'install_openerp_ccorp_addons' if config.params:
+            self._install_openerp_ccorp_addons = config.params['install_openerp_ccorp_addons']
+        else:
+            self._install_openerp_ccorp_addons = False
+            
+        if self._branch+'_install_openerp_costa_rica' in config.params:
+            self._install_openerp_costa_rica = config.params[self._branch+'_install_openerp_costa_rica']
+        elif 'install_openerp_costa_rica' if config.params:
+            self._install_openerp_costa_rica = config.params['install_openerp_costa_rica']
+        else:
+            self._install_openerp_costa_rica = False
+            
+        if self._branch+'_update_postgres_hba' in config.params:
+            self._update_postgres_hba = config.params[self._branch+'_update_postgres_hba']
+        elif 'update_postgres_hba' if config.params:
+            self._update_postgres_hba = config.params['update_postgres_hba']
+        else:
+            self._update_postgres_hba = False
+            
+        if self._branch+'_create_postgres_user' in config.params:
+            self._create_postgres_user = config.params[self._branch+'_create_postgres_user']
+        elif 'create_postgres_user' if config.params:
+            self._create_postgres_user = config.params['create_postgres_user']
+        else:
+            self._create_postgres_user = False
+            
+        if self._branch+'_install_apache' in config.params:
+            self._install_apache = config.params[self._branch+'_install_apache']
+        elif 'install_apache' if config.params:
+            self._install_apache = config.params['install_apache']
+        else:
+            self._install_apache = False
+            
         self._admin_password = config.params[self._branch+'_admin_password'] or config.params['admin_password'] or None
         self._postgresql_password = config.params[self._branch+'_postgresql_password'] or config.params['postgresql_password'] or None
         return super(oerpServer, self).__init__()
@@ -429,6 +472,7 @@ class oerpServer(object):
         return True
     
     def change_perms(self):
+        _logger.debug('User: %s' % self._user)
         if os.path.isdir('/srv/openerp'):
             if tools.exec_command('chown -R %s:openerp /srv/openerp' % self._user, as_root=True):
                 _logger.warning('Failed to set /srv/openerp owner. Skipping.')
@@ -579,7 +623,7 @@ class oerpServer(object):
             _logger.error('Failed to config init skeleton. Exiting.')
             return False
         if self._installation_type == 'dev':
-            if tools.exec_command('sed -i "s#@DBFILTER@#${SERVERNAME}_.*#g" /etc/openerp/%s/server/init-skeleton' % self._branch, as_root=True):
+            if tools.exec_command('sed -i "s#@DBFILTER@#\${SERVERNAME}_.*#g" /etc/openerp/%s/server/init-skeleton' % self._branch, as_root=True):
                 _logger.error('Failed to config init skeleton. Exiting.')
                 return False
         else:
@@ -853,5 +897,3 @@ class oerpServer(object):
         self._set_logrotation()
         
         return True
-
-oerp_server = oerpServer()

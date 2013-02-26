@@ -27,7 +27,7 @@ _logger = logging.getLogger('oerptools.oerp.instance')
 import os, re, pwd, grp
 
 from oerptools.lib import config, bzr, tools
-from oerptools.oerp.server import oerp_server as _server
+from oerptools.oerp.server import oerpServer
 
 class oerpInstance(object):
     def __init__(self):
@@ -44,6 +44,20 @@ class oerpInstance(object):
                 self._postgresql_version = '9.1'
         
         self._branch = config.params['branch'] or '7.0'
+        
+        installed_branches = []
+        if os.path.isdir('/etc/openerp/6.1'):
+            installed_branches.append('6.1')
+        if os.path.isdir('/etc/openerp/7.0'):
+            installed_branches.append('7.0')
+        if os.path.isdir('/etc/openerp/trunk'):
+            installed_branches.append('trunk')
+        
+        if len(installed_branches) == 1 and self._branch not in installed_branches:
+            _logger.debug('Selected branch (%s) not installed. Using %s instead.' % (self._branch, installed_branches[0]))
+            self._branch = installed_branches[0]
+        
+        
         self._name = config.params['name']
         self._installation_type = config.params[self._branch+'_'+self._name+'_installation_type'] or \
                                   config.params[self._branch+'_installation_type'] or \
@@ -54,27 +68,64 @@ class oerpInstance(object):
         self._port = config.params[self._branch+'_'+self._name+'_port'] or \
                      config.params[self._branch+'_port'] or \
                      config.params['port'] or 0
-        self._install_openobject_addons = config.params[self._branch+'_'+self._name+'_install_openobject_addons'] or \
-                                          config.params[self._branch+'_install_openobject_addons'] or \
-                                          config.params['install_openobject_addons'] or True
-        self._install_openerp_ccorp_addons = config.params[self._branch+'_'+self._name+'_install_openerp_ccorp_addons'] or \
-                                             config.params[self._branch+'_install_openerp_ccorp_addons'] or \
-                                             config.params['install_openerp_ccorp_addons'] or True
-        self._install_openerp_costa_rica = config.params[self._branch+'_'+self._name+'_install_openerp_costa_rica'] or \
-                                           config.params[self._branch+'_install_openerp_costa_rica'] or \
-                                           config.params['install_openerp_costa_rica'] or True
+        
+        if self._branch+'_'+self._name+'_install_openobject_addons' in config.params:
+            self._install_openobject_addons = config.params[self._branch+'_'+self._name+'_install_openobject_addons']
+        elif self._branch+'_install_openobject_addons' in config.params:
+            self._install_openobject_addons = config.params[self._branch+'_install_openobject_addons']
+        elif 'install_openobject_addons' in config.params:
+            self._install_openobject_addons = config.params['install_openobject_addons']
+        else:
+            self._install_openobject_addons = True
+        
+        if self._branch+'_'+self._name+'_install_openerp_ccorp_addons' in config.params:
+            self._install_openerp_ccorp_addons = config.params[self._branch+'_'+self._name+'_install_openerp_ccorp_addons']
+        elif self._branch+'_install_openerp_ccorp_addons' in config.params:
+            self._install_openerp_ccorp_addons = config.params[self._branch+'_install_openerp_ccorp_addons']
+        elif 'install_openerp_ccorp_addons' in config.params:
+            self._install_openerp_ccorp_addons = config.params['install_openerp_ccorp_addons']
+        else:
+            self._install_openerp_ccorp_addons = True
+        
+        if self._branch+'_'+self._name+'_install_openerp_costa_rica' in config.params:
+            self._install_openerp_costa_rica = config.params[self._branch+'_'+self._name+'_install_openerp_costa_rica']
+        elif self._branch+'_install_openerp_costa_rica' in config.params:
+            self._install_openerp_costa_rica = config.params[self._branch+'_install_openerp_costa_rica']
+        elif 'install_openerp_costa_rica' in config.params:
+            self._install_openerp_costa_rica = config.params['install_openerp_costa_rica']
+        else:
+            self._install_openerp_costa_rica = True
+        
         self._admin_password = config.params[self._branch+'_'+self._name+'_admin_password'] or \
                                config.params[self._branch+'_admin_password'] or \
                                config.params['admin_password'] or None
         self._postgresql_password = config.params[self._branch+'_'+self._name+'_postgresql_password'] or \
                                     config.params[self._branch+'_postgresql_password'] or \
                                     config.params['postgresql_password'] or None
-        self._start_now = config.params[self._branch+'_'+self._name+'_start_now'] or \
-                          config.params[self._branch+'_start_now'] or \
-                          config.params['start_now'] or (self._installation_type == 'server' and True) or False
-        self._on_boot = config.params[self._branch+'_'+self._name+'_on_boot'] or \
-                        config.params[self._branch+'_on_boot'] or \
-                        config.params['on_boot'] or (self._installation_type == 'server' and True) or False
+        
+        if self._branch+'_'+self._name+'_start_now' in config.params:
+            self._start_now = config.params[self._branch+'_'+self._name+'_start_now']
+        elif self._branch+'_start_now' in config.params:
+            self._start_now = config.params[self._branch+'_start_now']
+        elif 'start_now' in config.params:
+            self._start_now = config.params['start_now']
+        elif self._installation_type == 'server'
+            self._start_now = True
+        else:
+            self._start_now = False
+        
+        if self._branch+'_'+self._name+'_on_boot' in config.params:
+            self._on_boot = config.params[self._branch+'_'+self._name+'_on_boot']
+        elif self._branch+'_on_boot' in config.params:
+            self._on_boot = config.params[self._branch+'_on_boot']
+        elif 'on_boot' in config.params:
+            self._on_boot = config.params['on_boot']
+        elif self._installation_type == 'server'
+            self._on_boot = True
+        else:
+            self._on_boot = False
+        
+        self._server = oerpServer(instance=self)
         return super(oerpInstance, self).__init__()
     
     def _check_port(self):
@@ -126,6 +177,7 @@ class oerpInstance(object):
             except:
                 _logger.error('Your user must be the user of installation (%s), root, or be part of openerp group. Exiting.')
                 return False
+        _logger.info('Selected user: %s' % self._user)
         
         installed_branches = []
         if os.path.isdir('/etc/openerp/6.1'):
@@ -297,6 +349,6 @@ class oerpInstance(object):
         if self._installation_type == 'dev':
             tools.exec_command('bash -c "echo \\"127.0.1.1    %s.localhost\\" >> /etc/hosts"' % self._name, as_root=True)
         
-        _server.change_perms()
+        self._server.change_perms()
         
         return True
