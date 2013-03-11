@@ -41,6 +41,8 @@ class oerpServer(object):
                 self._postgresql_version = '8.4'
             else:
                 self._postgresql_version = '9.1'
+        elif self._os_info['os'] == 'Linux' and self._os_info['version'][0] == 'arch':
+            self._postgresql_version = '9.1'
         
         if instance:
             _logger.debug('Server initialized with instance: %s' % instance)
@@ -49,7 +51,10 @@ class oerpServer(object):
         else:
             _logger.debug('Server initialized without instance: %s' % instance)
             self._branch = config.params['branch'] or '7.0'
-        self._installation_type = config.params[self._branch+'_installation_type'] or config.params['installation_type'] or'dev'
+        print config.params[self._branch+'_installation_type']
+        print config.params['installation_type']
+        self._installation_type = config.params[self._branch+'_installation_type'] or config.params['installation_type'] or 'dev'
+        print self._installation_type
         self._user = config.params[self._branch+'_user'] or config.params['user'] or None
         
         if self._branch+'_install_openobject_addons' in config.params:
@@ -103,6 +108,7 @@ class oerpServer(object):
             group = grp.getgrnam('openerp')
         except:
             _logger.info('openerp group doesn\'t exist, creating group.')
+            # TODO: no addgroup in arch
             tools.exec_command('addgroup openerp', as_root=True)
             group = False
         else:
@@ -642,7 +648,7 @@ class oerpServer(object):
                 _logger.error('Failed to set interface in config skeleton. Exiting.')
                 return False
         else:
-            if tools.exec_command('sed -i "s#@INTERFACE@#localhost#g" /etc/openerp/%s/server/conf-skeleton' % (self._branch, self._branch), as_root=True):
+            if tools.exec_command('sed -i "s#@INTERFACE@#localhost#g" /etc/openerp/%s/server/conf-skeleton' % self._branch, as_root=True):
                 _logger.error('Failed to set interface in config skeleton. Exiting.')
                 return False
         
@@ -893,6 +899,7 @@ class oerpServer(object):
         
         if self._install_apache:
             self._do_install_apache()
+            self._do_install_phppgadmin()
         
         self._set_logrotation()
         

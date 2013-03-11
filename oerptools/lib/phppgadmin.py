@@ -45,21 +45,6 @@ def ubuntu_phppgadmin_install():
     if tools.ubuntu_install_package(['phppgadmin']):
         _logger.error('Failed to install phppgadmin package. Exiting.')
         return False
-    if tools.exec_command('sed -i "s/#\?[[:space:]]*\(deny from all.*\)/# deny from all/g" /etc/phppgadmin/apache.conf', as_root=True):
-        _logger.error('Failed to configure phppgadmin apache file. Exiting.')
-        return False
-    if tools.exec_command('sed -i "s/[[:space:]]*allow from \(.*\)/# allow from \1/g" /etc/phppgadmin/apache.conf', as_root=True):
-        _logger.error('Failed to configure phppgadmin apache file. Exiting.')
-        return False
-    if tools.exec_command('sed -i "s/#\?[[:space:]]*\(allow from all.*\)/allow from all/g" /etc/phppgadmin/apache.conf', as_root=True):
-        _logger.error('Failed to configure phppgadmin apache file. Exiting.')
-        return False
-    if tools.exec_command('sed -i "s/#\?[[:space:]]*\(allow from all.*\)/allow from all/g" /etc/phppgadmin/apache.conf', as_root=True):
-        _logger.error('Failed to configure phppgadmin apache file. Exiting.')
-        return False
-    if tools.exec_command('/etc/init.d/apache2 restart', as_root=True):
-        _logger.warning('Failed to restart apache. Exiting.')
-        return False
     return
 
 def arch_phppgadmin_install():
