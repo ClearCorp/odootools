@@ -26,7 +26,7 @@ _logger = logging.getLogger('oerptools.oerp.install')
 
 import os, datetime, pwd, grp, getpass, re, tempfile
 
-from oerptools.lib import config, bzr, tools, apache
+from oerptools.lib import config, bzr, tools, apache, phppgadmin
 
 class oerpServer(object):
     def __init__(self, instance=None):
@@ -899,7 +899,7 @@ class oerpServer(object):
         
         if self._install_apache:
             self._do_install_apache()
-            self._do_install_phppgadmin()
+            phppgadmin.phppgadmin_install()
         
         self._set_logrotation()
         
