@@ -302,7 +302,7 @@ class oerpInstance(object):
             tools.exec_command('sed -i "s#@NAME@#%s#g" /etc/init.d/openerp-server-%s' % (self._name, self._name), as_root=True)
             tools.exec_command('sed -i "s#@USER@#openerp_%s#g" /etc/init.d/openerp-server-%s' % (self._name, self._name), as_root=True)
             if self._on_boot:
-                toos.exec_command('update-rc.d openerp-server-%s defaults' % self._name, as_root=True)
+                tools.exec_command('update-rc.d openerp-server-%s defaults' % self._name, as_root=True)
         
         if tools.exec_command('cp -a /etc/openerp/%s/server/bin-skeleton /usr/local/bin/openerp-server-%s' % (self._branch, self._name), as_root=True):
             _logger.warning('Failed to copy bin script.')
