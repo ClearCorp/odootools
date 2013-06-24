@@ -20,8 +20,8 @@
 #       MA 02110-1301, USA.
 
 if [[ ! -d $OPENERP_CCORP_DIR ]]; then
-	echo "openerp-ccorp-scripts not installed."
-	exit 1
+    echo "openerp-ccorp-scripts not installed."
+    exit 1
 fi
 
 #~ Libraries import
@@ -38,7 +38,7 @@ checkRoot
 server_name=openerp_$3
 proc_name=${server_name:0:15}
 if [[ `ps -A | grep -c $proc_name` -gt 0 ]]; then
-	killall -s KILL openerp_$3
+    killall -s KILL openerp_$3
 fi
 
 # Re-create the database
@@ -53,6 +53,6 @@ sudo -u postgres pg_dump --format=c --no-owner $1 | sudo -u postgres pg_restore 
 
 # Restart copy server
 /etc/init.d/openerp-server-$3 start
-sudo -u postgres psql -c "ALTER DATABASE $2 OWNER TO openerp_$3"
+sudo -u postgres psql -c "ALTER DATABASE $2 OWNER TO openerp"
 
 exit 0
