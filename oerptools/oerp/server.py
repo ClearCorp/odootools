@@ -349,7 +349,7 @@ class oerpServer(object):
     
     def _arch_install_python_libs(self, packages):
         #Initialize packages match
-        distro_match_packages = get_packages_distro_match('arch')
+        distro_match_packages = self.get_packages_distro_match('arch')
         
         #Build definitive package list
         distro_packages = []
@@ -622,13 +622,13 @@ class oerpServer(object):
         if tools.exec_command('sed -i "s#@PATH@#/usr/local#g" /etc/openerp/%s/server/init-skeleton' % self._branch, as_root=True):
             _logger.error('Failed to config init skeleton. Exiting.')
             return False
-        if tools.exec_command('sed -i "s#@USER@#%s#g" /etc/openerp/%s/server/init-skeleton' % (self._user, self._branch), as_root=True):
-            _logger.error('Failed to config init skeleton. Exiting.')
-            return False
         if tools.exec_command('sed -i "s#@BRANCH@#%s#g" /etc/openerp/%s/server/init-skeleton' % (self._branch, self._branch), as_root=True):
             _logger.error('Failed to config init skeleton. Exiting.')
             return False
         if self._installation_type == 'dev':
+            if tools.exec_command('sed -i "s#@USER@#%s#g" /etc/openerp/%s/server/init-skeleton' % (self._user, self._branch), as_root=True):
+                _logger.error('Failed to config init skeleton. Exiting.')
+                return False
             if tools.exec_command('sed -i "s#@DBFILTER@#\${SERVERNAME}_.*#g" /etc/openerp/%s/server/init-skeleton' % self._branch, as_root=True):
                 _logger.error('Failed to config init skeleton. Exiting.')
                 return False
