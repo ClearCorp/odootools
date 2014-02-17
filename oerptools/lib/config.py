@@ -546,5 +546,5 @@ class configParameters(object):
             tools.exec_command('chmod o-w %s' % file_path, as_root=True)
         
         return file_path
-    
+
 params = configParameters()

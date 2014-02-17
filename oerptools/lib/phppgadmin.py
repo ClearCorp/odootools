@@ -34,7 +34,7 @@ from oerptools.lib import tools
 def phppgadmin_install():
     os_version = tools.get_os()
     if os_version['os'] == 'Linux':
-        if os_version['version'][0] == 'Ubuntu':
+        if (os_version['version'][0] == 'Ubuntu') or (os_version['version'][0] == 'LinuxMint'):
             return ubuntu_phppgadmin_install()
         elif os_version['version'][0] == 'arch':
             return arch_phppgadmin_install()
@@ -42,15 +42,15 @@ def phppgadmin_install():
 
 def ubuntu_phppgadmin_install():
     _logger.info('Installing PostgreSQL Web administration interface (phppgadmin)')
-    if tools.ubuntu_install_package(['phppgadmin']):
+    if not tools.ubuntu_install_package(['phppgadmin']):
         _logger.error('Failed to install phppgadmin package. Exiting.')
         return False
-    return
+    return True
 
 def arch_phppgadmin_install():
     _logger.info('Installing PostgreSQL Web administration interface (phppgadmin)')
-    if tools.arch_install_repo_package(['phppgadmin']):
+    if not tools.arch_install_repo_package(['phppgadmin']):
         _logger.error('Failed to install phppgadmin package. Exiting.')
         return False
-    #TODO: lp:1133345 configuration for phppgadmin in arch
+    #TODO: configuration for phppgadmin in arch
 

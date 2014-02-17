@@ -33,7 +33,7 @@ _logger = logging.getLogger('oerptools.lib.bzr')
 def bzr_install():
     os_version = tools.get_os()
     if os_version and os_version['os'] == 'Linux':
-        if os_version['version'][0] == 'Ubuntu':
+        if (os_version['version'][0] == 'Ubuntu') or (os_version['version'][0] == 'LinuxMint'):
             return ubuntu_bzr_install()
         elif os_version['version'][0] == 'arch':
             return arch_bzr_install()
@@ -41,12 +41,12 @@ def bzr_install():
     return False
 
 def ubuntu_bzr_install():
-    #TODO: lp:1133369 logger gets the output of the command
+    #TODO: logger gets the output of the command
     _logger.info('Installing bzr...')
     return tools.ubuntu_install_package(['bzr', 'python-bzrlib'], update=True)
 
 def arch_bzr_install():
-    #TODO: lp:1133369 logger gets the output of the command
+    #TODO: logger gets the output of the command
     _logger.info('Installing bzr...')
     return tools.arch_install_repo_package(['bzr'])
 
@@ -66,7 +66,7 @@ def bzr_initialize():
     load_plugins()
 
 def bzr_init_repo(target, no_trees=False):
-    #TODO: lp:1133372 do this with the python library
+    #TODO: do this with the python library
     if no_trees:
         if tools.exec_command('bzr init-repo --no-tree %s' % target):
             _logger.error('Failed to create repository in: %s. Exiting.' % target)

@@ -41,6 +41,8 @@ class oerpServer(object):
                 self._postgresql_version = '8.4'
             else:
                 self._postgresql_version = '9.1'
+        elif self._os_info['os'] == 'Linux' and self._os_info['version'][0] == 'LinuxMint':
+            self._postgresql_version = '9.1'
         elif self._os_info['os'] == 'Linux' and self._os_info['version'][0] == 'arch':
             self._postgresql_version = '9.1'
         
@@ -51,33 +53,30 @@ class oerpServer(object):
         else:
             _logger.debug('Server initialized without instance: %s' % instance)
             self._branch = config.params['branch'] or '7.0'
-        print config.params[self._branch+'_installation_type']
-        print config.params['installation_type']
         self._installation_type = config.params[self._branch+'_installation_type'] or config.params['installation_type'] or 'dev'
-        print self._installation_type
         self._user = config.params[self._branch+'_user'] or config.params['user'] or None
         
-        if self._branch+'_install_openobject_addons' in config.params:
-            self._install_openobject_addons = config.params[self._branch+'_install_openobject_addons']
-        elif 'install_openobject_addons' in config.params:
+        if 'install_openobject_addons' in config.params:
             self._install_openobject_addons = config.params['install_openobject_addons']
+        elif self._branch+'_install_openobject_addons' in config.params:
+            self._install_openobject_addons = config.params[self._branch+'_install_openobject_addons']
         else:
-            self._install_openobject_addons = True
-            
-        if self._branch+'_install_openerp_ccorp_addons' in config.params:
-            self._install_openerp_ccorp_addons = config.params[self._branch+'_install_openerp_ccorp_addons']
-        elif 'install_openerp_ccorp_addons' in config.params:
+            self._install_openobject_addons = True  
+        
+        if 'install_openerp_ccorp_addons' in config.params:
             self._install_openerp_ccorp_addons = config.params['install_openerp_ccorp_addons']
+        elif self._branch+'_install_openerp_ccorp_addons' in config.params:
+            self._install_openerp_ccorp_addons = config.params[self._branch+'_install_openerp_ccorp_addons']
         else:
             self._install_openerp_ccorp_addons = True
             
-        if self._branch+'_install_openerp_costa_rica' in config.params:
-            self._install_openerp_costa_rica = config.params[self._branch+'_install_openerp_costa_rica']
-        elif 'install_openerp_costa_rica' in config.params:
+        if 'install_openerp_costa_rica' in config.params:
             self._install_openerp_costa_rica = config.params['install_openerp_costa_rica']
+        elif self._branch+'_install_openerp_costa_rica' in config.params:
+            self._install_openerp_costa_rica = config.params[self._branch+'_install_openerp_costa_rica']
         else:
             self._install_openerp_costa_rica = True
-            
+    
         if self._branch+'_update_postgres_hba' in config.params:
             self._update_postgres_hba = config.params[self._branch+'_update_postgres_hba']
         elif 'update_postgres_hba' in config.params:
@@ -321,7 +320,7 @@ class oerpServer(object):
         
         # Test distro and call appropriate function
         if self._os_info and self._os_info['os'] == 'Linux':
-            if self._os_info['version'][0] == 'Ubuntu':
+            if (self._os_info['version'][0] == 'Ubuntu') or (self._os_info['version'][0] == 'LinuxMint'):
                 return self._ubuntu_install_python_libs(packages)
             elif self._os_info['version'][0] == 'arch':
                 return self._arch_install_python_libs(packages)
@@ -390,7 +389,7 @@ class oerpServer(object):
         _logger.info('Installing PostgreSQL.')
         # Test distro and call appropriate function
         if self._os_info and self._os_info['os'] == 'Linux':
-            if self._os_info['version'][0] == 'Ubuntu':
+            if (self._os_info['version'][0] == 'Ubuntu') or (self._os_info['version'][0] == 'LinuxMint'):
                 return self._ubuntu_install_postgresql()
             elif self._os_info['version'][0] == 'arch':
                 return self._arch_install_postgresql()
@@ -433,7 +432,7 @@ class oerpServer(object):
         _logger.info('Updating PostgreSQL pg_hba.conf file.')
         # Test distro and call appropriate function
         if self._os_info and self._os_info['os'] == 'Linux':
-            if self._os_info['version'][0] == 'Ubuntu':
+            if (self._os_info['version'][0] == 'Ubuntu') or (self._os_info['version'][0] == 'LinuxMint'):
                 return self._ubuntu_do_update_postgres_hba()
             elif self._os_info['version'][0] == 'arch':
                 return self._arch_do_update_postgres_hba()
@@ -511,7 +510,7 @@ class oerpServer(object):
         if tools.exec_command('mkdir -p /usr/local/src/oerptools/oerp', as_root=True):
             _logger.error('Failed to create /usr/local/src/oerptools/oerp dir. Exiting.')
             return False
-        
+
         if 'repo_tgz' in config.params and config.params['repo_tgz'] and os.path.isfile(os.path.abspath(config.params['repo_tgz'])):
             if tools.exec_command('cp %s /usr/local/src/oerptools/oerp/openerp.tgz' % os.path.abspath(config.params['repo_tgz']), as_root=True):
                 _logger.warning('Failed to copy %s to /usr/local/src/oerptools/oerp.')
@@ -661,13 +660,16 @@ class oerpServer(object):
     def _do_install_apache(self):
         os_version = tools.get_os()
         if os_version['os'] == 'Linux':
-            if os_version['version'][0] == 'Ubuntu':
-                return self._ubuntu_do_install_apache()
+            string = ''
+            if (os_version['version'][0] == 'Ubuntu') or (os_version['version'][0] == 'LinuxMint'):
+                if os_version['version'][0] == 'LinuxMint':
+                    string = '000-'
+                return self._ubuntu_do_install_apache(string)
             elif os_version['version'][0] == 'arch':
                 return self._arch_do_install_apache()
         return False
     
-    def _ubuntu_do_install_apache(self):
+    def _ubuntu_do_install_apache(self, string):
         if not apache.apache_install():
             _logger.error('Failed to install Apache. Exiting.')
             return False
@@ -678,9 +680,9 @@ class oerpServer(object):
             _logger.warning('Failed make /etc/openerp/apache2/rewrites.')
         if tools.exec_command('cp %s/oerptools/oerp/static/apache/apache-ssl-%s-skeleton /etc/openerp/apache2/ssl-%s-skeleton' % (config.params['oerptools_path'], self._branch, self._branch), as_root=True):
             _logger.warning('Failed copy Apache rewrite skeleton.')
-        if tools.exec_command('sed -i "s#ServerAdmin .*\\$#ServerAdmin support@clearcorp.co.cr\\n\\n\\tInclude /etc/apache2/sites-available/erp#g" /etc/apache2/sites-available/default', as_root=True):
+        if tools.exec_command('sed -i "s#ServerAdmin .*\\$#ServerAdmin support@clearcorp.co.cr\\n\\n\\tInclude /etc/apache2/sites-available/erp#g" /etc/apache2/sites-available/'+string+'default.conf', as_root=True):
             _logger.warning('Failed config Apache site.')
-        if tools.exec_command('sed -i "s#ServerAdmin .*\\$#ServerAdmin support@clearcorp.co.cr\\n\\n\\tInclude /etc/openerp/apache2/rewrites#g" /etc/apache2/sites-available/default-ssl', as_root=True):
+        if tools.exec_command('sed -i "s#ServerAdmin .*\\$#ServerAdmin support@clearcorp.co.cr\\n\\n\\tInclude /etc/openerp/apache2/rewrites#g" /etc/apache2/sites-available/default-ssl.conf', as_root=True):
             _logger.warning('Failed config Apache site.')
         if not apache.apache_restart():
             _logger.warning('Failed restart Apache.')
