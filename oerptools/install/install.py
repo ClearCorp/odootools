@@ -40,7 +40,7 @@ def install():
     def oerptools_install(install_dir):
         os_version = tools.get_os()
         if os_version['os'] == 'Linux':
-            if os_version['version'][0] == 'Ubuntu':
+            if (os_version['version'][0] == 'Ubuntu') or (os_version['version'][0] == 'LinuxMint'):
                 return ubuntu_oerptools_install(install_dir)
             elif os_version['version'][0] == 'arch':
                 return arch_oerptools_install(install_dir)

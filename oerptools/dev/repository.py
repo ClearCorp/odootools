@@ -175,7 +175,7 @@ class repository(object):
         self._branch_project('openerp-costa-rica',    False, ['6.1', '7.0', 'trunk'])
         self._branch_project('oerptools',             False, ['1.0', '2.0', 'trunk'])
         
-        self._branch_project('banking-addons',        True,  ['6.1', 'trunk'])
+        self._branch_project('banking-addons',        True,  ['6.1'])
         
         return True
     
@@ -196,7 +196,7 @@ class repository(object):
         self._update_project('openerp-costa-rica',    False, ['6.1', '7.0', 'trunk'])
         self._update_project('oerptools',             False, ['1.0', '2.0', 'trunk'])
         
-        self._update_project('banking-addons',        True,  ['6.1', 'trunk'])
+        self._update_project('banking-addons',        True,  ['6.1'])
         
         return True
     
@@ -217,7 +217,7 @@ class repository(object):
         self._reset_project_locations('openerp-costa-rica',    False, ['6.1', '7.0', 'trunk'])
         self._reset_project_locations('oerptools',             False, ['1.0', '2.0', 'trunk'])
         
-        self._reset_project_locations('banking-addons',        True,  ['6.1', 'trunk'])
+        self._reset_project_locations('banking-addons',        True,  ['6.1'])
         
         return True
     
@@ -336,7 +336,7 @@ class repository(object):
         self._src_branch_project('openerp-ccorp-addons',  False, ['6.1', '7.0', 'trunk'])
         self._src_branch_project('openerp-costa-rica',    False, ['6.1', '7.0', 'trunk'])
         
-        self._src_branch_project('banking-addons',        True,  ['6.1', 'trunk'])
+        self._src_branch_project('banking-addons',        True,  ['6.1'])
         
         self._src_compress_project('openobject-server',     True,  ['6.1', '7.0', 'trunk'])
         self._src_compress_project('openobject-addons',     True,  ['6.1', '7.0', 'trunk'])
@@ -345,7 +345,7 @@ class repository(object):
         self._src_compress_project('openerp-ccorp-addons',  False, ['6.1', '7.0', 'trunk'])
         self._src_compress_project('openerp-costa-rica',    False, ['6.1', '7.0', 'trunk'])
         
-        self._src_compress_project('banking-addons',        True,  ['6.1', 'trunk'])
+        self._src_compress_project('banking-addons',        True,  ['6.1'])
         
         self._src_compress_repo()
         
@@ -365,7 +365,7 @@ class repository(object):
         self._src_update_project('openerp-ccorp-addons',  False, ['6.1', '7.0', 'trunk'])
         self._src_update_project('openerp-costa-rica',    False, ['6.1', '7.0', 'trunk'])
         
-        self._src_update_project('banking-addons',        True,  ['6.1', 'trunk'])
+        self._src_update_project('banking-addons',        True,  ['6.1'])
         
         self._src_compress_project('openobject-server',     True,  ['6.1', '7.0', 'trunk'])
         self._src_compress_project('openobject-addons',     True,  ['6.1', '7.0', 'trunk'])
@@ -374,7 +374,7 @@ class repository(object):
         self._src_compress_project('openerp-ccorp-addons',  False, ['6.1', '7.0', 'trunk'])
         self._src_compress_project('openerp-costa-rica',    False, ['6.1', '7.0', 'trunk'])
         
-        self._src_compress_project('banking-addons',        True,  ['6.1', 'trunk'])
+        self._src_compress_project('banking-addons',        True,  ['6.1'])
         
         self._src_compress_repo()
         

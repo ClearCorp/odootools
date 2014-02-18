@@ -42,6 +42,8 @@ class oerpInstance(object):
                 self._postgresql_version = '8.4'
             else:
                 self._postgresql_version = '9.1'
+        if self._os_info['os'] == 'Linux' and self._os_info['version'][0] == 'LinuxMint':
+            self._postgresql_version = '9.1'
         
         self._branch = config.params['branch'] or '7.0'
         

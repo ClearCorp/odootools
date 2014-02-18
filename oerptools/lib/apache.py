@@ -34,13 +34,16 @@ from oerptools.lib import tools
 def apache_install():
     os_version = tools.get_os()
     if os_version['os'] == 'Linux':
-        if os_version['version'][0] == 'Ubuntu':
-            return ubuntu_apache_install()
+        string = ''
+        if (os_version['version'][0] == 'Ubuntu') or (os_version['version'][0] == 'LinuxMint'):
+            if os_version['version'][0] == 'LinuxMint':
+                string = '000-'
+            return ubuntu_apache_install(string)
         elif os_version['version'][0] == 'arch':
             return arch_apache_install()
     return False
 
-def ubuntu_apache_install():
+def ubuntu_apache_install(string):
     _logger.info('Installing Apache web server')
     if not tools.ubuntu_install_package(['apache2']):
         _logger.error('Failed to install apache package. Exiting.')
@@ -56,7 +59,7 @@ def ubuntu_apache_install():
     if tools.exec_command('a2enmod ssl rewrite suexec include proxy proxy_http proxy_connect proxy_ftp headers', as_root=True):
         _logger.error('Failed to enable Apache modules. Exiting.')
         return False
-    if tools.exec_command('a2ensite default default-ssl', as_root=True):
+    if tools.exec_command('a2ensite '+string+'default default-ssl', as_root=True):
         _logger.error('Failed to enable Apache sites. Exiting.')
         return False
     if tools.exec_command('/etc/init.d/apache2 restart', as_root=True):
@@ -70,12 +73,12 @@ def arch_apache_install():
         _logger.error('Failed to install apache package. Exiting.')
         return False
     return True
-    #TODO: lp:1133347 configuration for apache in arch
+    #TODO: configuration for apache in arch
 
 def apache_restart():
     os_version = tools.get_os()
     if os_version['os'] == 'Linux':
-        if os_version['version'][0] == 'Ubuntu':
+        if (os_version['version'][0] == 'Ubuntu') or (os_version['version'][0] == 'LinuxMint'):
             return ubuntu_apache_restart()
         elif os_version['version'][0] == 'arch':
             return arch_apache_restart()
