@@ -34,10 +34,7 @@ from oerptools.lib import tools
 def apache_install():
     os_version = tools.get_os()
     if os_version['os'] == 'Linux':
-        string = ''
         if (os_version['version'][0] == 'Ubuntu') or (os_version['version'][0] == 'LinuxMint'):
-            if os_version['version'][0] == 'LinuxMint':
-                string = '000-'
             return ubuntu_apache_install(string)
         elif os_version['version'][0] == 'arch':
             return arch_apache_install()
