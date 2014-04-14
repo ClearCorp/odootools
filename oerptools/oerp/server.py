@@ -661,13 +661,12 @@ class oerpServer(object):
         os_version = tools.get_os()
         if os_version['os'] == 'Linux':
             if (os_version['version'][0] == 'Ubuntu') or (os_version['version'][0] == 'LinuxMint'):
-                if os_version['version'][0] == 'LinuxMint':
                 return self._ubuntu_do_install_apache()
             elif os_version['version'][0] == 'arch':
                 return self._arch_do_install_apache()
         return False
 
-    def _ubuntu_do_install_apache(self, string):
+    def _ubuntu_do_install_apache(self):
         if not apache.apache_install():
             _logger.error('Failed to install Apache. Exiting.')
             return False
