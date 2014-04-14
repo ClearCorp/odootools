@@ -16,7 +16,7 @@
 #  Affero General Public License for more details.
 #
 #  You should have received a copy of the GNU Affero General Public
-#  License along with this program.  If not, see 
+#  License along with this program.  If not, see
 #  <http://www.gnu.org/licenses/>.
 #
 ########################################################################
@@ -43,7 +43,7 @@ def apache_install():
             return arch_apache_install()
     return False
 
-def ubuntu_apache_install(string):
+def ubuntu_apache_install():
     _logger.info('Installing Apache web server')
     if not tools.ubuntu_install_package(['apache2']):
         _logger.error('Failed to install apache package. Exiting.')
@@ -59,7 +59,7 @@ def ubuntu_apache_install(string):
     if tools.exec_command('a2enmod ssl rewrite suexec include proxy proxy_http proxy_connect proxy_ftp headers', as_root=True):
         _logger.error('Failed to enable Apache modules. Exiting.')
         return False
-    if tools.exec_command('a2ensite '+string+'default default-ssl', as_root=True):
+    if tools.exec_command('a2ensite 000-default default-ssl', as_root=True):
         _logger.error('Failed to enable Apache sites. Exiting.')
         return False
     if tools.exec_command('/etc/init.d/apache2 restart', as_root=True):
