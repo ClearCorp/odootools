@@ -1,19 +1,19 @@
 #!/bin/bash
 
 #       openerp-lib.sh
-#       
+#
 #       Copyright 2010 ClearCorp S.A. <info@clearcorp.co.cr>
-#       
+#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
 #       (at your option) any later version.
-#       
+#
 #       This program is distributed in the hope that it will be useful,
 #       but WITHOUT ANY WARRANTY; without even the implied warranty of
 #       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #       GNU General Public License for more details.
-#       
+#
 #       You should have received a copy of the GNU General Public License
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -29,7 +29,7 @@ function log_echo {
 }
 
 function openerp_get_dist {
-    
+
     # Sets vars corresponding to the distro
     if [[ $dist == "lucid" ]]; then
         # Ubuntu 10.04, python 2.6
@@ -58,6 +58,26 @@ function openerp_get_dist {
         posgresql_rel=9.1
         python_rel=python2.7
         ubuntu_rel=12.04
+    elif [[ $dist == "quantal" ]]; then
+        # Ubuntu 12.10, python 2.7, postgres 9.1
+        posgresql_rel=9.1
+        python_rel=python2.7
+        ubuntu_rel=12.10
+    elif [[ $dist == "raring" ]]; then
+        # Ubuntu 13.04, python 2.7, postgres 9.1
+        posgresql_rel=9.1
+        python_rel=python2.7
+        ubuntu_rel=13.04
+    elif [[ $dist == "saucy" ]]; then
+        # Ubuntu 13.10, python 2.7, postgres 9.1
+        posgresql_rel=9.1
+        python_rel=python2.7
+        ubuntu_rel=13.10
+    elif [[ $dist == "trusty" ]]; then
+        # Ubuntu 14.04, python 2.7, postgres 9.1
+        posgresql_rel=9.1
+        python_rel=python2.7
+        ubuntu_rel=14.04
     else
         # Only Lucid supported for now
         log_echo "ERROR: This program must be executed on Ubuntu 10.04 - 11.10 (Desktop or Server)"
@@ -109,10 +129,10 @@ function update_system {
 function install_python_lib {
     # Install the required packages and python libraries for openerp.
     echo "Installing the required packages and python libraries for openerp..."
-    
+
     # Package array
     declare -a packages
-    
+
     # Packages need by the installer
     packages+=(python-setuptools)
 
@@ -138,7 +158,7 @@ function install_python_lib {
     if [[ $branch =~ "5.0" ]]; then
         #Dependencies
         packages+=(python-egenix-mxdatetime)
-        
+
         #Recommended
         packages+=(python-pyparsing)
     fi
@@ -162,7 +182,7 @@ function install_python_lib {
         packages+=(python-werkzeug)
         install_werkzeug=1
         packages+=(python-zsi)
-    
+
         # Recomended
         packages+=(python-gdata)        #Google data parser
         packages+=(python-ldap)
@@ -197,18 +217,18 @@ function install_python_lib {
         # Dependencies
         packages+=(python-werkzeug)
         install_werkzeug=1
-    
+
         # Recomended
         packages+=(python-mock)         # For testing
             if [[ ! $dist =~ "lucid" ]]; then
                 packages+=(python-unittest2)    # For testing
             fi
     fi
-    
+
     # Install packages
     log_echo "apt-get -qy install ${packages[*]}"
     apt-get -qy install ${packages[*]} >> $INSTALL_LOG_FILE
-    
+
     # werkzeug verion in lucid is too old.
     if [[ $dist =~ "lucid" ]] && [[ $install_werkzeug == 1 ]]; then
         easy_install -U werkzeug >> $INSTALL_LOG_FILE
@@ -324,7 +344,7 @@ function download_openerp {
     else
         download_repo
     fi
-    
+
     if [[ $branch == "5.0" ]] || [[ $branch == "6.0" ]] || [[ $branch == "6.1" ]] || [[ $branch == "trunk" ]]; then
         download_openerp_branch openobject-server openobject-server $branch-ccorp
         if [[ $install_openerp_addons =~ ^[Yy]$ ]]; then
@@ -358,7 +378,7 @@ function install_openerp_server {
          sed -i "s#\\[USER\\]#$openerp_user#g" /etc/openerp/$branch/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
          sed -i "s#\(chown.*\)openerp:openerp#\1$openerp_user:openerp#g" /etc/openerp/$branch/server/init-$branch-skeleton >> $INSTALL_LOG_FILE
     fi
-        
+
     # OpenERP Server config skeletons
     cp $OPENERP_CCORP_DIR/openerp-scripts/server/server.conf-$branch-skeleton /etc/openerp/$branch/server/ >> $INSTALL_LOG_FILE
     sed -i "s#\\[BRANCH\\]#$branch#g" /etc/openerp/$branch/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
@@ -369,7 +389,7 @@ function install_openerp_server {
         sed -i "s#\\[LOGLEVEL\\]#debug#g" /etc/openerp/$branch/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
         sed -i "s#\\[DEBUGMODE\\]#True#g" /etc/openerp/$branch/server/server.conf-$branch-skeleton >> $INSTALL_LOG_FILE
     fi
-    
+
     #~ Make pid dir
     mkdir -p /var/run/openerp >> $INSTALL_LOG_FILE
 
@@ -398,10 +418,10 @@ function install_change_perms {
     chmod -R g+w /var/log/openerp >> $INSTALL_LOG_FILE
     chmod -R g+w /var/run/openerp >> $INSTALL_LOG_FILE
     if ls /srv/openerp/$branch/instances/*/addons > /dev/null 1>&2; then
-	    for x in $(ls -d /srv/openerp/$branch/instances/*/addons); do
-	        chmod +x $x >> $INSTALL_LOG_FILE;
-	    done
-	fi
+        for x in $(ls -d /srv/openerp/$branch/instances/*/addons); do
+            chmod +x $x >> $INSTALL_LOG_FILE;
+        done
+    fi
 }
 
 function install_openerp {
@@ -442,7 +462,7 @@ function install_openerp_web_client {
     else
         sed -i "s/\[TYPE\]/production/g" /etc/openerp/$branch/web-client/web-client.conf-$branch-skeleton >> $INSTALL_LOG_FILE
     fi
-    
+
     #Change perms
     install_change_perms
 }
