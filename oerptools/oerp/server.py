@@ -677,7 +677,7 @@ class oerpServer(object):
             _logger.warning('Failed make /etc/openerp/apache2/rewrites.')
         if tools.exec_command('cp %s/oerptools/oerp/static/apache/apache-ssl-%s-skeleton /etc/openerp/apache2/ssl-%s-skeleton' % (config.params['oerptools_path'], self._branch, self._branch), as_root=True):
             _logger.warning('Failed copy Apache rewrite skeleton.')
-        if tools.exec_command('sed -i "s#ServerAdmin .*\\$#ServerAdmin support@clearcorp.co.cr\\n\\n\\tInclude /etc/apache2/sites-available/erp#g" /etc/apache2/sites-available/'+string+'default.conf', as_root=True):
+        if tools.exec_command('sed -i "s#ServerAdmin .*\\$#ServerAdmin support@clearcorp.co.cr\\n\\n\\tInclude /etc/apache2/sites-available/erp#g" /etc/apache2/sites-available/000-default.conf', as_root=True):
             _logger.warning('Failed config Apache site.')
         if tools.exec_command('sed -i "s#ServerAdmin .*\\$#ServerAdmin support@clearcorp.co.cr\\n\\n\\tInclude /etc/openerp/apache2/rewrites#g" /etc/apache2/sites-available/default-ssl.conf', as_root=True):
             _logger.warning('Failed config Apache site.')
