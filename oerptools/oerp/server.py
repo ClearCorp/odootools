@@ -169,6 +169,7 @@ class oerpServer(object):
                 'python-zsi':               'python-zsi',
                 'tinymce':                  'tinymce',
                 'wget':                     'wget',
+                'poppler-utils':            'poppler-utils'
             },
 
             'arch': {
@@ -207,6 +208,7 @@ class oerpServer(object):
                     'python-yaml':              'python2-yaml',
                     'tinymce':                  None,
                     'wget':                     'wget',
+                    'poppler-utils':            'poppler-utils' # Needs review on arch
                 },
                 'aur': {
                     'python-mock':              'python2-mock',
@@ -276,6 +278,7 @@ class oerpServer(object):
                 'python-simplejson',
                 'python-pyparsing',
                 # Recommended
+                'poppler-utils',
             ]
 
         # Packages for 7.0
@@ -316,6 +319,7 @@ class oerpServer(object):
                 'ghostscript',
                 'python-imaging',
                 'python-matplotlib',
+                'poppler-utils',
             ]
 
         # Test distro and call appropriate function
