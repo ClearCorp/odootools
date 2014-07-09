@@ -39,8 +39,11 @@ class oerpServer(object):
                 self._postgresql_init_suffix = '-8.4'
             if self._os_info['version'][1] < '11.10':
                 self._postgresql_version = '8.4'
-            else:
+            if self._os_info['version'][1] < '14.04':
                 self._postgresql_version = '9.1'
+            else:
+                self._postgresql_version = '9.3'
+        # TODO check versions for Linux Mint and Arch Linux
         elif self._os_info['os'] == 'Linux' and self._os_info['version'][0] == 'LinuxMint':
             self._postgresql_version = '9.1'
         elif self._os_info['os'] == 'Linux' and self._os_info['version'][0] == 'arch':
@@ -169,6 +172,7 @@ class oerpServer(object):
                 'python-zsi':               'python-zsi',
                 'tinymce':                  'tinymce',
                 'wget':                     'wget',
+                'poppler-utils':            'poppler-utils'
             },
 
             'arch': {
@@ -207,6 +211,7 @@ class oerpServer(object):
                     'python-yaml':              'python2-yaml',
                     'tinymce':                  None,
                     'wget':                     'wget',
+                    'poppler-utils':            'poppler-utils' # Needs review on arch
                 },
                 'aur': {
                     'python-mock':              'python2-mock',
@@ -276,6 +281,7 @@ class oerpServer(object):
                 'python-simplejson',
                 'python-pyparsing',
                 # Recommended
+                'poppler-utils',
             ]
 
         # Packages for 7.0
@@ -316,6 +322,7 @@ class oerpServer(object):
                 'ghostscript',
                 'python-imaging',
                 'python-matplotlib',
+                'poppler-utils',
             ]
 
         # Test distro and call appropriate function
