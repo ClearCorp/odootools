@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 ########################################################################
 #
-#  OpenERP Tools by CLEARCORP S.A.
+#  Odoo Tools by CLEARCORP S.A.
 #  Copyright (C) 2009-TODAY CLEARCORP S.A. (<http://clearcorp.co.cr>).
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -25,12 +25,12 @@ import sys, os, logging
 
 _logger = logging.getLogger('oerptools')
 
-# Add the module oerptools to PYTHONPATH
+# Add the module odootools to PYTHONPATH
 # This is necesary in order to call the module without installing it
-oerptools_path = os.path.abspath(os.path.dirname(__file__))
-sys.path.append(oerptools_path+'/..')
+odootools_path = os.path.abspath(os.path.dirname(__file__))
+sys.path.append(odootools_path+'/..')
 
-from oerptools.lib import config, logger
+from odootools.lib import config, logger
 
 # Read configuration values
 _params = config.params
@@ -41,8 +41,8 @@ if __name__ == '__main__':
     
     _logger.debug('Params loaded, logger initialized.')
     
-    _logger.info('OERPTools started, with command: %s' % _params['command'])
+    _logger.info('Odoo Tools started, with command: %s' % _params['command'])
     
     _params.exec_function()
     
-    _logger.info('OERPTools finished.')
+    _logger.info('Odoo Tools finished.')

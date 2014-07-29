@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 ########################################################################
 #
-#  OpenERP Tools by CLEARCORP S.A.
+#  Odoo Tools by CLEARCORP S.A.
 #  Copyright (C) 2009-TODAY CLEARCORP S.A. (<http://clearcorp.co.cr>).
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -21,13 +21,13 @@
 #
 ########################################################################
 
-#This logger method is inspired in OpenERP logger
+#This logger method is inspired in Odoo logger
 
 import os, sys, logging, logging.handlers
-import oerptools.lib.config as config
-import oerptools.lib.tools as tools
+import odootools.lib.config as config
+import odootools.lib.tools as tools #TODO
 
-_logger = logging.getLogger('oerptools.lib.logger')
+_logger = logging.getLogger('odootools.lib.logger')
 # create console handler with a higher log level
 log_console = logging.StreamHandler()
 log_console.setLevel(logging.WARNING)
@@ -79,7 +79,7 @@ class consoleColors (object):
     BG_CYAN    = "46"
     BG_WHITE   = "47"
     BG_DEFAULT = "49"
-    #Light foreground colors
+    #Light background colors
     BG_L_BLACK   = "100"
     BG_L_RED     = "101"
     BG_L_GREEN   = "102"
@@ -179,15 +179,15 @@ def load_info():
     if 'log_level' in config.params and config.params['log_level']:
         log_level = config.params['log_level']
         if log_level.lower() == 'debug':
-            pseudo_log_levels = ['oerptools:DEBUG']
+            pseudo_log_levels = ['odootools:DEBUG']
         elif log_level.lower() == 'info':
-            pseudo_log_levels = ['oerptools:INFO']
+            pseudo_log_levels = ['odootools:INFO']
         elif log_level.lower() == 'warning':
-            pseudo_log_levels = ['oerptools:WARNING']
+            pseudo_log_levels = ['odootools:WARNING']
         elif log_level.lower() == 'error':
-            pseudo_log_levels = ['oerptools:ERROR']
+            pseudo_log_levels = ['odootools:ERROR']
         elif log_level.lower() == 'critical':
-            pseudo_log_levels = ['oerptools:CRITICAL']
+            pseudo_log_levels = ['odootools:CRITICAL']
 
     if 'log_handler' in config.params and config.params['log_handler']:
         log_handler = config.params['log_handler']
@@ -195,8 +195,6 @@ def load_info():
         log_handler = []
 
     res['log_hander_list'] = default_log_levels + pseudo_log_levels + log_handler
-    # Force bzr:INFO if no bzr handler
-    res['log_hander_list'] = ['bzr:INFO'] + res['log_hander_list']
     return res
 
 def set_levels():
@@ -215,11 +213,11 @@ def set_levels():
     for log_handler_item in logger_info['log_hander_list']:
         _logger.debug('logger level set: "%s"', log_handler_item)
     
-    #Force oerptools.lib.config to reset handlers
-    if not 'oerptools.lib.config' in logger_info['log_hander_list']:
-        logging.getLogger('oerptools.lib.config').handlers = []
-    #Force oerptools.lib.logger to reset handlers
-    if not 'oerptools.lib.logger' in logger_info['log_hander_list']:
-        logging.getLogger('oerptools.lib.logger').handlers = []
+    #Force odootools.lib.config to reset handlers
+    if not 'odootools.lib.config' in logger_info['log_hander_list']:
+        logging.getLogger('odootools.lib.config').handlers = []
+    #Force odootools.lib.logger to reset handlers
+    if not 'odootools.lib.logger' in logger_info['log_hander_list']:
+        logging.getLogger('odootools.lib.logger').handlers = []
 
 logger_info = load_info()

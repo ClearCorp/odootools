@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 ########################################################################
 #
-#  OpenERP Tools by CLEARCORP S.A.
+#  Odoo Tools by CLEARCORP S.A.
 #  Copyright (C) 2009-TODAY CLEARCORP S.A. (<http://clearcorp.co.cr>).
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -26,10 +26,9 @@ import platform
 import subprocess
 import sys
 import logging
+import odootools.lib.config
 
-_logger = logging.getLogger('oerptools.lib.tools')
-
-import oerptools.lib.config
+_logger = logging.getLogger('odootools.lib.tools')
 
 def check_root():
     uid = os.getuid()
@@ -114,7 +113,7 @@ def exec_command(command, as_root=False):
     return process.returncode
 
 def command_not_available():
-    _logger.error('The command %s is not implemented yet.' % oerptools.lib.config.params['command'])
+    _logger.error('The command %s is not implemented yet.' % odootools.lib.config.params['command'])
     return
 
 def ubuntu_install_package(packages, update=False):
@@ -152,7 +151,7 @@ def arch_install_aur_package(packages):
             return False
     
     import tempfile, tarfile, copy
-    temp_dir = tempfile.mkdtemp(prefix='oerptools-')
+    temp_dir = tempfile.mkdtemp(prefix='odootools-')
     cwd = os.getcwd()
     
     error = False

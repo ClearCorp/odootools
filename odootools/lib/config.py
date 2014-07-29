@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 ########################################################################
 #
-#  OpenERP Tools by CLEARCORP S.A.
+#  Odoo Tools by CLEARCORP S.A.
 #  Copyright (C) 2009-TODAY CLEARCORP S.A. (<http://clearcorp.co.cr>).
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -21,13 +21,13 @@
 #
 ########################################################################
 
-#This config params loading method is inspired in OpenERP Server
+#This config params loading method is inspired in Odoo
 
 #TODO: Change ConfigParser to configparser for python3 compat
 import os, argparse, ConfigParser, ast
-
 import logging
-_logger = logging.getLogger('oerptools.lib.config')
+
+_logger = logging.getLogger('odootools.lib.config')
 # create console handler with a higher log level
 log_console = logging.StreamHandler()
 log_console.setLevel(logging.WARNING)
@@ -39,19 +39,20 @@ _logger.addHandler(log_console)
 
 #This class is initialized before initialization of the loggers, beware of this.
 class configParameters(object):
+    
     def __init__(self):
         self.params = {}
         self.param_sections = []
         # Required default options.
-        self.params['oerptools_path'] = '/usr/local/share/oerptools'
-        self.params['log_file'] = '/var/log/oerptools/oerptools.log'
+        self.params['odootools_path'] = '/usr/local/share/odootools'
+        self.params['log_file'] = '/var/log/odootools/odootools.log'
         
         self.params_lists = ['config_file','log_handler']
         
         cmdline_args = self._get_cmdline_args()
         
         # config_files list has all files to read, in order of precedence
-        config_files = ['/etc/oerptools/settings.conf', '~/.oerptools.conf']
+        config_files = ['/etc/odootools/settings.conf', '~/.odootools.conf']
         if 'config_file' in cmdline_args and cmdline_args.config_file:
             config_files += cmdline_args.config_file
         
@@ -116,12 +117,12 @@ class configParameters(object):
         Return namespace: parse_args() namespace with the arguments information parsed.
         """
         #WARNING: If you add or remove options remember to update the self.param_types dict.
-        #         Also update the default-oerptools.conf file.
+        #         Also update the default-odootools.conf file.
         #WARNING: If you add or remove option groups remember to update the self.param_types dict and
         #         the self.param_setions.
         
         #Initialize argument parser
-        parser = argparse.ArgumentParser(description='CLEARCORP OpenERP admin scripts.', prog='oerptools', add_help=False)
+        parser = argparse.ArgumentParser(description='CLEARCORP Odoo admin scripts.', prog='odootools', add_help=False)
         
         # Main
         group = parser.add_argument_group('Main', 'Main parameters')
@@ -130,8 +131,8 @@ class configParameters(object):
                             help='Show this help message and exit.')
         parser.add_argument('--config-file', '-c', action="append", metavar="PATH", type=str, default=argparse.SUPPRESS,
                             help='Custom config file. This option can be repeated. The order in declared files states precedence of options.')
-        parser.add_argument('--oerptools-path', '-p', type=str, default=argparse.SUPPRESS,
-                            help='Custom oerptools installation path.')
+        parser.add_argument('--odootools-path', '-p', type=str, default=argparse.SUPPRESS,
+                            help='Custom odootools installation path.')
         
         # Logging
         group = parser.add_argument_group('Logging', 'Log parameters')
@@ -150,53 +151,50 @@ class configParameters(object):
         group.add_argument('--log-handler', action="append", metavar="PREFIX:LEVEL", default=argparse.SUPPRESS,
                             help='Setup a handler at LEVEL for a given PREFIX. An empty PREFIX indicates the root logger. This option can be repeated. Example: "oerptools.install.make:DEBUG" or "oerptools.oerp.install:CRITICAL" (default: ":INFO")')
         
-        
-        
         # Commands
-        subparsers = parser.add_subparsers(dest='command', title='command', description='Valid OERPTools commands',
+        subparsers = parser.add_subparsers(dest='command', title='command', description='Valid Odoo Tools commands',
                             help='Command to execute (for help use "command --help")')
         
-        #oerptools-build
-        subparser = subparsers.add_parser('oerptools-build', help='Make a OERPTools installer .tgz file.', add_help=False)
+        #odootools-build
+        subparser = subparsers.add_parser('odootools-build', help='Make a Odoo Tools installer .tgz file.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
         group.add_argument('--target', '-t', type=str, default=argparse.SUPPRESS,
-                            help='Target directory for building and writing the oerptools.tgz file.')
+                            help='Target directory for building and writing the odootools.tgz file.')
         
-        #oerptools-install
-        subparser = subparsers.add_parser('oerptools-install', help='Install OERPTools.', add_help=False)
+        #odootools-install
+        subparser = subparsers.add_parser('odootools-install', help='Install Odoo Tools.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
         group.add_argument('--install-target-path', '-t', type=str, default=argparse.SUPPRESS,
-                            help='Path to install OERPTools in (default: /usr/local/share/oerptools).')
+                            help='Path to install Odoo Tools in (default: /usr/local/share/odootools).')
         group.add_argument('--install-config-path', type=str, default=argparse.SUPPRESS,
-                            help='Path for the OERPTools config file in (default: /etc/oerptools/settings.conf).')
+                            help='Path for the Odoo Tools config file in (default: /etc/odootools/settings.conf).')
         group.add_argument('--source-branch', '-s', type=str, default=argparse.SUPPRESS,
-                            help='URL of the OERPTools branch to install from (default: lp:oerptools).')
+                            help='URL of the Odoo Tools branch to install from (default: https://github.com/CLEARCORP/odootools).')
         
-        #oerptools-update
-        subparser = subparsers.add_parser('oerptools-update', help='Update the installed OERPTools.', add_help=False)
+        #odootools-update
+        subparser = subparsers.add_parser('odootools-update', help='Update the installed Odoo Tools.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
         group.add_argument('--source-branch', '-s', type=str, default=argparse.SUPPRESS,
-                            help='URL of the OERPTools branch to update from (default: lp:oerptools).')
+                            help='URL of the Odoo Tools branch to update from (default: https://github.com/CLEARCORP/odootools).')
         
-        #oerptools-uninstall
-        subparser = subparsers.add_parser('oerptools-uninstall', help='Uninstall OERPTools.', add_help=False)
+        #odootools-uninstall
+        subparser = subparsers.add_parser('odootools-uninstall', help='Uninstall Odoo Tools.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
         
-        
-        #oerp-install
-        subparser = subparsers.add_parser('oerp-install', help='Install OpenERP service.', add_help=False)
+        #odoo-install
+        subparser = subparsers.add_parser('odoo-install', help='Install Odoo service.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
@@ -205,25 +203,20 @@ class configParameters(object):
                             help='Server type (default: dev).')
         group.add_argument('--user', '-u', type=str, default=argparse.SUPPRESS,
                             help='User for development station installation.')
-        group.add_argument('--branch', '-b', choices=['6.1', '7.0', 'trunk'], default=argparse.SUPPRESS,
-                            help='OpenERP branch to install (default: 7.0).')
+        group.add_argument('--branch', '-b', choices=['6.1', '7.0', '8.0', 'trunk'], default=argparse.SUPPRESS,
+                            help='Odoo branch to install (default: 8.0).')
         # Addons
         group = subparser.add_argument_group('Addons', 'Addons to install')
         subgroup = group.add_mutually_exclusive_group()
-        subgroup.add_argument('--openobject-addons', dest='install_openobject_addons', action='store_true', default=argparse.SUPPRESS,
-                            help='Install openobject-addons modules branch (lp:openobject-addons).')
-        subgroup.add_argument('--no-openobject-addons', dest='install_openobject_addons', action='store_false', default=argparse.SUPPRESS,
-                            help='Don\'t install openobject-addons modules branch (lp:openobject-addons).')
+        subgroup.add_argument('--odoo-clearcorp', '--clearcorp', dest='install_odoo_clearcorp', action='store_true', default=argparse.SUPPRESS,
+                            help='Install odoo-clearcorp modules branch (https://github.com/CLEARCORP/odoo-clearcorp).')
+        subgroup.add_argument('--no-odoo-clearcorp', '--no-clearcorp', dest='install_odoo_clearcorp', action='store_false', default=argparse.SUPPRESS,
+                            help='Don\'t install odoo-clearcorp modules branch (https://github.com/CLEARCORP/odoo-clearcorp).')
         subgroup = group.add_mutually_exclusive_group()
-        subgroup.add_argument('--openerp-ccorp-addons', '--ccorp', dest='install_openerp_ccorp_addons', action='store_true', default=argparse.SUPPRESS,
-                            help='Install openerp-ccorp-addons modules branch (lp:openerp-ccorp-addons).')
-        subgroup.add_argument('--no-openerp-ccorp-addons', '--no-ccorp', dest='install_openerp_ccorp_addons', action='store_false', default=argparse.SUPPRESS,
-                            help='Don\'t install openerp-ccorp-addons modules branch (lp:openerp-ccorp-addons).')
-        subgroup = group.add_mutually_exclusive_group()
-        subgroup.add_argument('--openerp-costa-rica', '--l10n_cr', '--costa-rica', dest='install_openerp_costa_rica', action='store_true', default=argparse.SUPPRESS,
-                            help='Install openerp-costa-rica modules branch (lp:openerp-costa-rica).')
-        subgroup.add_argument('--no-openerp-costa-rica', '--no-l10n_cr', '--no-costa-rica', dest='install_openerp_costa_rica', action='store_false', default=argparse.SUPPRESS,
-                            help='Don\'t install openerp-costa-rica modules branch (lp:openerp-costa-rica).')
+        subgroup.add_argument('--odoo-costa-rica', '--l10n_cr', '--costa-rica', dest='install_odoo_costa_rica', action='store_true', default=argparse.SUPPRESS,
+                            help='Install odoo-costa-rica modules branch (https://github.com/CLEARCORP/odoo-costa-rica).')
+        subgroup.add_argument('--no-odoo-costa-rica', '--no-l10n_cr', '--no-costa-rica', dest='install_odoo_costa_rica', action='store_false', default=argparse.SUPPRESS,
+                            help='Don\'t install odoo-costa-rica modules branch (https://github.com/CLEARCORP/odoo-costa-rica).')
         #Advanced
         group = subparser.add_argument_group('Advanced', 'Advanced options')
         subgroup = group.add_mutually_exclusive_group()
@@ -239,27 +232,27 @@ class configParameters(object):
         subgroup.add_argument('--install-apache', '--apache', dest='install_apache', action='store_true', default=argparse.SUPPRESS,
                             help='Install Apache server (for reverse SSL proxy) (default).')
         subgroup.add_argument('--no-install-apache', '--no-apache', dest='install_apache', action='store_false', default=argparse.SUPPRESS,
-                            help='Don\'t  install Apache server (for reverse SSL proxy) (default).')
+                            help='Don\'t  install Apache server (for reverse SSL proxy).')
         group.add_argument('--repo-tgz', '-r', type=str, default=argparse.SUPPRESS,
-                            help='Path of the OERPTools repo tgz file (default: None).')
+                            help='Path of the Odoo Tools repo tgz file (default: None).')
         
-        #oerp-update
-        subparser = subparsers.add_parser('oerp-update', help='Update OpenERP service.', add_help=False)
+        #odoo-update
+        subparser = subparsers.add_parser('odoo-update', help='Update Odoo service.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
         
-        #oerp-uninstall
-        subparser = subparsers.add_parser('oerp-uninstall', help='Uninstall OpenERP service.', add_help=False)
+        #odoo-uninstall
+        subparser = subparsers.add_parser('odoo-uninstall', help='Uninstall Odoo service.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
         
         
-        #oerp-instance-make
-        subparser = subparsers.add_parser('oerp-instance-make', help='Make an OpenERP instance.', add_help=False)
+        #odoo-instance-make
+        subparser = subparsers.add_parser('odoo-instance-make', help='Make an Odoo instance.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
@@ -268,8 +261,8 @@ class configParameters(object):
                             help='Name for the instance.')
         group.add_argument('--port', '-p', type=int, default=argparse.SUPPRESS,
                             help='Port number for the instance.')
-        group.add_argument('--branch', '-b', choices=['6.1', '7.0', 'trunk'], default=argparse.SUPPRESS,
-                            help='OpenERP branch to install (default: 7.0).')
+        group.add_argument('--branch', '-b', choices=['6.1', '7.0', '8.0', 'trunk'], default=argparse.SUPPRESS,
+                            help='Odoo branch to install (default: 8.0).')
         #Advanced
         group = subparser.add_argument_group('Advanced', 'Advanced options')
         subgroup = group.add_mutually_exclusive_group()
@@ -282,10 +275,10 @@ class configParameters(object):
                             help='Start the instance on boot (default for server installation).')
         subgroup.add_argument('--no-on-boot', '--no-boot', dest='on_boot', action='store_false', default=argparse.SUPPRESS,
                             help='Don\'t start the instance on boot (default for dev installation).')
-        group.set_defaults(additional_commands=['oerp-install'])
+        group.set_defaults(additional_commands=['odoo-install'])
         
-        #oerp-instance-remove
-        subparser = subparsers.add_parser('oerp-instance-remove', help='Remove an OpenERP instance.', add_help=False)
+        #odoo-instance-remove
+        subparser = subparsers.add_parser('odoo-instance-remove', help='Remove an Odoo instance.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
@@ -294,64 +287,49 @@ class configParameters(object):
                             help='Name for the instance.')
         
         #dev-repo-make
-        subparser = subparsers.add_parser('dev-repo-make', help='Make the OpenERP development bzr repository.', add_help=False)
+        subparser = subparsers.add_parser('dev-repo-make', help='Make the Odoo development git repository.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
         group.add_argument('--repo-dir', '-d', type=str, default=argparse.SUPPRESS,
-                            help='Directory for the dev repository (default: ~/Development/openerp).')
-        subgroup = group.add_mutually_exclusive_group()
-        subgroup.add_argument('--trees', dest='no_trees', action='store_false', default=argparse.SUPPRESS,
-                            help='Create bzr repositories with trees (default).')
-        subgroup.add_argument('--no-trees', dest='no_trees', action='store_true', default=argparse.SUPPRESS,
-                            help='Create bzr repositories without trees.')
-        subgroup = group.add_mutually_exclusive_group()
-        subgroup.add_argument('--push', dest='push', action='store_true', default=argparse.SUPPRESS,
-                            help='Push branches to ccorp locations.')
-        subgroup.add_argument('--no-push', dest='push', action='store_false', default=argparse.SUPPRESS,
-                            help='Don\'t push branches to ccorp locations (default).')
+                            help='Directory for the dev repository (default: ~/Development/odoo).')
         
         #dev-repo-update
-        subparser = subparsers.add_parser('dev-repo-update', help='Update the OpenERP development bzr repository.', add_help=False)
+        subparser = subparsers.add_parser('dev-repo-update', help='Update the Odoo development git repository.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
         group.add_argument('--repo-dir', '-d', type=str, default=argparse.SUPPRESS,
-                            help='Directory for the dev repository (default: ~/Development/openerp).')
-        subgroup = group.add_mutually_exclusive_group()
-        subgroup.add_argument('--push', dest='push', action='store_true', default=argparse.SUPPRESS,
-                            help='Push branches to ccorp locations.')
-        subgroup.add_argument('--no-push', dest='push', action='store_false', default=argparse.SUPPRESS,
-                            help='Don\'t push branches to ccorp locations (default).')
+                            help='Directory for the dev repository (default: ~/Development/odoo).')
         
         #dev-repo-reset-locations
-        subparser = subparsers.add_parser('dev-repo-reset-locations', help='Reset OpenERP development repository branch locations.', add_help=False)
+        subparser = subparsers.add_parser('dev-repo-reset-locations', help='Reset Odoo development repository branch locations.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
         group.add_argument('--repo-dir', '-d', type=str, default=argparse.SUPPRESS,
-                            help='Directory for the dev repository (default: ~/Development/openerp).')
+                            help='Directory for the dev repository (default: ~/Development/odoo).')
         
         #dev-repo-src-make
-        subparser = subparsers.add_parser('dev-repo-src-make', help='Make the OpenERP development bzr source repository.', add_help=False)
+        subparser = subparsers.add_parser('dev-repo-src-make', help='Make the Odoo development git source repository.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
         group.add_argument('--repo-dir', '-d', type=str, default=argparse.SUPPRESS,
-                            help='Directory for the dev repository (default: ~/Development/openerp).')
+                            help='Directory for the dev repository (default: ~/Development/odoo).')
         
         #dev-repo-src-update
-        subparser = subparsers.add_parser('dev-repo-src-update', help='Update the OpenERP development bzr source repository.', add_help=False)
+        subparser = subparsers.add_parser('dev-repo-src-update', help='Update the Odoo development git source repository.', add_help=False)
         # Main
         group = subparser.add_argument_group('Main', 'Main parameters')
         group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
                             help='Show this help message and exit.')
         group.add_argument('--repo-dir', '-d', type=str, default=argparse.SUPPRESS,
-                            help='Directory for the dev repository (default: ~/Development/openerp).')
+                            help='Directory for the dev repository (default: ~/Development/odoo).')
         
         return parser.parse_args()
     
@@ -371,23 +349,24 @@ class configParameters(object):
             pass
         return params
     
+    #TODO review imports and methods 1 by 1
     def exec_function(self):
         if 'command' in self.params:
             command = self.params['command']
-            if command == 'oerptools-build':
-                import oerptools.install.make
-                oerptools.install.make.make_installer()
-            elif command == 'oerptools-install':
-                import oerptools.install.install
-                oerptools.install.install.install()
-            elif command == 'oerptools-update':
-                import oerptools.install.update
-                oerptools.install.update.update()
-            elif command == 'oerptools-uninstall':
-                import oerptools.lib.tools
-                oerptools.lib.tools.command_not_available()
+            if command == 'odootools-build':
+                import odootools.install.make #TODO
+                odootools.install.make.make_installer()
+            elif command == 'odoo-install':
+                import odootools.install.install #TODO
+                odootools.install.install.install()
+            elif command == 'odootools-update':
+                import odootools.install.update #TODO
+                odootools.install.update.update()
+            elif command == 'odootools-uninstall':
+                import odootools.lib.tools #TODO
+                odootools.lib.tools.command_not_available()
             elif command == 'oerp-install':
-                import oerptools.oerp.server
+                import odootools.oerp.server #TODO
                 oerp_server = oerptools.oerp.server.oerpServer()
                 oerp_server.install()
             elif command == 'oerp-update':

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 ########################################################################
 #
-#  OpenERP Tools by CLEARCORP S.A.
+#  Odoo Tools by CLEARCORP S.A.
 #  Copyright (C) 2009-TODAY CLEARCORP S.A. (<http://clearcorp.co.cr>).
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 ########################################################################
 
 '''
-Description: Makes the oerptools installer in a tgz
+Description: Makes the odootools installer in a tgz
 WARNING:    If you update this file, please remake the installer and
             upload it to launchpad.
             To make the installer, run this file or call oerptools-install-make
@@ -30,11 +30,11 @@ WARNING:    If you update this file, please remake the installer and
 '''
 
 import os, logging, shutil, tarfile, random, string
-import oerptools.lib.config
-import oerptools.lib.logger
-from oerptools.lib import bzr
+import odootools.lib.config #TODO
+import odootools.lib.logger #TODO
+from odootools.lib import bzr #TODO
 
-_logger = logging.getLogger('oerptools.install.make')
+_logger = logging.getLogger('odootools.install.make')
 
 
 def make_installer():
