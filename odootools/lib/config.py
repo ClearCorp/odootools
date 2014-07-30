@@ -354,7 +354,7 @@ class configParameters(object):
         if 'command' in self.params:
             command = self.params['command']
             if command == 'odootools-build':
-                import odootools.install.make #TODO
+                import odootools.install.make
                 odootools.install.make.make_installer()
             elif command == 'odoo-install':
                 import odootools.install.install #TODO

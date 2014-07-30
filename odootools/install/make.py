@@ -85,15 +85,15 @@ def make_installer():
                 build_path+"/setup")
     _logger.debug("Copying INSTALL.txt file to main dir.")
     shutil.copy(build_path+"/odootools/install/INSTALL.txt",
-                build_path+"/INSTALL.txt") # TODO Review INSTALL.txt
+                build_path+"/INSTALL.txt")
 
-    _logger.debug("Compressing the oodotools dir")
-    tar = tarfile.open(target_path+"/oerptools-setup.tgz", "w:gz")
-    tar.add(build_path, arcname='oerptools')
+    _logger.debug("Compressing the odootools dir")
+    tar = tarfile.open(target_path+"/odootools-setup.tgz", "w:gz")
+    tar.add(build_path, arcname='odootools')
     tar.close()
 
-    _logger.debug("Deleting the oerptools dir")
+    _logger.debug("Deleting the odootools dir")
     shutil.rmtree(build_path)
     
-    _logger.info("OERPTools make process finished")
+    _logger.info("Odoo Tools make process finished")
     return
