@@ -25,7 +25,7 @@
 
 import os, sys, logging, logging.handlers
 import odootools.lib.config as config
-import odootools.lib.tools as tools #TODO
+import odootools.lib.tools as tools
 
 _logger = logging.getLogger('odootools.lib.logger')
 # create console handler with a higher log level
