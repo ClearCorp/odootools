@@ -30,25 +30,24 @@ WARNING:    If you update this file, please remake the installer and
 '''
 
 import os, logging, shutil, tarfile, random, string
-import odootools.lib.config #TODO
-import odootools.lib.logger #TODO
-from odootools.lib import bzr #TODO
+import odootools.lib.config
+import odootools.lib.logger
+from odootools.lib import bzr
 
 _logger = logging.getLogger('odootools.install.make')
 
 
 def make_installer():
-
+    
     # Import and initialize bzr
     bzr.bzr_initialize()
     from bzrlib.branch import Branch
     
-    params = oerptools.lib.config.params
+    params = odootools.lib.config.params
     
-    _logger.info("Starting OERPTools make process")
+    _logger.info("Starting Odoo Tools make process")
     
-    #TODO: lp:1133407 enable the user to choose the oerptools path
-    _logger.debug("Getting this oerptools dir absolute path")
+    _logger.debug("Getting this odootools dir absolute path")
     scripts_path =  os.path.abspath(os.path.dirname(__file__)+'../../..')
     
     _logger.debug("Opening this bzr branch: %s" % scripts_path)
@@ -60,7 +59,7 @@ def make_installer():
         target_path = '.'
     target_path = os.path.abspath(target_path)
     tmp_string = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(8))
-    build_path = target_path+'/.oerptools.'+tmp_string
+    build_path = target_path+'/.odootools.'+tmp_string
     
     if not os.path.isdir(target_path):
         _logger.error('The provided directory path to build the installer (%s) doesn\'t exist. Exiting.' % target_path)
@@ -74,7 +73,7 @@ def make_installer():
     target_branch = this_branch.bzrdir.sprout(build_path).open_branch()
     
     # TODO: lp:1133410 Let the user choose the parent branch.
-    parent_path = 'lp:oerptools/2.0'
+    parent_path = 'lp:oerptools/2.0' #TODO rename parent branch
     _logger.debug('Set parent location for target branch: %s' % parent_path)
     target_branch.set_parent(parent_path)
     _logger.debug('Updating target branch from parent location.')
@@ -82,13 +81,13 @@ def make_installer():
     target_branch.pull(parent_branch)
 
     _logger.debug("Copying setup file to main dir.")
-    shutil.copy(build_path+"/oerptools/install/setup",
+    shutil.copy(build_path+"/odootools/install/setup",
                 build_path+"/setup")
     _logger.debug("Copying INSTALL.txt file to main dir.")
-    shutil.copy(build_path+"/oerptools/install/INSTALL.txt",
-                build_path+"/INSTALL.txt")
+    shutil.copy(build_path+"/odootools/install/INSTALL.txt",
+                build_path+"/INSTALL.txt") # TODO Review INSTALL.txt
 
-    _logger.debug("Compressing the oerptools dir")
+    _logger.debug("Compressing the oodotools dir")
     tar = tarfile.open(target_path+"/oerptools-setup.tgz", "w:gz")
     tar.add(build_path, arcname='oerptools')
     tar.close()

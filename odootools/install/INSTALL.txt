@@ -1,18 +1,18 @@
-Installation instructions for OERPTools
-=======================================
+Installation instructions for Odoo Tools
+========================================
 
-Steps to install OERPTools:
+Steps to install Odoo Tools:
 
-1. Download oerptools-setup.tgz from https://launchpad.net/oerptools
+1. Download odootools-setup.tgz from https://launchpad.net/oerptools #TODO rename launchpad project
 
 2. Untar the file with a graphical utility, or from the command line with:
-    'tar xfvz oerptools-setup.tgz'
+    'tar xfvz odootools-setup.tgz'
 
 3. From the command line, in the directory where you untarred the tgz file run:
-    './oerptools-setup/setup.py'
+    './odootools-setup/setup'
 
 4. Follow the instructions and aswer the questions, at the end you will have oerptools installed,
-   you can run commands from the command line with 'oerptools COMMAND [options]'.
-   Use 'oerptools -h' for help.
+   you can run commands from the command line with 'odootools COMMAND [options]'.
+   Use 'odootools -h' for help.
 
 Please give us some feedback, bug reports, questions and help at the launchpad proyect page.
