@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 ########################################################################
 #
-#  OpenERP Tools by CLEARCORP S.A.
+#  Odoo Tools by CLEARCORP S.A.
 #  Copyright (C) 2009-TODAY CLEARCORP S.A. (<http://clearcorp.co.cr>).
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -22,41 +22,40 @@
 ########################################################################
 
 '''
-Description: Installs OERPTools
+Description: Installs Odoo Tools
 WARNING:    If you update this file, please remake the installer and
             upload it to launchpad.
-            To make the installer, run this file or call oerptools-build
-            if the oerptools are installed.
+            To make the installer, run this file or call odootools-build
+            if the odootools are installed.
 '''
 
 import os, shutil, stat, logging
-from oerptools.lib import config, tools, bzr
+from odootools.lib import config, tools, bzr
 
 _logger = logging.getLogger('oerptools.install.install')
 
-
 def install():
     
-    def oerptools_install(install_dir):
+    def odootools_install(install_dir):
         os_version = tools.get_os()
         if os_version['os'] == 'Linux':
             if (os_version['version'][0] == 'Ubuntu') or (os_version['version'][0] == 'LinuxMint'):
-                return ubuntu_oerptools_install(install_dir)
+                return ubuntu_odootools_install(install_dir)
             elif os_version['version'][0] == 'arch':
-                return arch_oerptools_install(install_dir)
-        _logger.warning('Can\'t install OERPTools in this OS')
+                return arch_odootools_install(install_dir)
+        _logger.warning('Can\'t install Odoo Tools in this OS')
         return False
     
-    def ubuntu_oerptools_install(install_dir):
+    def ubuntu_odootools_install(install_dir):
         import re
         
-        _logger.info('Installing oerptools')
+        _logger.info('Installing odootools')
         
         # Initialize bzr
         bzr.bzr_initialize()
         from bzrlib.branch import Branch
         
-        # Get this oerptools branch directory
+        # Get this odootools branch directory
         branch_path = os.path.abspath(os.path.dirname(__file__)+"/../..")
         
         # Values dict to store default config values for this install
@@ -65,8 +64,8 @@ def install():
             'logging': {},
             }
         
-        # Set oerptools_path for new file
-        values['main'].update({'oerptools_path': install_dir})
+        # Set odootools_path for new file
+        values['main'].update({'odootools_path': install_dir})
         
         # Set config_file for new file
         if 'install_config_path' in config.params:
@@ -74,13 +73,13 @@ def install():
         elif 'config_file' in config.params and config.params['config_file']:
             values['main'].update({'config_file': config.params['config_file'][-1]})
         else:
-            values['main'].update({'config_file': '/etc/oerptools/settings.conf'})
+            values['main'].update({'config_file': '/etc/odootools/settings.conf'})
             
         # Set log_file for new file
         if 'log_file' in config.params:
             values['logging'].update({'log_file': config.params['log_file']})
         else:
-            values['logging'].update({'log_file': '/var/log/oerptools/oerptools.log'})
+            values['logging'].update({'log_file': '/var/log/odootools/odootools.log'})
             
         # Set log_handler for new file
         if 'log_handler' in config.params:
@@ -92,13 +91,13 @@ def install():
         f = open('/etc/environment')
         environment = f.read()
         f.close()
-        if 'OERPTOOLS_DIR' in environment:
-            environment = re.sub(r'OERPTOOLS_DIR.*','OERPTOOLS_DIR=%s' % install_dir, environment)
+        if 'ODOOTOOLS_DIR' in environment:
+            environment = re.sub(r'ODOOTOOLS_DIR.*','ODOOTOOLS_DIR=%s' % install_dir, environment)
             f = open('/etc/environment','w+')
             f.write(environment)
         else:
             f = open('/etc/environment','a+')
-            f.write('OERPTOOLS_DIR=%s\n' % install_dir)
+            f.write('ODOOTOOLS_DIR=%s\n' % install_dir)
         f.close()
         
         if os.path.isdir(install_dir):
@@ -113,32 +112,32 @@ def install():
                     branch.set_parent(config.params['source_branch'])
                     bzr.bzr_pull(install_dir)
                 except:
-                    branch.set_parent('lp:oerptools')
+                    branch.set_parent('lp:oerptools')# TODO Update branch
                     bzr.bzr_pull(install_dir)
             else:
                 branch.set_parent('lp:oerptools')
                 bzr.bzr_pull(install_dir)
         
         #Make config directory
-        if not os.path.exists('/etc/oerptools'):
-            os.mkdir('/etc/oerptools')
+        if not os.path.exists('/etc/odootools'):
+            os.mkdir('/etc/odootools')
         
         # Update config
         if not os.path.exists(values['main']['config_file']):
-            shutil.copy(branch_path+"/oerptools/install/default-oerptools.conf",values['main']['config_file'])
+            shutil.copy(branch_path+"/odootools/install/default-odootools.conf",values['main']['config_file'])
         elif not os.path.isfile(values['main']['config_file']):
             _logger.warning('Config file (%s) not updated because it is not a regular file.' % values['main']['config_file'])
         
         config.params.update_config_file_values(values, update_file=values['main']['config_file'])
         
-        # Make bin symlink to oerptools.py
-        if os.path.islink('/usr/local/bin/oerptools'):
-            os.remove('/usr/local/bin/oerptools')
-            os.symlink(install_dir+'/oerptools.py','/usr/local/bin/oerptools')
-        elif os.path.exists('/usr/local/bin/oerptools'):
-            _logger.warning('/usr/local/bin/oerptools already exists and is not a symlink.')
+        # Make bin symlink to odootools.py
+        if os.path.islink('/usr/local/bin/odootools'):
+            os.remove('/usr/local/bin/odootools')
+            os.symlink(install_dir+'/odootools.py','/usr/local/bin/odootools')
+        elif os.path.exists('/usr/local/bin/odootools'):
+            _logger.warning('/usr/local/bin/odootools already exists and is not a symlink.')
         else:
-            os.symlink(install_dir+'/oerptools.py','/usr/local/bin/oerptools')
+            os.symlink(install_dir+'/odootools.py','/usr/local/bin/odootools')
         
         # Create log dir
         log_file = os.path.abspath(values['logging']['log_file'])
@@ -154,13 +153,13 @@ def install():
 
         return True
     
-    def arch_oerptools_install(install_dir):
+    def arch_odootools_install(install_dir):
         # No differences as of now
-        return ubuntu_oerptools_install(install_dir)
+        return ubuntu_odootools_install(install_dir)
 
 
     _logger.debug('Checking if user is root')
-    tools.exit_if_not_root('oerptools-install')
+    tools.exit_if_not_root('odootools-install')
     
     _logger.debug('Installing bzr')
     bzr.bzr_install()
@@ -168,8 +167,8 @@ def install():
     if 'install_target_path' in config.params:
         install_dir = config.params['install_target_path']
     else:
-        install_dir = '/usr/local/share/oerptools'
+        install_dir = '/usr/local/share/odootools'
     
-    oerptools_install(install_dir)
+    odootools_install(install_dir)
     
     return True

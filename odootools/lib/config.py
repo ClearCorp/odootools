@@ -354,10 +354,10 @@ class configParameters(object):
         if 'command' in self.params:
             command = self.params['command']
             if command == 'odootools-build':
-                import odootools.install.make
+                import odootools.install.make #TODO testing pending
                 odootools.install.make.make_installer()
-            elif command == 'odoo-install':
-                import odootools.install.install #TODO
+            elif command == 'odootools-install':
+                import odootools.install.install
                 odootools.install.install.install()
             elif command == 'odootools-update':
                 import odootools.install.update #TODO
@@ -431,7 +431,7 @@ class configParameters(object):
             config_file = open(file_path)
         except:
             try:
-                import oerptools.lib.tools as tools
+                import odootools.lib.tools as tools
                 tools.exec_command('chmod o+r %s' % file_path, as_root=True)
                 chmod_r = True
                 config_file = open(file_path)
@@ -508,7 +508,7 @@ class configParameters(object):
             config_file.close()
         except:
             try:
-                import oerptools.lib.tools as tools
+                import odootools.lib.tools as tools
                 tools.exec_command('chmod o+w %s' % file_path, as_root=True)
                 chmod_w = True
                 config_file = open(file_path,'w')
