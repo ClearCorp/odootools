@@ -26,7 +26,7 @@ Description: Install bzr
 '''
 
 import logging
-from oerptools.lib import tools
+from odootools.lib import tools
 
 _logger = logging.getLogger('oerptools.lib.bzr')
 
@@ -60,8 +60,8 @@ def bzr_initialize():
     library_state.__enter__()
     set_verbosity_level(1000)
     
-    import oerptools.lib.logger
-    oerptools.lib.logger.set_levels()
+    import odootools.lib.logger
+    odootools.lib.logger.set_levels()
     
     load_plugins()
 
