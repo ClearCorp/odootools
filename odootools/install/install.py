@@ -112,10 +112,10 @@ def install():
                     branch.set_parent(config.params['source_branch'])
                     bzr.bzr_pull(install_dir)
                 except:
-                    branch.set_parent('lp:oerptools')# TODO Update branch
+                    branch.set_parent('lp:~gs.clearcorp/oerptools/3.0_oerptools') #TODO Update branch to correct one
                     bzr.bzr_pull(install_dir)
             else:
-                branch.set_parent('lp:oerptools')
+                branch.set_parent('lp:~gs.clearcorp/oerptools/3.0_oerptools') #TODO Update branch to correct one
                 bzr.bzr_pull(install_dir)
         
         #Make config directory
