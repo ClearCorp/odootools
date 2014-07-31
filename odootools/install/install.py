@@ -74,7 +74,7 @@ def install():
             values['main'].update({'config_file': config.params['config_file'][-1]})
         else:
             values['main'].update({'config_file': '/etc/odootools/settings.conf'})
-            
+        
         # Set log_file for new file
         if 'log_file' in config.params:
             values['logging'].update({'log_file': config.params['log_file']})
@@ -87,7 +87,7 @@ def install():
         else:
             values['logging'].update({'log_handler': ':INFO'})
         
-        
+        #TODO Reload env variables if possible
         f = open('/etc/environment')
         environment = f.read()
         f.close()
@@ -123,6 +123,7 @@ def install():
             os.mkdir('/etc/odootools')
         
         # Update config
+        #TODO: Remove write (group,others) and execute (owner,group,others) permissions
         if not os.path.exists(values['main']['config_file']):
             shutil.copy(branch_path+"/odootools/install/default-odootools.conf",values['main']['config_file'])
         elif not os.path.isfile(values['main']['config_file']):
@@ -140,6 +141,7 @@ def install():
             os.symlink(install_dir+'/odootools.py','/usr/local/bin/odootools')
         
         # Create log dir
+        #TODO Review folder permissions
         log_file = os.path.abspath(values['logging']['log_file'])
         log_dir = os.path.dirname(log_file)
         if not os.path.isdir(log_dir) and os.path.exists(log_dir):
