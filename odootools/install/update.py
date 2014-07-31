@@ -22,39 +22,38 @@
 ########################################################################
 
 '''
-Description: Updates the oerptools installation
+Description: Updates the odootools installation
 WARNING:    If you update this file, please remake the installer and
             upload it to launchpad.
-            To make the installer, run this file or call oerptools-install-make
-            if the oerptools are installed.
+            To make the installer, run this file or call odootools-make
+            if the odootools are installed.
 '''
 
-import logging
-_logger = logging.getLogger('oerptools.install.update')
-
 import os
+import logging
+from odootools.lib import config, bzr, tools
 
-from oerptools.lib import config, bzr, tools
+_logger = logging.getLogger('odootools.install.update')
 
 def update():
     _logger.debug('Checking if user is root')
-    tools.exit_if_not_root('oerptools-update')
+    tools.exit_if_not_root('odootools-update')
     
     bzr.bzr_initialize()
     
-    if 'oerptools_path' in config.params:
-        oerptools_path = config.params['oerptools_path']
+    if 'odootools_path' in config.params:
+        odootools_path = config.params['odootools_path']
     else:
-        _logger.error('The OERPTools path was not specified. Exiting.')
+        _logger.error('The Odoo Tools path was not specified. Exiting.')
         return False
     
-    if not os.path.isdir(oerptools_path):
-        _logger.error('The OERPTools path (%s) is not a valid directory. Exiting.' % oerptools_path)
+    if not os.path.isdir(odootools_path):
+        _logger.error('The Odoo Tools path (%s) is not a valid directory. Exiting.' % oerptools_path)
         return False
         
     if 'source_branch' in config.params:
-        bzr.bzr_pull(oerptools_path, config.params['source_branch'])
+        bzr.bzr_pull(odootools_path, config.params['source_branch'])
     else:
-        bzr.bzr_pull(oerptools_path)
+        bzr.bzr_pull(odootools_path)
         
     return True
