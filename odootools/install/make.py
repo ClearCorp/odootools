@@ -73,7 +73,8 @@ def make_installer():
     target_branch = this_branch.bzrdir.sprout(build_path).open_branch()
     
     # TODO: lp:1133410 Let the user choose the parent branch.
-    parent_path = 'lp:oerptools/2.0' #TODO rename parent branch
+    #parent_path = 'lp:oerptools/2.0' #TODO rename parent branch
+    parent_path = 'lp:~gs.clearcorp/oerptools/3.0_oerptools'
     _logger.debug('Set parent location for target branch: %s' % parent_path)
     target_branch.set_parent(parent_path)
     _logger.debug('Updating target branch from parent location.')
