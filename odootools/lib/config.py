@@ -360,15 +360,15 @@ class configParameters(object):
                 import odootools.install.install
                 odootools.install.install.install()
             elif command == 'odootools-update':
-                import odootools.install.update #TODO
+                import odootools.install.update
                 odootools.install.update.update()
             elif command == 'odootools-uninstall':
-                import odootools.lib.tools #TODO
-                odootools.lib.tools.command_not_available()
-            elif command == 'oerp-install':
-                import odootools.oerp.server #TODO
-                oerp_server = oerptools.oerp.server.oerpServer()
-                oerp_server.install()
+                import odootools.lib.tools
+                odootools.lib.tools.command_not_available() # Must be implemented
+            elif command == 'odoo-install':
+                import odootools.odoo.server #TODO
+                odoo_server = odootools.odoo.server.odooServer()
+                odoo_server.install()
             elif command == 'oerp-update':
                 import oerptools.lib.tools
                 oerptools.lib.tools.command_not_available()

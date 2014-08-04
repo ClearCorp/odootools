@@ -1,4 +1,4 @@
-/var/log/openerp/*.log /var/log/openerp/*/*.log {
+/var/log/odoo/*.log /var/log/odoo/*/*.log {
 	daily
 	rotate 30
 	compress
@@ -6,6 +6,6 @@
 	copytruncate
 	notifempty
 	nomissingok
-	create 664 openerp openerp
+	create 664 odoo odoo
 	noolddir
 }

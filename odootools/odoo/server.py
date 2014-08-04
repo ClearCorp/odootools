@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 ########################################################################
 #
-#  OpenERP Tools by CLEARCORP S.A.
+#  Odoo Tools by CLEARCORP S.A.
 #  Copyright (C) 2009-TODAY CLEARCORP S.A. (<http://clearcorp.co.cr>).
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -21,64 +21,60 @@
 #
 ########################################################################
 
-import logging
-_logger = logging.getLogger('oerptools.oerp.install')
-
 import os, datetime, pwd, grp, getpass, re, tempfile
+import logging
+from odootools.lib import config, bzr, tools, apache, phppgadmin
 
-from oerptools.lib import config, bzr, tools, apache, phppgadmin
+_logger = logging.getLogger('odootools.odoo.server')
 
-class oerpServer(object):
+class odooServer(object):
+    
     def __init__(self, instance=None):
         self._os_info = tools.get_os()
-        #Old Ubuntu versions have a suffix in postgresql init script
-        self._postgresql_init_suffix = ''
         self._postgresql_version = ''
         if self._os_info['os'] == 'Linux' and self._os_info['version'][0] == 'Ubuntu':
-            if self._os_info['version'][1] in ('10.04','10.10'):
-                self._postgresql_init_suffix = '-8.4'
-            if self._os_info['version'][1] < '11.10':
-                self._postgresql_version = '8.4'
-            if self._os_info['version'][1] < '14.04':
+            #Support for previous LTS
+            if self._os_info['version'][1] = '12.04':
                 self._postgresql_version = '9.1'
-            else:
+            #Support for versions between both LTS version
+            elif self._os_info['version'][1] < '14.04':
+                self._postgresql_version = '9.1'
+            #Support for current LTS
+            elif self._os_info['version'][1] = '14.04':
                 self._postgresql_version = '9.3'
+            else:
+                self._postgresql_version = '9.3' #This should fail unsupported version
         # TODO check versions for Linux Mint and Arch Linux
         elif self._os_info['os'] == 'Linux' and self._os_info['version'][0] == 'LinuxMint':
             self._postgresql_version = '9.1'
         elif self._os_info['os'] == 'Linux' and self._os_info['version'][0] == 'arch':
             self._postgresql_version = '9.1'
 
+        # TODO check if related to bazaar
         if instance:
             _logger.debug('Server initialized with instance: %s' % instance)
             _logger.debug('Branch: %s' % instance._branch)
             self._branch = instance._branch
         else:
             _logger.debug('Server initialized without instance: %s' % instance)
-            self._branch = config.params['branch'] or '7.0'
+            self._branch = config.params['branch'] or '8.0'
+        
         self._installation_type = config.params[self._branch+'_installation_type'] or config.params['installation_type'] or 'dev'
         self._user = config.params[self._branch+'_user'] or config.params['user'] or None
 
-        if 'install_openobject_addons' in config.params:
-            self._install_openobject_addons = config.params['install_openobject_addons']
-        elif self._branch+'_install_openobject_addons' in config.params:
-            self._install_openobject_addons = config.params[self._branch+'_install_openobject_addons']
+        if 'install_odoo_clearcorp' in config.params:
+            self._install_odoo_clearcorp = config.params['install_odoo_clearcorp']
+        elif self._branch+'_install_odoo_clearcorp' in config.params:
+            self._install_odoo_clearcorp = config.params[self._branch+'_install_odoo_clearcorp']
         else:
-            self._install_openobject_addons = True
+            self._install_odoo_clearcorp = True
 
-        if 'install_openerp_ccorp_addons' in config.params:
-            self._install_openerp_ccorp_addons = config.params['install_openerp_ccorp_addons']
-        elif self._branch+'_install_openerp_ccorp_addons' in config.params:
-            self._install_openerp_ccorp_addons = config.params[self._branch+'_install_openerp_ccorp_addons']
+        if 'install_odoo_costa_rica' in config.params:
+            self._install_odoo_costa_rica = config.params['install_odoo_costa_rica']
+        elif self._branch+'_install_odoo_costa_rica' in config.params:
+            self._install_odoo_costa_rica = config.params[self._branch+'_install_odoo_costa_rica']
         else:
-            self._install_openerp_ccorp_addons = True
-
-        if 'install_openerp_costa_rica' in config.params:
-            self._install_openerp_costa_rica = config.params['install_openerp_costa_rica']
-        elif self._branch+'_install_openerp_costa_rica' in config.params:
-            self._install_openerp_costa_rica = config.params[self._branch+'_install_openerp_costa_rica']
-        else:
-            self._install_openerp_costa_rica = True
+            self._install_odoo_costa_rica = True
 
         if self._branch+'_update_postgres_hba' in config.params:
             self._update_postgres_hba = config.params[self._branch+'_update_postgres_hba']
@@ -103,30 +99,31 @@ class oerpServer(object):
 
         self._admin_password = config.params[self._branch+'_admin_password'] or config.params['admin_password'] or None
         self._postgresql_password = config.params[self._branch+'_postgresql_password'] or config.params['postgresql_password'] or None
-        return super(oerpServer, self).__init__()
+        return super(odooServer, self).__init__()
 
-    def _add_openerp_user(self):
+    def _add_odoo_user(self):
         try:
-            group = grp.getgrnam('openerp')
+            group = grp.getgrnam('odoo')
         except:
-            _logger.info('openerp group doesn\'t exist, creating group.')
+            _logger.info('odoo group doesn\'t exist, creating group.')
             # TODO: no addgroup in arch
-            tools.exec_command('addgroup openerp', as_root=True)
+            tools.exec_command('addgroup odoo', as_root=True)
             group = False
         else:
-            _logger.debug('openerp group already exists.')
+            _logger.debug('odoo group already exists.')
 
         try:
             pw = pwd.getpwnam(self._user)
         except:
             _logger.info('Creating user: (%s)' % self._user)
-            tools.exec_command('adduser --system --home /var/run/openerp --no-create-home --ingroup openerp %s' % self._user, as_root=True)
+            tools.exec_command('adduser --system --home /var/run/odoo --no-create-home --ingroup odoo %s' % self._user, as_root=True)
         else:
-            _logger.info('User %s already exists, adding to openerp group.' % self._user)
-            tools.exec_command('adduser %s openerp' % self._user, as_root=True)
+            _logger.info('User %s already exists, adding to odoo group.' % self._user)
+            tools.exec_command('adduser %s odoo' % self._user, as_root=True)
 
         return True
 
+    #Todo check packages
     def get_packages_distro_match(self, distro):
         match = {
             'ubuntu': {
@@ -232,7 +229,7 @@ class oerpServer(object):
             return False
 
     def _install_python_libs(self):
-        _logger.info('Installing the required packages and python libraries for OpenERP.')
+        _logger.info('Installing the required packages and python libraries for Odoo.')
 
         packages = []
 
@@ -240,52 +237,49 @@ class oerpServer(object):
         packages.append('python-setuptools')
         packages.append('wget')
 
-        # Packages for 6.1
-        if self._branch == '6.1':
+        # Packages for 7.0
+        if self._branch == '7.0':
             packages += [
-                # Server
                 # Dependencies
+                'python-dateutil',
+                'python-docutils',
+                'python-feedparser',
+                'python-gdata',         #Google data parser
+                'python-jinja2',
+                'python-ldap',
+                'python-libxslt1',      #Excel spreadsheets
                 'python-lxml',
+                'python-mako',
+                'python-mock',          #For testing
+                'python-openid',
+                'python-psutil',
                 'python-psycopg2',
+                'python-pybabel',
                 'python-pychart',
                 'python-pydot',
-                'python-reportlab',
-                'python-tz',
-                'python-vobject',
-                'python-dateutil',
-                'python-feedparser',
-                'python-mako',
                 'python-pyparsing',
-                'python-yaml',
+                'python-reportlab',
+                'python-simplejson',
+                'python-tz',
+                'python-unittest2',     #For testing
+                'python-vatnumber',
+                'python-vobject',
+                'python-webdav',        #For document-webdav
                 'python-werkzeug',
+                'python-xlwt',          #Excel spreadsheets
+                'python-yaml',
                 'python-zsi',
+
                 # Recomended
                 'graphviz',
                 'ghostscript',
                 'python-imaging',
-                'python-libxslt1',      #Excel spreadsheets
                 'python-matplotlib',
-                'python-openssl',       #Extra for ssl ports
-                'python-xlwt',          #Excel spreadsheets
-                'python-webdav',        #For document-webdav
-                'python-gdata',         #Google data parser
-                'python-ldap',
-                'python-openid',
-                'python-vatnumber',
-                'python-mock',          #For testing
-                'python-unittest2',     #For testing
-                # Web client
-                # Dependencies
-                'python-formencode',
-                'python-pybabel',
-                'python-simplejson',
-                'python-pyparsing',
-                # Recommended
                 'poppler-utils',
             ]
-
-        # Packages for 7.0
-        if self._branch == '7.0' or self._branch == 'trunk':
+            
+            # Packages for 8.0
+        if self._branch == '8.0' or self._branch == 'trunk':
             packages += [
                 # Dependencies
                 'python-dateutil',
@@ -451,7 +445,7 @@ class oerpServer(object):
         if tools.exec_command("sed -i 's/\(local[[:space:]]*all[[:space:]]*all[[:space:]]*\)\(ident[[:space:]]*sameuser\)/\1md5/g' /etc/postgresql/%s/main/pg_hba.conf" % self._postgresql_version, as_root=True):
             _logger.error('Failed to set PostgreSQL pg_hba.conf file. Exiting.')
             return False
-        if tools.exec_command('/etc/init.d/postgresql%s restart' % self._postgresql_init_suffix, as_root=True):
+        if tools.exec_command('service postgresql restart', as_root=True):
             _logger.error('Failed to start PostgreSQL. Exiting.')
             return False
         return True
@@ -485,34 +479,35 @@ class oerpServer(object):
 
     def change_perms(self):
         _logger.debug('User: %s' % self._user)
-        if os.path.isdir('/srv/openerp'):
-            if tools.exec_command('chown -R %s:openerp /srv/openerp' % self._user, as_root=True):
-                _logger.warning('Failed to set /srv/openerp owner. Skipping.')
-            if tools.exec_command('chmod -R g+w /srv/openerp', as_root=True):
-                _logger.warning('Failed to set /srv/openerp perms. Skipping.')
-        if os.path.isdir('/var/log/openerp'):
-            if tools.exec_command('chown -R %s:openerp /var/log/openerp' % self._user, as_root=True):
-                _logger.warning('Failed to set /var/log/openerp owner. Skipping.')
-            if tools.exec_command('chmod -R g+w /var/log/openerp', as_root=True):
-                _logger.warning('Failed to set /var/log/openerp perms. Skipping.')
-        if os.path.isdir('/var/run/openerp'):
-            if tools.exec_command('chown -R %s:openerp /var/run/openerp' % self._user, as_root=True):
-                _logger.warning('Failed to set /var/run/openerp owner. Skipping.')
-            if tools.exec_command('chmod -R g+w /var/run/openerp', as_root=True):
-                _logger.warning('Failed to set /var/run/openerp perms. Skipping.')
-        if os.path.isdir('/etc/openerp'):
-            if tools.exec_command('chown -R %s:openerp /etc/openerp' % self._user, as_root=True):
-                _logger.warning('Failed to set /etc/openerp owner. Skipping.')
+        if os.path.isdir('/srv/odoo'):
+            if tools.exec_command('chown -R %s:odoo /srv/odoo' % self._user, as_root=True):
+                _logger.warning('Failed to set /srv/odoo owner. Skipping.')
+            if tools.exec_command('chmod -R g+w /srv/odoo', as_root=True):
+                _logger.warning('Failed to set /srv/odoo perms. Skipping.')
+        if os.path.isdir('/var/log/odoo'):
+            if tools.exec_command('chown -R %s:odoo /var/log/odoo' % self._user, as_root=True):
+                _logger.warning('Failed to set /var/log/odoo owner. Skipping.')
+            if tools.exec_command('chmod -R g+w /var/log/odoo', as_root=True):
+                _logger.warning('Failed to set /var/log/odoo perms. Skipping.')
+        if os.path.isdir('/var/run/odoo'):
+            if tools.exec_command('chown -R %s:odoo /var/run/odoo' % self._user, as_root=True):
+                _logger.warning('Failed to set /var/run/odoo owner. Skipping.')
+            if tools.exec_command('chmod -R g+w /var/run/odoo', as_root=True):
+                _logger.warning('Failed to set /var/run/odoo perms. Skipping.')
+        if os.path.isdir('/etc/odoo'):
+            if tools.exec_command('chown -R %s:odoo /etc/odoo' % self._user, as_root=True):
+                _logger.warning('Failed to set /etc/odoo owner. Skipping.')
 
         return True
 
+    #TODO Change to git
     def _download_openerp_repo(self):
-        bzr.bzr_initialize()
-        if os.path.isdir('/srv/openerp'):
-            _logger.warning('/srv/openerp already exists. Not downloading repo.')
+        #bzr.bzr_initialize()
+        if os.path.isdir('/srv/odoo'):
+            _logger.warning('/srv/odoo already exists. Not downloading repo.')
             return False
 
-        _logger.info('Downloading latest OpenERP bzr repository.')
+        _logger.info('Downloading latest Odoo git repository.')
         temp_dir = tempfile.mkdtemp(suffix='-oerptools')
         if tools.exec_command('mkdir -p /usr/local/src/oerptools/oerp', as_root=True):
             _logger.error('Failed to create /usr/local/src/oerptools/oerp dir. Exiting.')
@@ -540,6 +535,7 @@ class oerpServer(object):
         os.chdir(cwd)
         return True
 
+    #TODO change to git
     def _download_openerp_lp_branch(self, repo_downloaded, name, lp_project, lp_branch):
         bzr.bzr_initialize()
         _logger.info('Downloading %s latest %s release.' % (name, self._branch))
@@ -605,61 +601,61 @@ class oerpServer(object):
         self.change_perms()
         return True
 
-    def _config_openerp_version(self):
-        _logger.info('Configuring OpenERP %s' % self._branch)
+    def _config_odoo_version(self):
+        _logger.info('Configuring Odoo %s' % self._branch)
         cwd = os.getcwd()
 
-        # OpenERP Server bin
+        # Odoo Server bin
         _logger.debug('Copy bin script skeleton to /etc')
-        if tools.exec_command('mkdir -p /etc/openerp/%s/server/' % self._branch, as_root=True):
-            _logger.error('Failed to make /etc/openerp/%s/server/ directory. Exiting.' % self._branch)
+        if tools.exec_command('mkdir -p /etc/odoo/%s/server/' % self._branch, as_root=True):
+            _logger.error('Failed to make /etc/odoo/%s/server/ directory. Exiting.' % self._branch)
             return False
-        if tools.exec_command('cp %s/oerptools/oerp/static/bin/server-bin-%s-skeleton /etc/openerp/%s/server/bin-skeleton' % (config.params['oerptools_path'], self._branch, self._branch), as_root=True):
+        if tools.exec_command('cp %s/odootools/odoo/static/bin/server-bin-%s-skeleton /etc/odoo/%s/server/bin-skeleton' % (config.params['odootools_path'], self._branch, self._branch), as_root=True):
             _logger.error('Failed to copy bin skeleton. Exiting.')
             return False
-        if tools.exec_command('sed -i "s#@BRANCH@#%s#g" /etc/openerp/%s/server/bin-skeleton' % (self._branch, self._branch), as_root=True):
+        if tools.exec_command('sed -i "s#@BRANCH@#%s#g" /etc/odoo/%s/server/bin-skeleton' % (self._branch, self._branch), as_root=True):
             _logger.error('Failed to config bin skeleton. Exiting.')
             return False
 
-        # OpenERP Server init
-        if tools.exec_command('cp %s/oerptools/oerp/static/init/server-init-%s-skeleton /etc/openerp/%s/server/init-skeleton' % (config.params['oerptools_path'], self._branch, self._branch), as_root=True):
+        # Odoo Server init
+        if tools.exec_command('cp %s/odootools/odoo/static/init/server-init-%s-skeleton /etc/odoo/%s/server/init-skeleton' % (config.params['odootools_path'], self._branch, self._branch), as_root=True):
             _logger.error('Failed to copy init skeleton. Exiting.')
             return False
-        if tools.exec_command('sed -i "s#@PATH@#/usr/local#g" /etc/openerp/%s/server/init-skeleton' % self._branch, as_root=True):
+        if tools.exec_command('sed -i "s#@PATH@#/usr/local#g" /etc/odoo/%s/server/init-skeleton' % self._branch, as_root=True):
             _logger.error('Failed to config init skeleton. Exiting.')
             return False
-        if tools.exec_command('sed -i "s#@BRANCH@#%s#g" /etc/openerp/%s/server/init-skeleton' % (self._branch, self._branch), as_root=True):
+        if tools.exec_command('sed -i "s#@BRANCH@#%s#g" /etc/odoo/%s/server/init-skeleton' % (self._branch, self._branch), as_root=True):
             _logger.error('Failed to config init skeleton. Exiting.')
             return False
         if self._installation_type == 'dev':
-            if tools.exec_command('sed -i "s#@USER@#%s#g" /etc/openerp/%s/server/init-skeleton' % (self._user, self._branch), as_root=True):
+            if tools.exec_command('sed -i "s#@USER@#%s#g" /etc/odoo/%s/server/init-skeleton' % (self._user, self._branch), as_root=True):
                 _logger.error('Failed to config init skeleton. Exiting.')
                 return False
-            if tools.exec_command('sed -i "s#@DBFILTER@#\${SERVERNAME}_.*#g" /etc/openerp/%s/server/init-skeleton' % self._branch, as_root=True):
+            if tools.exec_command('sed -i "s#@DBFILTER@#\${SERVERNAME}_.*#g" /etc/odoo/%s/server/init-skeleton' % self._branch, as_root=True):
                 _logger.error('Failed to config init skeleton. Exiting.')
                 return False
         else:
-            if tools.exec_command('sed -i "s#@DBFILTER@#.*#g" /etc/openerp/%s/server/init-skeleton' % self._branch, as_root=True):
+            if tools.exec_command('sed -i "s#@DBFILTER@#.*#g" /etc/odoo/%s/server/init-skeleton' % self._branch, as_root=True):
                 _logger.error('Failed to config init skeleton. Exiting.')
                 return False
-        # OpenERP Server config
-        if tools.exec_command('cp %s/oerptools/oerp/static/conf/server.conf-%s-skeleton /etc/openerp/%s/server/conf-skeleton' % (config.params['oerptools_path'], self._branch, self._branch), as_root=True):
+        # Odoo Server config
+        if tools.exec_command('cp %s/odootools/odoo/static/conf/server.conf-%s-skeleton /etc/odoo/%s/server/conf-skeleton' % (config.params['odootools_path'], self._branch, self._branch), as_root=True):
             _logger.error('Failed to copy conf skeleton. Exiting.')
             return False
-        if tools.exec_command('sed -i "s#@BRANCH@#%s#g" /etc/openerp/%s/server/conf-skeleton' % (self._branch, self._branch), as_root=True):
+        if tools.exec_command('sed -i "s#@BRANCH@#%s#g" /etc/odoo/%s/server/conf-skeleton' % (self._branch, self._branch), as_root=True):
             _logger.error('Failed to config init skeleton. Exiting.')
             return False
         if self._installation_type == 'dev':
-            if tools.exec_command('sed -i "s#@INTERFACE@##g" /etc/openerp/%s/server/conf-skeleton' % self._branch, as_root=True):
+            if tools.exec_command('sed -i "s#@INTERFACE@##g" /etc/odoo/%s/server/conf-skeleton' % self._branch, as_root=True):
                 _logger.error('Failed to set interface in config skeleton. Exiting.')
                 return False
         else:
-            if tools.exec_command('sed -i "s#@INTERFACE@#localhost#g" /etc/openerp/%s/server/conf-skeleton' % self._branch, as_root=True):
+            if tools.exec_command('sed -i "s#@INTERFACE@#localhost#g" /etc/odoo/%s/server/conf-skeleton' % self._branch, as_root=True):
                 _logger.error('Failed to set interface in config skeleton. Exiting.')
                 return False
 
-        if tools.exec_command('mkdir -p /var/run/openerp', as_root=True):
-            _logger.error('Failed to create /var/run/openerp. Exiting.')
+        if tools.exec_command('mkdir -p /var/run/odoo', as_root=True):
+            _logger.error('Failed to create /var/run/odoo. Exiting.')
             return False
 
         return True
@@ -678,15 +674,15 @@ class oerpServer(object):
             _logger.error('Failed to install Apache. Exiting.')
             return False
         _logger.info('Configuring site config files.')
-        if tools.exec_command('cp %s/oerptools/oerp/static/apache/apache-erp /etc/apache2/sites-available/erp' % config.params['oerptools_path'], as_root=True):
-            _logger.warning('Failed copy Apache erp site conf file.')
-        if tools.exec_command('mkdir -p /etc/openerp/apache2/rewrites', as_root=True):
-            _logger.warning('Failed make /etc/openerp/apache2/rewrites.')
-        if tools.exec_command('cp %s/oerptools/oerp/static/apache/apache-ssl-%s-skeleton /etc/openerp/apache2/ssl-%s-skeleton' % (config.params['oerptools_path'], self._branch, self._branch), as_root=True):
+        if tools.exec_command('cp %s/odootools/odoo/static/apache/apache-odoo /etc/apache2/sites-available/odoo' % config.params['odootools_path'], as_root=True):
+            _logger.warning('Failed copy Apache odoo site conf file.')
+        if tools.exec_command('mkdir -p /etc/odoo/apache2/rewrites', as_root=True):
+            _logger.warning('Failed make /etc/odoo/apache2/rewrites.')
+        if tools.exec_command('cp %s/odootools/odoo/static/apache/apache-ssl-%s-skeleton /etc/odoo/apache2/ssl-%s-skeleton' % (config.params['odootools_path'], self._branch, self._branch), as_root=True):
             _logger.warning('Failed copy Apache rewrite skeleton.')
-        if tools.exec_command('sed -i "s#ServerAdmin .*\\$#ServerAdmin support@clearcorp.co.cr\\n\\n\\tInclude /etc/apache2/sites-available/erp#g" /etc/apache2/sites-available/000-default.conf', as_root=True):
+        if tools.exec_command('sed -i "s#ServerAdmin .*\\$#ServerAdmin support@clearcorp.co.cr\\n\\n\\tInclude /etc/apache2/sites-available/odoo#g" /etc/apache2/sites-available/000-default.conf', as_root=True):
             _logger.warning('Failed config Apache site.')
-        if tools.exec_command('sed -i "s#ServerAdmin .*\\$#ServerAdmin support@clearcorp.co.cr\\n\\n\\tInclude /etc/openerp/apache2/rewrites#g" /etc/apache2/sites-available/default-ssl.conf', as_root=True):
+        if tools.exec_command('sed -i "s#ServerAdmin .*\\$#ServerAdmin support@clearcorp.co.cr\\n\\n\\tInclude /etc/odoo/apache2/rewrites#g" /etc/apache2/sites-available/default-ssl.conf', as_root=True):
             _logger.warning('Failed config Apache site.')
         if not apache.apache_restart():
             _logger.warning('Failed restart Apache.')
@@ -700,9 +696,9 @@ class oerpServer(object):
         _logger.info('Configuring site config files.')
         #if tools.exec_command('cp %s/oerptools/oerp/static/apache/apache-erp /etc/apache2/sites-available/erp' % config.params['oerptools_path'], as_root=True):
         #    _logger.warning('Failed copy Apache erp site conf file.')
-        if tools.exec_command('mkdir -p /etc/openerp/apache2/rewrites', as_root=True):
-            _logger.warning('Failed make /etc/openerp/apache2/rewrites.')
-        if tools.exec_command('cp %s/oerptools/oerp/static/apache/apache-ssl-%s-skeleton /etc/openerp/apache2/ssl-%s-skeleton' % (config.params['oerptools_path'], branch, branch), as_root=True):
+        if tools.exec_command('mkdir -p /etc/odoo/apache2/rewrites', as_root=True):
+            _logger.warning('Failed make /etc/odoo/apache2/rewrites.')
+        if tools.exec_command('cp %s/odootools/odoo/static/apache/apache-ssl-%s-skeleton /etc/odoo/apache2/ssl-%s-skeleton' % (config.params['odootools_path'], branch, branch), as_root=True):
             _logger.warning('Failed copy Apache rewrite skeleton.')
         #if tools.exec_command('sed -i "s/ServerAdmin .*$/ServerAdmin support@clearcorp.co.cr\n\n\tInclude \/etc\/apache2\/sites-available\/erp/g" /etc/apache2/sites-available/default', as_root=True):
         #    _logger.warning('Failed config Apache site.')
@@ -713,13 +709,13 @@ class oerpServer(object):
         return True
 
     def _set_logrotation(self):
-        if tools.exec_command('cp %s/oerptools/oerp/static/log/openerp.logrotate /etc/logrotate.d/' % config.params['oerptools_path'], as_root=True):
+        if tools.exec_command('cp %s/odootools/odoo/static/log/odoo.logrotate /etc/logrotate.d/' % config.params['odootools_path'], as_root=True):
             _logger.error('Failed to copy logrotate. Exiting.')
             return False
         return True
 
     def install(self):
-        _logger.info('OpenERP server installation started.')
+        _logger.info('Odoo server installation started.')
 
         _logger.info('')
         _logger.info('Please check the following information before continuing.')
@@ -743,7 +739,7 @@ class oerpServer(object):
         _logger.info('Installation info')
         _logger.info('-----------------')
 
-        _logger.info('OpenERP version (branch) to install: %s' % self._branch)
+        _logger.info('Odoo version (branch) to install: %s' % self._branch)
 
         if self._installation_type == 'dev':
             _logger.info('Installation type: development station')
@@ -771,37 +767,33 @@ class oerpServer(object):
                     _logger.info('User: %s' % self._user)
 
         elif not self._user and self._installation_type == 'server':
-            self._user = 'openerp'
+            self._user = 'odoo'
 
         if not self._user:
             _logger.error('User unknown. Exiting.')
             return False
         elif pwd.getpwuid(os.getuid()).pw_name not in (self._user, 'root'):
             try:
-                group = grp.getgrnam('openerp')
+                group = grp.getgrnam('odoo')
                 if not pwd.getpwuid(os.getuid()).pw_name in group['gr_mem']:
-                    _logger.error('Your user must be the user of installation (%s), root, or be part of openerp group. Exiting.')
+                    _logger.error('Your user must be the user of installation (%s), root, or be part of odoo group. Exiting.')
                     return False
             except:
-                _logger.error('Your user must be the user of installation (%s), root, or be part of openerp group. Exiting.')
+                _logger.error('Your user must be the user of installation (%s), root, or be part of odoo group. Exiting.')
                 return False
 
         _logger.info('')
         _logger.info('Addons installation:')
         _logger.info('--------------------')
 
-        if self._install_openobject_addons:
-            _logger.info('Install openobject-addons: YES')
+        if self._install_odoo_clearcorp
+            _logger.info('Install odoo-clearcorp: YES')
         else:
-            _logger.info('Install openobject-addons: NO')
-        if self._install_openerp_ccorp_addons:
-            _logger.info('Install openerp-ccorp-addons: YES')
+            _logger.info('Install odoo-clearcorp: NO')
+        if self._install_odoo_costa_rica:
+            _logger.info('Install odoo-costa-rica: YES')
         else:
-            _logger.info('Install openerp-ccorp-addons: NO')
-        if self._install_openerp_costa_rica:
-            _logger.info('Install openerp-costa-rica: YES')
-        else:
-            _logger.info('Install openerp-costa-rica: NO')
+            _logger.info('Install odoo-costa-rica: NO')
 
         _logger.info('')
         _logger.info('Please review the values above and confirm accordingly.')
@@ -817,11 +809,11 @@ class oerpServer(object):
             else:
                 answer = False
 
-        _logger.info('Setting the OpenERP admin password.')
+        _logger.info('Setting the Odoo admin password.')
         # Get admin password
         while not self._admin_password:
-            self._admin_password = getpass.getpass('Enter OpenERP admin password: ')
-            if not self._admin_password == getpass.getpass('Confirm OpenERP admin password: '):
+            self._admin_password = getpass.getpass('Enter Odoo admin password: ')
+            if not self._admin_password == getpass.getpass('Confirm Odoo admin password: '):
                 _logger.error('Passwords don\'t match. Try again.')
                 self._admin_password = False
 
@@ -848,12 +840,11 @@ class oerpServer(object):
 
         #Update config file with new values
         values = {
-            'oerp-install': {
+            'odoo-install': {
                 self._branch+'_installation_type': self._installation_type,
                 self._branch+'_user': self._user,
-                self._branch+'_install_openobject_addons': self._install_openobject_addons,
-                self._branch+'_install_openerp_ccorp_addons': self._install_openerp_ccorp_addons,
-                self._branch+'_install_openerp_costa_rica': self._install_openerp_costa_rica,
+                self._branch+'_install_odoo_clearcorp': self._install_odoo_clearcorp,
+                self._branch+'_install_odoo_costa_rica': self._install_odoo_costa_rica,
                 self._branch+'_admin_password': self._admin_password,
                 self._branch+'_postgresql_password': self._postgresql_password,
             },
@@ -868,16 +859,17 @@ class oerpServer(object):
 
         # Preparing installation
         _logger.info('')
-        _logger.info('Preparing OpenERP installation')
+        _logger.info('Preparing Odoo installation')
         _logger.info('==============================')
         _logger.info('')
 
-        self._add_openerp_user()
+        self._add_odoo_user()
         self._install_python_libs()
 
-        if not bzr.bzr_install():
+        #TODO remove bzr funtionality when installing server.
+        """if not bzr.bzr_install():
             _logger.error('Failed to install bzr (Bazaar VCS). Exiting.')
-            return False
+            return False"""
 
         if not self._install_postgresql():
             _logger.error('Failed to install PostgreSQL. Exiting.')
@@ -893,13 +885,12 @@ class oerpServer(object):
             self._change_postgresql_admin_password()
 
         modules_to_install = {
-            'openobject-addons': self._install_openobject_addons,
-            'openerp-ccorp-addons': self._install_openerp_ccorp_addons,
-            'openerp-costa-rica': self._install_openerp_costa_rica,
+            'odoo-clearcorp': self._install_odoo_clearcorp,
+            'odoo-costa-rica': self._install_odoo_costa_rica,
         }
-        self._download_openerp(modules_to_install)
+        self._download_odoo(modules_to_install)
 
-        self._config_openerp_version()
+        self._config_odoo_version()
 
         self.change_perms()
 

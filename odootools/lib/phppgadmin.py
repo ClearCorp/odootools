@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 ########################################################################
 #
-#  OpenERP Tools by CLEARCORP S.A.
+#  Odoo Tools by CLEARCORP S.A.
 #  Copyright (C) 2009-TODAY CLEARCORP S.A. (<http://clearcorp.co.cr>).
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -25,11 +25,11 @@
 Description: Install phppgadmin
 '''
 
-import logging
-_logger = logging.getLogger('oerptools.lib.phppgadmin')
-
 import os
-from oerptools.lib import tools
+import logging
+from odootools.lib import tools
+
+_logger = logging.getLogger('odootools.lib.phppgadmin')
 
 def phppgadmin_install():
     os_version = tools.get_os()
@@ -53,4 +53,3 @@ def arch_phppgadmin_install():
         _logger.error('Failed to install phppgadmin package. Exiting.')
         return False
     #TODO: configuration for phppgadmin in arch
-

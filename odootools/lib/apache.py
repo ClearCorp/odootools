@@ -25,11 +25,11 @@
 Description: Apache2 Install
 '''
 
-import logging
-_logger = logging.getLogger('odootools.lib.apache')
-
 import os
+import logging
 from odootools.lib import tools
+
+_logger = logging.getLogger('odootools.lib.apache')
 
 def apache_install():
     os_version = tools.get_os()
@@ -59,7 +59,7 @@ def ubuntu_apache_install():
     if tools.exec_command('a2ensite 000-default default-ssl', as_root=True):
         _logger.error('Failed to enable Apache sites. Exiting.')
         return False
-    if tools.exec_command('/etc/init.d/apache2 restart', as_root=True):
+    if tools.exec_command('service apache2 restart', as_root=True):
         _logger.warning('Failed to restart apache. Exiting.')
         return False
     return True
@@ -83,7 +83,7 @@ def apache_restart():
 
 def ubuntu_apache_restart():
     _logger.info('Restarting Apache web server')
-    if tools.exec_command('/etc/init.d/apache2 restart', as_root=True):
+    if tools.exec_command('service apache2 restart', as_root=True):
         _logger.error('Failed to restart Apache. Exiting.')
         return False
     return True
@@ -94,4 +94,3 @@ def arch_apache_restart():
         _logger.error('Failed to restart Apache. Exiting.')
         return False
     return True
-
