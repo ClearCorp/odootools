@@ -23,7 +23,7 @@
 
 import os, datetime, pwd, grp, getpass, re, tempfile
 import logging
-from odootools.lib import config, bzr, tools, apache, phppgadmin
+from odootools.lib import config, git, tools, apache, phppgadmin
 
 _logger = logging.getLogger('odootools.odoo.server')
 
@@ -500,104 +500,52 @@ class odooServer(object):
 
         return True
 
-    #TODO Change to git
-    def _download_openerp_repo(self):
-        #bzr.bzr_initialize()
+    def _download_odoo_repo(self):
         if os.path.isdir('/srv/odoo'):
             _logger.warning('/srv/odoo already exists. Not downloading repo.')
             return False
 
-        _logger.info('Downloading latest Odoo git repository.')
-        temp_dir = tempfile.mkdtemp(suffix='-oerptools')
-        if tools.exec_command('mkdir -p /usr/local/src/oerptools/oerp', as_root=True):
-            _logger.error('Failed to create /usr/local/src/oerptools/oerp dir. Exiting.')
+        _logger.info('Creating the directory structure.')
+        if tools.exec_command('mkdir -p /srv/odoo/%s/instances' % self._branch, as_root=True):
+            _logger.error('Failed to create the odoo directory structure. Exiting.')
             return False
-
-        if 'repo_tgz' in config.params and config.params['repo_tgz'] and os.path.isfile(os.path.abspath(config.params['repo_tgz'])):
-            if tools.exec_command('cp %s /usr/local/src/oerptools/oerp/openerp.tgz' % os.path.abspath(config.params['repo_tgz']), as_root=True):
-                _logger.warning('Failed to copy %s to /usr/local/src/oerptools/oerp.')
+        if tools.exec_command('mkdir -p /srv/odoo/%s/src' % self._branch, as_root=True):
+            _logger.error('Failed to create the odoo src directory structure. Exiting.')
+            return False
         cwd = os.getcwd()
-        os.chdir('/usr/local/src/oerptools/oerp')
-        if not os.path.isfile('openerp.tgz'):
-            if tools.exec_command('wget http://code.clearcorp.co.cr/bzr/openerp/openerp-src/bin/openerp.tgz', as_root=True):
-                _logger.error('Failed to download repo tgz file. Exiting.')
-                return False
-        else:
-            _logger.info('Repo file already exists, skipping download.')
-
-        os.chdir('/srv')
-        if tools.exec_command('tar xzf /usr/local/src/oerptools/oerp/openerp.tgz', as_root=True):
-            _logger.error('Failed to extract repo tgz file. Exiting.')
-            return False
-        if os.path.exists('/srv/openerp/.bzr/repository/no-working-trees'):
-            os.remove('/srv/openerp/.bzr/repository/no-working-trees')
-
+        os.chdir('/srv/odoo/%s/src/' % self._branch)
+        _logger.info('Cloning latest Odoo git repository.')
+        repo = git.git_clone('git@github.com:CLEARCORP/odoo.git', 'odoo', branch=self._branch) # TODO: select source
         os.chdir(cwd)
+        _logger.info('Cloning finished.')
         return True
 
-    #TODO change to git
-    def _download_openerp_lp_branch(self, repo_downloaded, name, lp_project, lp_branch):
-        bzr.bzr_initialize()
-        _logger.info('Downloading %s latest %s release.' % (name, self._branch))
-
-        if tools.exec_command('mkdir -p /srv/openerp/%s/src' % self._branch):
-            _logger.error('Failed to make branch directory. Exiting.')
+    def _download_git_repo(self, source, name):
+        if not os.path.isdir('/srv/odoo/%s/src/' % self._branch):
+            _logger.warning('/srv/odoo/%s/src/ do not exists. Not cloning repo.' % self._branch)
             return False
-
-        if os.path.exists('/srv/openerp/%s/src/%s' % (self._branch, name)):
-            _logger.info('%s/%s exists. Updating.' % (name, self._branch))
-            bzr.bzr_pull('/srv/openerp/%s/src/%s' % (self._branch, name))
-        elif repo_downloaded and name in ('openobject-server', 'openerp-web', 'openobject-addons'):
-            bzr.bzr_branch('lp:~clearcorp-drivers/%s/%s' % (lp_project, lp_branch), '/srv/openerp/%s/src/%s' % (self._branch, name))
-        else:
-            cwd = os.getcwd()
-            if tools.exec_command('mkdir -p /usr/local/src/oerptools/oerp/%s' % self._branch, as_root=True):
-                _logger.error('Failed to make branch download directory. Exiting.')
-                return False
-            if not os.path.exists('/usr/local/src/oerptools/oerp/%s/%s.tgz' % (self._branch, name)):
-                if tools.exec_command('wget http://code.clearcorp.co.cr/bzr/openerp/openerp-src/bin/%s/%s.tgz' % (self._branch, name), as_root=True):
-                    _logger.error('Failed to download branch. Exiting.')
-                    return False
-            os.chdir('/usr/local/src/oerptools/oerp')
-            if tools.exec_command('tar xzf %s/%s.tgz' % (self._branch, name), as_root=True):
-                _logger.error('Failed to extract branch. Exiting.')
-                return False
-            bzr.bzr_branch('/usr/local/src/oerptools/oerp/%s' % self._branch, '/srv/openerp/%s/src/%s' % (self._branch, name))
-            bzr.bzr_set_parent('/srv/openerp/%s/src/%s' % (self._branch, name), 'http://bazaar.launchpad.net/~clearcorp-drivers/%s/%s' % (lp_project, lp_branch))
-            bzr.bzr_pull('/srv/openerp/%s/src/%s' % (self._branch, name))
+        cwd = os.getcwd()
+        os.chdir('/srv/odoo/%s/src/' % self._branch)
+        _logger.info('Cloning from %s latest %s branch.' % (source, self._branch))
+        repo = git.git_clone(source, name, branch=self._branch)
+        os.chdir(cwd)
+        _logger.info('Cloning finished.')
         return True
 
-    def _download_other_lp_branch(self, name, lp_project, lp_branch):
-        bzr.bzr_initialize()
-        _logger.info('Downloading %s latest %s release.' % (name, self._branch))
-        if tools.exec_command('mkdir -p /srv/openerp/%s/src' % self._branch):
-            _logger.error('Failed to make branch directory. Exiting.')
-            return False
-        if os.path.exists('/srv/openerp/%s/src/%s' % (self._branch, name)):
-            _logger.info('%s/%s exists. Updating.' % (name, self._branch))
-            bzr.bzr_pull('/srv/openerp/%s/src/%s' % (self._branch, name))
-        else:
-            bzr.bzr_branch('lp:%s/%s' % (lp_project, lp_branch), '/srv/openerp/%s/src/%s' % (self._branch, name))
-        return True
-
-    def _download_openerp(self, modules_to_install):
-        _logger.info('Downloading latest OpenERP %s release.' % self._branch)
-        if os.path.isdir('/srv/openerp'):
-            _logger.info('OpenERP repo already exists.')
+    def _download_odoo(self, modules_to_install):
+        _logger.info('Downloading latest Odoo %s release.' % self._branch)
+        if os.path.isdir('/srv/odoo'):
+            _logger.info('Odoo repo already exists.')
             repo_downloaded = True
         else:
-            repo_downloaded = self._download_openerp_repo()
+            repo_downloaded = self._download_odoo_repo()
 
         self.change_perms()
 
-        self._download_openerp_lp_branch(repo_downloaded, 'openobject-server', 'openobject-server', '%s-ccorp' % self._branch)
-        self._download_openerp_lp_branch(repo_downloaded, 'openerp-web', 'openerp-web', '%s-ccorp' % self._branch)
-        if 'openobject-addons' in modules_to_install and modules_to_install['openobject-addons']:
-            self._download_openerp_lp_branch(repo_downloaded, 'openobject-addons', 'openobject-addons', '%s-ccorp' % self._branch)
-        if 'openerp-ccorp-addons' in modules_to_install and modules_to_install['openerp-ccorp-addons']:
-            self._download_other_lp_branch('openerp-ccorp-addons', 'openerp-ccorp-addons', '%s' % self._branch)
-        if 'openerp-costa-rica' in modules_to_install and modules_to_install['openerp-costa-rica']:
-            self._download_other_lp_branch('openerp-costa-rica', 'openerp-costa-rica', '%s' % self._branch)
+        if 'odoo-clearcorp' in modules_to_install and modules_to_install['odoo-clearcorp']:
+            self._download_git_repo('git@github.com:CLEARCORP/odoo-clearcorp.git', 'odoo-clearcorp')
+        if 'odoo-costa-rica' in modules_to_install and modules_to_install['odoo-costa-rica']:
+            self._download_git_repo('git@github.com:CLEARCORP/odoo-costa-rica.git', 'odoo-costa-rica')
         self.change_perms()
         return True
 
@@ -613,7 +561,7 @@ class odooServer(object):
         if tools.exec_command('cp %s/odootools/odoo/static/bin/server-bin-%s-skeleton /etc/odoo/%s/server/bin-skeleton' % (config.params['odootools_path'], self._branch, self._branch), as_root=True):
             _logger.error('Failed to copy bin skeleton. Exiting.')
             return False
-        if tools.exec_command('sed -i "s#@BRANCH@#%s#g" /etc/odoo/%s/server/bin-skeleton' % (self._branch, self._branch), as_root=True):
+        if tools.exec_command('sed -i "s#@BRANCH@#%s#g" /etc/odoo/%s/server/bin-skeleton' % (self._branch, self._branch), as_root=True): # TODO: check sed command
             _logger.error('Failed to config bin skeleton. Exiting.')
             return False
 
@@ -866,11 +814,6 @@ class odooServer(object):
         self._add_odoo_user()
         self._install_python_libs()
 
-        #TODO remove bzr funtionality when installing server.
-        """if not bzr.bzr_install():
-            _logger.error('Failed to install bzr (Bazaar VCS). Exiting.')
-            return False"""
-
         if not self._install_postgresql():
             _logger.error('Failed to install PostgreSQL. Exiting.')
             return False
@@ -899,5 +842,4 @@ class odooServer(object):
             phppgadmin.phppgadmin_install()
 
         self._set_logrotation()
-
         return True

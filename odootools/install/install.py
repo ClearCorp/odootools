@@ -30,7 +30,7 @@ WARNING:    If you update this file, please remake the installer and
 '''
 
 import os, shutil, stat, logging
-from odootools.lib import config, tools, bzr
+from odootools.lib import config, tools, bzr, git
 
 _logger = logging.getLogger('oerptools.install.install')
 
@@ -163,8 +163,12 @@ def install():
     _logger.debug('Checking if user is root')
     tools.exit_if_not_root('odootools-install')
     
+    # TODO: Remove after migrating ODOOTOOLS to github
     _logger.debug('Installing bzr')
     bzr.bzr_install()
+    
+    _logger.debug('Installing git')
+    git.git_install()
         
     if 'install_target_path' in config.params:
         install_dir = config.params['install_target_path']

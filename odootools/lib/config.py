@@ -233,8 +233,6 @@ class configParameters(object):
                             help='Install Apache server (for reverse SSL proxy) (default).')
         subgroup.add_argument('--no-install-apache', '--no-apache', dest='install_apache', action='store_false', default=argparse.SUPPRESS,
                             help='Don\'t  install Apache server (for reverse SSL proxy).')
-        group.add_argument('--repo-tgz', '-r', type=str, default=argparse.SUPPRESS,
-                            help='Path of the Odoo Tools repo tgz file (default: None).')
         
         #odoo-update
         subparser = subparsers.add_parser('odoo-update', help='Update Odoo service.', add_help=False)
