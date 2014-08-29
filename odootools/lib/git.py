@@ -27,7 +27,6 @@ Description: Install git
 
 import logging
 from odootools.lib import tools
-from git import Repo
 
 _logger = logging.getLogger('oerptools.lib.git')
 
@@ -51,12 +50,14 @@ def arch_git_install():
     return tools.arch_install_repo_package(['git','python-git'])
 
 def git_init_repo(target):
+    from git import Repo
     repo = Repo.init(target)
     if repo: return True
     return False
     
 
 def git_clone(source, target, branch=None):
+    from git import Repo
     try:
         if branch:
             repo = Repo.clone_from(source, target, branch=branch)
@@ -69,6 +70,7 @@ def git_clone(source, target, branch=None):
 
 #TODO check origin and upstream values use ssh instead of https
 def git_pull(source, remote=None, branch=None):
+    from git import Repo
     try:
         repo = Repo(source)
         if not remote:
@@ -86,6 +88,7 @@ def git_pull(source, remote=None, branch=None):
 
 #TODO check origin and upstream values use ssh instead of https
 def git_push(source, remote=None, branch=None):
+    from git import Repo
     try:
         repo = Repo(source)
         if not remote:
