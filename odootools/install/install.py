@@ -30,7 +30,7 @@ WARNING:    If you update this file, please remake the installer and
 '''
 
 import os, shutil, stat, logging
-from odootools.lib import config, tools, bzr, git
+from odootools.lib import config, tools, bzr, git_lib
 
 _logger = logging.getLogger('oerptools.install.install')
 
@@ -168,7 +168,7 @@ def install():
     bzr.bzr_install()
     
     _logger.debug('Installing git')
-    git.git_install()
+    git_lib.git_install()
         
     if 'install_target_path' in config.params:
         install_dir = config.params['install_target_path']

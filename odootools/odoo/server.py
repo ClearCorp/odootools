@@ -23,7 +23,7 @@
 
 import os, datetime, pwd, grp, getpass, re, tempfile
 import logging
-from odootools.lib import config, git, tools, apache, phppgadmin
+from odootools.lib import config, git_lib, tools, apache, phppgadmin
 
 _logger = logging.getLogger('odootools.odoo.server')
 
@@ -34,13 +34,13 @@ class odooServer(object):
         self._postgresql_version = ''
         if self._os_info['os'] == 'Linux' and self._os_info['version'][0] == 'Ubuntu':
             #Support for previous LTS
-            if self._os_info['version'][1] = '12.04':
+            if self._os_info['version'][1] == '12.04':
                 self._postgresql_version = '9.1'
             #Support for versions between both LTS version
             elif self._os_info['version'][1] < '14.04':
                 self._postgresql_version = '9.1'
             #Support for current LTS
-            elif self._os_info['version'][1] = '14.04':
+            elif self._os_info['version'][1] == '14.04':
                 self._postgresql_version = '9.3'
             else:
                 self._postgresql_version = '9.3' #This should fail unsupported version
@@ -734,7 +734,7 @@ class odooServer(object):
         _logger.info('Addons installation:')
         _logger.info('--------------------')
 
-        if self._install_odoo_clearcorp
+        if self._install_odoo_clearcorp:
             _logger.info('Install odoo-clearcorp: YES')
         else:
             _logger.info('Install odoo-clearcorp: NO')
