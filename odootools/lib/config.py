@@ -259,7 +259,7 @@ class configParameters(object):
                             help='Name for the instance.')
         group.add_argument('--port', '-p', type=int, default=argparse.SUPPRESS,
                             help='Port number for the instance.')
-        group.add_argument('--branch', '-b', choices=['6.1', '7.0', '8.0', 'trunk'], default=argparse.SUPPRESS,
+        group.add_argument('--branch', '-b', choices=['7.0', '8.0', 'trunk'], default=argparse.SUPPRESS,
                             help='Odoo branch to install (default: 8.0).')
         #Advanced
         group = subparser.add_argument_group('Advanced', 'Advanced options')
@@ -364,25 +364,25 @@ class configParameters(object):
                 import odootools.lib.tools
                 odootools.lib.tools.command_not_available() # Must be implemented
             elif command == 'odoo-install':
-                import odootools.odoo.server #TODO
+                import odootools.odoo.server
                 odoo_server = odootools.odoo.server.odooServer()
                 odoo_server.install()
-            elif command == 'oerp-update':
-                import oerptools.lib.tools
-                oerptools.lib.tools.command_not_available()
-            elif command == 'oerp-uninstall':
-                import oerptools.lib.tools
-                oerptools.lib.tools.command_not_available()
-            elif command == 'oerp-instance-make':
-                import oerptools.oerp.instance
-                oerp_instance = oerptools.oerp.instance.oerpInstance()
-                oerp_instance.install()
-            elif command == 'oerp-instance-remove':
-                import oerptools.lib.tools
-                oerptools.lib.tools.command_not_available()
+            elif command == 'odoo-update':
+                import odootools.lib.tools
+                odootools.lib.tools.command_not_available() # Must be implemented
+            elif command == 'odoo-uninstall':
+                import odootools.lib.tools
+                odootools.lib.tools.command_not_available() # Must be implemented
+            elif command == 'odoo-instance-make':
+                import odootools.odoo.instance
+                odoo_instance = odootools.odoo.instance.odooInstance()
+                odoo_instance.install()
+            elif command == 'odoo-instance-remove':
+                import odootools.lib.tools
+                odootools.lib.tools.command_not_available() # Must be implemented
             elif command == 'dev-repo-make':
                 import oerptools.dev.repository
-                repo = oerptools.dev.repository.repository()
+                repo = oerptools.dev.repository.repository() 
                 return repo.make()
             elif command == 'dev-repo-update':
                 import oerptools.dev.repository

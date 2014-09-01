@@ -50,7 +50,6 @@ class odooServer(object):
         elif self._os_info['os'] == 'Linux' and self._os_info['version'][0] == 'arch':
             self._postgresql_version = '9.1'
 
-        # TODO check if related to bazaar
         if instance:
             _logger.debug('Server initialized with instance: %s' % instance)
             _logger.debug('Branch: %s' % instance._branch)
