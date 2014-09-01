@@ -285,6 +285,7 @@ class odooInstance(object):
         os.makedirs('/srv/odoo/%s/instances/%s/filestore' % (self._branch, self._name))
         os.symlink('/srv/odoo/%s/src/odoo' % self._branch, '/srv/odoo/%s/instances/%s/server' % (self._branch, self._name))
         
+        installed_addons = []
         for path in os.listdir('/srv/odoo/%s/src' % self._branch):
             if path not in ('odoo'):
                 os.symlink('/srv/odoo/%s/src/%s' % (self._branch, path), '/srv/odoo/%s/instances/%s/addons/%s' % (self._branch, self._name, path))
