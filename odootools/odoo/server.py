@@ -514,8 +514,8 @@ class odooServer(object):
             return False
         cwd = os.getcwd()
         os.chdir('/srv/odoo/%s/src/' % self._branch)
-        _logger.info('Cloning latest Odoo git repository.')
-        repo = git.git_clone('git@github.com:CLEARCORP/odoo.git', 'odoo', branch=self._branch) # TODO: select source
+        _logger.info('Cloning the latest Odoo git repository from https://github.com/CLEARCORP/odoo.git latest %s branch.' % self._branch))
+        repo = git_lib.git_clone('https://github.com/CLEARCORP/odoo.git', 'odoo', branch=self._branch)
         os.chdir(cwd)
         _logger.info('Cloning finished.')
         return True
@@ -527,7 +527,7 @@ class odooServer(object):
         cwd = os.getcwd()
         os.chdir('/srv/odoo/%s/src/' % self._branch)
         _logger.info('Cloning from %s latest %s branch.' % (source, self._branch))
-        repo = git.git_clone(source, name, branch=self._branch)
+        repo = git_lib.git_clone(source, name, branch=self._branch)
         os.chdir(cwd)
         _logger.info('Cloning finished.')
         return True
@@ -543,9 +543,9 @@ class odooServer(object):
         self.change_perms()
 
         if 'odoo-clearcorp' in modules_to_install and modules_to_install['odoo-clearcorp']:
-            self._download_git_repo('git@github.com:CLEARCORP/odoo-clearcorp.git', 'odoo-clearcorp')
+            self._download_git_repo('https://github.com/CLEARCORP/odoo-clearcorp.git', 'odoo-clearcorp')
         if 'odoo-costa-rica' in modules_to_install and modules_to_install['odoo-costa-rica']:
-            self._download_git_repo('git@github.com:CLEARCORP/odoo-costa-rica.git', 'odoo-costa-rica')
+            self._download_git_repo('https://github.com/CLEARCORP/odoo-costa-rica.git', 'odoo-costa-rica')
         self.change_perms()
         return True
 
