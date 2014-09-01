@@ -513,7 +513,7 @@ class odooServer(object):
             return False
         cwd = os.getcwd()
         os.chdir('/srv/odoo/%s/src/' % self._branch)
-        _logger.info('Cloning the latest Odoo git repository from https://github.com/CLEARCORP/odoo.git latest %s branch.' % self._branch))
+        _logger.info('Cloning the latest Odoo git repository from https://github.com/CLEARCORP/odoo.git latest %s branch.' % self._branch)
         repo = git_lib.git_clone('https://github.com/CLEARCORP/odoo.git', 'odoo', branch=self._branch)
         os.chdir(cwd)
         _logger.info('Cloning finished.')
