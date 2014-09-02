@@ -68,7 +68,6 @@ def git_clone(source, target, branch=None):
         return False
     return repo
 
-#TODO check origin and upstream values use ssh instead of https
 def git_pull(source, remote=None, branch=None):
     from git import Repo
     try:
@@ -86,7 +85,6 @@ def git_pull(source, remote=None, branch=None):
         return False
     return True
 
-#TODO check origin and upstream values use ssh instead of https
 def git_push(source, remote=None, branch=None):
     from git import Repo
     try:
@@ -100,5 +98,19 @@ def git_push(source, remote=None, branch=None):
         _logger.error('Git Pull: The provided source branch (%s) is up to date.' % source)
         return False
     except:
-        _logger.error('Bzr push: failed. Exiting.')
+        _logger.error('Git Push: failed. Exiting.')
     return False
+
+def git_add_remote(repo_dir, remote_name, remote_url):
+    from git import Repo
+    try:
+        repo = Repo(repor_dir)
+        try:
+            remote = repo.create_remote(remote_name, remote_url)
+        except:
+            _logger.error('Git Pull: The provided remote %s / %s can not be added.' % (remote_name, remote_url))
+            return False
+    except:
+        _logger.error('Opening branch failed failed. Exiting.')
+        return False
+    return True

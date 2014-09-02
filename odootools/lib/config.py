@@ -381,8 +381,8 @@ class configParameters(object):
                 import odootools.lib.tools
                 odootools.lib.tools.command_not_available() # Must be implemented
             elif command == 'dev-repo-make':
-                import oerptools.dev.repository
-                repo = oerptools.dev.repository.repository() 
+                import odootools.dev.repository
+                repo = odootools.dev.repository.repository() 
                 return repo.make()
             elif command == 'dev-repo-update':
                 import oerptools.dev.repository

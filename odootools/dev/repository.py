@@ -21,19 +21,16 @@
 #
 ########################################################################
 
-import logging
-_logger = logging.getLogger('odootools.dev.repository')
-
 import os
+import logging
+from odootools.lib import config, git_lib, tools
 
-#from oerptools.lib import config, bzr, tools
-from odootools.lib import config, tools
+_logger = logging.getLogger('odootools.dev.repository')
 
 class repository(object):
     def __init__(self):
-        _logger.info('Initializing OpenERP development repository.')
-        self._repo_dir = os.path.expanduser(config.params['repo_dir'] or '~/Development/openerp')
-        self._no_trees = config.params['no_trees'] or False
+        _logger.info('Initializing Odoo development repository.')
+        self._repo_dir = os.path.expanduser(config.params['repo_dir'] or '~/Development/odoo')
         self._push = config.params['push'] or False
         self._repo_exists = False
         
@@ -45,50 +42,22 @@ class repository(object):
             _logger.info('New repository in: %s.' % self._repo_dir)
         return super(repository, self).__init__()
     
-    def _branch_project(self, name, ccorp, branches):
-        _logger.info('Creating development repository for %s, branches: %s.' % (name, branches))
+    def _branch_project(self, source, name, clearcorp=False, remote_project=''):
+        _logger.info('Creating development repository for %s' % source)
         
         project_dir = os.path.abspath(self._repo_dir) + '/%s' % name
         
         if os.path.isdir(project_dir):
             _logger.warning('Repository in %s already exists, delete before running the script to recreate.' % name)
         else:
-            if not bzr.bzr_init_repo(project_dir, self._no_trees):
+            if not git_lib.git_clone(source, project_dir)
                 _logger.error('Failed to create repo in %s. Exiting.' % name)
                 return False
-        
-        if not os.path.isdir('%s/main' % project_dir):
-            os.mkdir('%s/main' % project_dir)
-        if not os.path.isdir('%s/features' % project_dir):
-            os.mkdir('%s/features' % project_dir)
-        
-        for branch in branches:
-            official_branch = 'lp:%s/%s' % (name, branch)
-            ccorp_branch = 'lp:~clearcorp-drivers/%s/%s-ccorp' % (name, branch)
-            _logger.info('Creating branches for %s/%s.' % (name, branch))
-            
-            _logger.info('Branch: %s.' % official_branch)
-            
-            if os.path.isdir('%s/main/%s/.bzr' % (project_dir, branch)):
-                _logger.warning('%s/main/%s already exists, delete before running the script to recreate.' % (project_dir, branch))
-            else:
-                bzr.bzr_branch(official_branch, '%s/main/%s' % (project_dir, branch))
-            
-            if ccorp:
-                _logger.info('Branch: %s.' % ccorp_branch)
-                
-                if os.path.isdir('%s/main/%s-ccorp/.bzr' % (project_dir, branch)):
-                    _logger.warning('%s/main/%s-ccorp already exists, delete before running the script to recreate.' % (project_dir, branch))
-                else:
-                    bzr.bzr_branch(ccorp_branch, '%s/main/%s-ccorp' % (project_dir, branch))
-            
-            _logger.info('Updating parent locations for %s.' % name)
-            bzr.bzr_set_parent('%s/main/%s' % (project_dir, branch), official_branch)
-            bzr.bzr_set_push_location('%s/main/%s' % (project_dir, branch), official_branch)
-            if ccorp:
-                bzr.bzr_set_parent('%s/main/%s-ccorp' % (project_dir, branch), official_branch)
-                bzr.bzr_set_push_location('%s/main/%s-ccorp' % (project_dir, branch), ccorp_branch)
-            
+            if clearcorp:
+                _logger.info('Adding dev remote to branch')
+                if not remote_project:
+                    remote_project = name
+                git_lib.git_add_remote(project_dir, 'dev', 'git@github.com:CLEARCORP-dev/' % remote_name)
         return True
     
     def _update_project(self, name, ccorp, branches):
@@ -160,24 +129,37 @@ class repository(object):
         return True
     
     def make(self):
-        bzr.bzr_initialize()
-        _logger.info('Making new OpenERP development repository.')
+        _logger.info('Making new Odoo development repository.')
         if self._repo_exists:
             _logger.info('Repository exists in: %s. Exiting.' % self._repo_dir)
             return False
         
-        self._branch_project('openobject-server',     True,  ['6.1', '7.0', 'trunk'])
-        self._branch_project('openobject-addons',     True,  ['6.1', '7.0', 'trunk', 'extra-trunk'])
-        self._branch_project('openobject-client',     True,  ['6.1', 'trunk'])
-        self._branch_project('openerp-web',           True,  ['6.1', '7.0', 'trunk'])
-        self._branch_project('openobject-doc',        True,  ['6.1'])
+        _logger.info('Please inform github your ssh key before continue.')
+        answer = False
+        while not answer:
+            answer = raw_input('Are you sure you want to continue (y/n)? ')
+            if re.match(r'^y$|^yes$', answer, flags=re.IGNORECASE):
+                answer = 'y'
+            elif re.match(r'^n$|^no$', answer, flags=re.IGNORECASE):
+                answer = 'n'
+                _logger.error('Aborting. Please run odootools again whe ready.')
+                return False
+            else:
+                answer = False
         
-        self._branch_project('openerp-ccorp-addons',  False, ['6.1', '7.0', 'trunk'])
-        self._branch_project('openerp-costa-rica',    False, ['6.1', '7.0', 'trunk'])
-        self._branch_project('oerptools',             False, ['1.0', '2.0', 'trunk'])
-        
-        self._branch_project('banking-addons',        True,  ['6.1'])
-        
+        # TODO: show progress
+        _logger.info('Cloning odoo source.')
+        self._branch_project('ssh://git@github.com:odoo/odoo','odoo')
+        _logger.info('Cloning odoo source finished.')
+        _logger.info('Cloning odoo CLEARCORP fork source.')
+        self._branch_project('ssh://git@github.com:CLEARCORP/odoo','odoo-fork', clearcorp=True, remote_project='odoo')
+        _logger.info('Cloning odoo CLEARCORP fork finished.')
+        _logger.info('Cloning odoo-clearcorp source.')
+        self._branch_project('ssh://git@github.com:CLEARCORP/odoo-clearcorp','odoo-clearcorp', clearcorp=True)
+        _logger.info('Cloning odoo-clearcorp finished.')}
+        _logger.info('Cloning odoo-costa-rica source.')
+        self._branch_project('ssh://git@github.com:CLEARCORP/odoo-costa-rica','odoo-costa-rica', clearcorp=True)
+        _logger.info('Cloning odoo-costa-rica finished.')
         return True
     
     def update(self):
