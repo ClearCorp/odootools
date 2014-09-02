@@ -21,7 +21,7 @@
 #
 ########################################################################
 
-import os
+import os, re
 import logging
 from odootools.lib import config, git_lib, tools
 
