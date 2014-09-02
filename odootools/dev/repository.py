@@ -50,7 +50,7 @@ class repository(object):
                 _logger.info('Adding dev remote to branch')
                 if not remote_project:
                     remote_project = name
-                git_lib.git_add_remote(project_dir, 'dev', 'git@github.com:CLEARCORP-dev/' % remote_project)
+                git_lib.git_add_remote(project_dir, 'dev', 'git@github.com:CLEARCORP-dev/' + remote_project)
         return True
     
     def _update_project(self, name, ccorp, branches):
