@@ -104,13 +104,13 @@ def git_push(source, remote=None, branch=None):
 def git_add_remote(repo_dir, remote_name, remote_url):
     from git import Repo
     try:
-        repo = Repo(repor_dir)
+        repo = Repo(repo_dir)
         try:
             remote = repo.create_remote(remote_name, remote_url)
         except:
             _logger.error('Git Pull: The provided remote %s / %s can not be added.' % (remote_name, remote_url))
             return False
     except:
-        _logger.error('Opening branch failed failed. Exiting.')
+        _logger.error('Opening branch failed. Exiting.')
         return False
     return True
