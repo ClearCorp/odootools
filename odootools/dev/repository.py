@@ -50,7 +50,7 @@ class repository(object):
         if os.path.isdir(project_dir):
             _logger.warning('Repository in %s already exists, delete before running the script to recreate.' % name)
         else:
-            if not git_lib.git_clone(source, project_dir)
+            if not git_lib.git_clone(source, project_dir):
                 _logger.error('Failed to create repo in %s. Exiting.' % name)
                 return False
             if clearcorp:
