@@ -156,7 +156,7 @@ class repository(object):
         _logger.info('Cloning odoo CLEARCORP fork finished.')
         _logger.info('Cloning odoo-clearcorp source.')
         self._branch_project('ssh://git@github.com:CLEARCORP/odoo-clearcorp','odoo-clearcorp', clearcorp=True)
-        _logger.info('Cloning odoo-clearcorp finished.')}
+        _logger.info('Cloning odoo-clearcorp finished.')
         _logger.info('Cloning odoo-costa-rica source.')
         self._branch_project('ssh://git@github.com:CLEARCORP/odoo-costa-rica','odoo-costa-rica', clearcorp=True)
         _logger.info('Cloning odoo-costa-rica finished.')
