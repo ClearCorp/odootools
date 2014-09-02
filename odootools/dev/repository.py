@@ -33,13 +33,6 @@ class repository(object):
         self._repo_dir = os.path.expanduser(config.params['repo_dir'] or '~/Development/odoo')
         self._push = config.params['push'] or False
         self._repo_exists = False
-        
-        if os.path.isdir(self._repo_dir):
-            _logger.info('Repository exists in: %s.' % self._repo_dir)
-            _logger.info('Using existing repo.')
-            self._repo_exists = True
-        else:
-            _logger.info('New repository in: %s.' % self._repo_dir)
         return super(repository, self).__init__()
     
     def _branch_project(self, source, name, clearcorp=False, remote_project=''):
@@ -130,9 +123,6 @@ class repository(object):
     
     def make(self):
         _logger.info('Making new Odoo development repository.')
-        if self._repo_exists:
-            _logger.info('Repository exists in: %s. Exiting.' % self._repo_dir)
-            return False
         
         _logger.info('Please inform github your ssh key before continue.')
         answer = False
