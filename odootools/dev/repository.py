@@ -149,16 +149,16 @@ class repository(object):
         
         # TODO: show progress
         _logger.info('Cloning odoo source.')
-        self._branch_project('ssh://git@github.com:odoo/odoo','odoo')
+        self._branch_project('git@github.com:odoo/odoo','odoo')
         _logger.info('Cloning odoo source finished.')
         _logger.info('Cloning odoo CLEARCORP fork source.')
-        self._branch_project('ssh://git@github.com:CLEARCORP/odoo','odoo-fork', clearcorp=True, remote_project='odoo')
+        self._branch_project('git@github.com:CLEARCORP/odoo','odoo-fork', clearcorp=True, remote_project='odoo')
         _logger.info('Cloning odoo CLEARCORP fork finished.')
         _logger.info('Cloning odoo-clearcorp source.')
-        self._branch_project('ssh://git@github.com:CLEARCORP/odoo-clearcorp','odoo-clearcorp', clearcorp=True)
+        self._branch_project('git@github.com:CLEARCORP/odoo-clearcorp','odoo-clearcorp', clearcorp=True)
         _logger.info('Cloning odoo-clearcorp finished.')
         _logger.info('Cloning odoo-costa-rica source.')
-        self._branch_project('ssh://git@github.com:CLEARCORP/odoo-costa-rica','odoo-costa-rica', clearcorp=True)
+        self._branch_project('git@github.com:CLEARCORP/odoo-costa-rica','odoo-costa-rica', clearcorp=True)
         _logger.info('Cloning odoo-costa-rica finished.')
         return True
     
