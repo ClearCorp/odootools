@@ -44,7 +44,6 @@ class odooServer(object):
                 self._postgresql_version = '9.3'
             else:
                 self._postgresql_version = '9.3' #This should fail unsupported version
-        # TODO check versions for Linux Mint and Arch Linux
         elif self._os_info['os'] == 'Linux' and self._os_info['version'][0] == 'LinuxMint':
             #Support for previous LTS
             if self._os_info['version'][1] == '13':
@@ -57,6 +56,7 @@ class odooServer(object):
                 self._postgresql_version = '9.3'
             else:
                 self._postgresql_version = '9.3' #This should fail unsupported version
+        # TODO check versions for Arch Linux
         elif self._os_info['os'] == 'Linux' and self._os_info['version'][0] == 'arch':
             self._postgresql_version = '9.1'
 

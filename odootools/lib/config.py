@@ -320,7 +320,6 @@ class configParameters(object):
             pass
         return params
     
-    #TODO review imports and methods 1 by 1
     def exec_function(self):
         if 'command' in self.params:
             command = self.params['command']
