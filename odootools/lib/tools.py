@@ -47,7 +47,7 @@ def get_os():
     key os: os name
     key version: tuple with more info
     """
-    supported_dists = ['Ubuntu','arch']
+    supported_dists = ['Ubuntu','arch','LinuxMint']
     os_name = platform.system()
     os_version = ""
     known_os = False
