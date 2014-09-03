@@ -68,6 +68,26 @@ def git_clone(source, target, branch=None):
         return False
     return repo
 
+def git_fetch(source, remote=None):
+    from git import Repo
+    try:
+        repo = Repo(source)
+        try:
+            if not remote:
+                for remote in repo.remotes:
+                    remote.fetch()
+            else:
+                remote.fetch()
+        except AssertionError:
+            _logger.warning('Git Fetch: Everithing is up to date.')
+        except:
+            _logger.error('Git Fetch: An error occurred fetching the remote %s.' % source)
+            return False
+    except:
+        _logger.error('Git Fetch: The provided source branch %s can\'t be opened.' % source)
+        return False
+    return True
+
 def git_pull(source, remote=None, branch=None):
     from git import Repo
     try:
@@ -100,7 +120,7 @@ def git_push(source, remote=None, branch=None):
     except:
         _logger.error('Git Push: failed. Exiting.')
     return False
-
+        
 def git_add_remote(repo_dir, remote_name, remote_url):
     from git import Repo
     try:

@@ -302,33 +302,6 @@ class configParameters(object):
         group.add_argument('--repo-dir', '-d', type=str, default=argparse.SUPPRESS,
                             help='Directory for the dev repository (default: ~/Development/odoo).')
         
-        #dev-repo-reset-locations
-        subparser = subparsers.add_parser('dev-repo-reset-locations', help='Reset Odoo development repository branch locations.', add_help=False)
-        # Main
-        group = subparser.add_argument_group('Main', 'Main parameters')
-        group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
-                            help='Show this help message and exit.')
-        group.add_argument('--repo-dir', '-d', type=str, default=argparse.SUPPRESS,
-                            help='Directory for the dev repository (default: ~/Development/odoo).')
-        
-        #dev-repo-src-make
-        subparser = subparsers.add_parser('dev-repo-src-make', help='Make the Odoo development git source repository.', add_help=False)
-        # Main
-        group = subparser.add_argument_group('Main', 'Main parameters')
-        group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
-                            help='Show this help message and exit.')
-        group.add_argument('--repo-dir', '-d', type=str, default=argparse.SUPPRESS,
-                            help='Directory for the dev repository (default: ~/Development/odoo).')
-        
-        #dev-repo-src-update
-        subparser = subparsers.add_parser('dev-repo-src-update', help='Update the Odoo development git source repository.', add_help=False)
-        # Main
-        group = subparser.add_argument_group('Main', 'Main parameters')
-        group.add_argument('--help', '-h', action='help', default=argparse.SUPPRESS,
-                            help='Show this help message and exit.')
-        group.add_argument('--repo-dir', '-d', type=str, default=argparse.SUPPRESS,
-                            help='Directory for the dev repository (default: ~/Development/odoo).')
-        
         return parser.parse_args()
     
     def _read_config_files(self, file_list):
@@ -385,21 +358,10 @@ class configParameters(object):
                 repo = odootools.dev.repository.repository() 
                 return repo.make()
             elif command == 'dev-repo-update':
-                import oerptools.dev.repository
-                repo = oerptools.dev.repository.repository()
-                return repo.update()
-            elif command == 'dev-repo-reset-locations':
-                import oerptools.dev.repository
-                repo = oerptools.dev.repository.repository()
-                return repo.reset_branch_locations()
-            elif command == 'dev-repo-src-make':
-                import oerptools.dev.repository
-                repo = oerptools.dev.repository.repository()
-                return repo.src_make()
-            elif command == 'dev-repo-src-update':
-                import oerptools.dev.repository
-                repo = oerptools.dev.repository.repository()
-                return repo.src_update()
+                import odootools.dev.repository
+                odootools.lib.tools.command_not_available() # Temporal until update review
+                #repo = odootools.dev.repository.repository()
+                #return repo.update() # TODO: Needs Review
         else:
             return False
     
