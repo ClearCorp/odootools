@@ -54,7 +54,6 @@ def git_init_repo(target):
     repo = Repo.init(target)
     if repo: return True
     return False
-    
 
 def git_clone(source, target, branch=None):
     from git import Repo
@@ -115,12 +114,12 @@ def git_push(source, remote=None, branch=None):
             branch = repo.active_branch.name
         remote.push(branch)
     except AssertionError as e:
-        _logger.error('Git Pull: The provided source branch (%s) is up to date.' % source)
+        _logger.error('Git Push: The provided source branch (%s) is up to date.' % source)
         return False
     except:
         _logger.error('Git Push: failed. Exiting.')
     return False
-        
+
 def git_add_remote(repo_dir, remote_name, remote_url):
     from git import Repo
     try:
