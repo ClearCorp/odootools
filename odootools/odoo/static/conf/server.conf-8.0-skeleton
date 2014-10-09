@@ -1,1 +1,190 @@
-server.conf-7.0-skeleton
+# /etc/odoo-server.conf(5) - configuration file for odoo-server(1)
+
+[options]
+
+# COMMON
+########################################################################
+
+# (char) Specify additional addons paths (separated by commas)
+# (default None).
+addons_path = @ADDONS@
+
+# (char) The file where the server pid will be stored (default False).
+pidfile = /var/run/odoo/@NAME@/server.pid
+
+# (char) Use this for big data importation, if it crashes you will be
+# able to continue at the current state. Provide a filename to store
+# intermediate importation states (default blank).
+#import_partial = 
+
+# (char) Comma-separated list of server-wide modules (default web).
+#server_wide_modules = web
+
+# (char) Directory where to store Odoo data (default user's home or
+# /var/lib/odoo if no home).
+#data_dir = 
+
+# XML-RPC
+########################################################################
+
+# XML-RPC
+# (bool) Enable the XML-RPC protocol (default True).
+xmlrpc = True
+
+# (int) Specify the TCP port for the XML-RPC protocol (default 8069).
+xmlrpc_port = 20@PORT@
+
+# (int) Enable correct behavior when behind a reverse proxy
+# (default 8072).
+longpolling_port = 21@PORT@
+
+# (char) Specify the TCP IP address for the XML-RPC protocol
+# (default blank).
+xmlrpc_interface = @INTERFACE@
+
+# (bool) Enable correct behavior when behind a reverse proxy
+# (default False).
+proxy_mode = True
+
+# WEB INTERFACE
+########################################################################
+
+# (regexp) Filter listed database. Use %d as domain and %h as hostname
+# (default .*).
+#dbfilter = .*
+
+# TESTING
+########################################################################
+
+# (char) Launch a YML test file (default False).
+#test_file = False
+
+# (char) If set, will save sample of all reports in this directory
+# (default False).
+#test_report_directory = False
+
+# (bool) Disable loading test files (default False).
+#test_disable = False
+
+# (bool) Commit database changes performed by tests (default False).
+#test_commit = False
+
+# LOGGING
+########################################################################
+
+# (char) The file where the server log will be stored (default None).
+logfile = /var/log/odoo/@NAME@/server.log
+
+# (bool) Rotate the log file (default False).
+#logrotate = False
+
+# (bool) Send the log to the syslog server (default False).
+#syslog = False
+
+# (list) Setup a handler at LEVEL for a given PREFIX. An empty PREFIX
+# indicates the root logger. This option can be repeated.
+# Example: "openerp.orm:DEBUG" or "werkzeug:CRITICAL" (default: ":INFO")
+# Common handlers: openerp.netsvc.rpc.request:DEBUG
+# openerp.netsvc.rpc.response:DEBUG
+# openerp.addons.web.common.http:DEBUG
+# openerp.sql_db:DEBUG
+log_handler = :INFO,werkzeug:WARNING
+
+# (char) Logging database (default False -> current db).
+#log_db = False
+
+# DATABASE
+########################################################################
+
+# (char) Specify the database name (default False).
+# Please uncomment the following line *after* you have created the
+# database. It activates the auto module check on startup.
+#db_name = False
+
+# (char) Specify the database user name (default False).
+#db_user = False
+
+# (char) Specify the database password for db_user (default False).
+#db_password = False
+
+# (char) Specify the PostgreSQL executable path (default None).
+#pg_path = None
+
+# (char) Specify the database host (default False).
+#db_host = False
+
+# (char) Specify the database port (default False).
+#db_port = False
+
+# (int) Specify the the maximum number of physical connections to
+# posgresql (default 64).
+#db_maxconn = 64
+
+# (char) specify a custom database template to create a new database
+# (default template0)
+#db_template = template0
+
+# SECURITY
+########################################################################
+
+# (bool) Enable the ability to return the list of databases
+# (default True).
+#list_db = True
+
+# (char) This is the password that allows database operations
+# (default admin).
+admin_passwd = @ADMIN_PASSWD@
+
+# ADVANCED
+########################################################################
+
+# (bool) Enable auto reload (default False).
+auto_reload = True
+
+# (bool) Enable debug mode (default False).
+#debug_mode = False
+
+# (int) Force a limit on the maximum number of records kept in the
+# virtual osv_memory tables. The default is False, which means no
+# count-based limit. (default False).
+#osv_memory_count_limit = False
+
+# (float) Force a limit on the maximum age of records kept in the virtual
+# osv_memory tables. This is a decimal value expressed in hours, and the
+# default is 1 hour (default 1.0)
+#osv_memory_age_limit = 1.0
+
+# (int) Maximum number of threads processing concurrently cron jobs.
+# (default 2)
+#max_cron_threads = 2
+
+# (bool) Use the unaccent function provided by the database when
+# available (requires PostgreSQL Contrib package). (default False)
+unaccent = True
+
+# MULTIPROCESSING
+########################################################################
+
+# (int) Specify the number of workers, 0 disable prefork mode.
+# (default 0).
+workers = 0
+
+# (int) Maximum allowed virtual memory per worker, when reached the
+# worker be reset after the current request
+# (default 2048 * 1024 * 1024 = 2147483648 = 2GB).
+limit_memory_soft = 536870912
+
+# (int) Maximum allowed virtual memory per worker, when reached, any
+# memory allocation will fail
+# (default 2560 * 1024 * 1024 = 2684354560 = 2.5GB).
+limit_memory_hard = 805306368
+
+# (int) Maximum allowed CPU time per request (default 60).
+#limit_time_cpu = 60
+
+# (int) Maximum allowed Real time per request (default 120).
+#limit_time_real = 120
+
+# (int) Maximum number of request to be processed per worker
+# (default 8192).
+#limit_request = 8192

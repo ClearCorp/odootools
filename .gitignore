@@ -52,3 +52,9 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+# Specific
+*~
+bin/
+openerp-ccorp-scripts.tgz
+oerptools-setup.tgz
+.buildpath
