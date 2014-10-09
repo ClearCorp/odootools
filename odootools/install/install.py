@@ -30,7 +30,7 @@ WARNING:    If you update this file, please remake the installer and
 '''
 
 import os, shutil, stat, logging
-from odootools.lib import config, tools, bzr, git_lib
+from odootools.lib import config, tools, git_lib
 
 _logger = logging.getLogger('oerptools.install.install')
 
@@ -51,12 +51,8 @@ def install():
         
         _logger.info('Installing odootools')
         
-        # Initialize bzr
-        bzr.bzr_initialize()
-        from bzrlib.branch import Branch
-        
-        # Get this odootools branch directory
-        branch_path = os.path.abspath(os.path.dirname(__file__)+"/../..")
+        # Get this odootools repo directory
+        repo_path = os.path.abspath(os.path.dirname(__file__)+"/../..")
         
         # Values dict to store default config values for this install
         values = {
@@ -101,22 +97,17 @@ def install():
         f.close()
         
         if os.path.isdir(install_dir):
-            _logger.info('bzr repository: %s already exists, updating.' % install_dir)
-            bzr.bzr_pull(install_dir)
+            _logger.info('git repository: %s already exists, updating.' % install_dir)
+            git_lib.git_pull(install_dir)
         else:
-            # Copy this branch
-            branch = bzr.bzr_branch(branch_path, install_dir)
-            # Update from lp
-            if 'source_branch' in config.params:
+            # Clone stable repo 
+            if 'source_repo' in config.params:
                 try:
-                    branch.set_parent(config.params['source_branch'])
-                    bzr.bzr_pull(install_dir)
+                    repo = git_lib.git_clone(config.params['source_repo'], install_dir)
                 except:
-                    branch.set_parent('lp:~gs.clearcorp/oerptools/3.0_oerptools') #TODO Update branch to correct one
-                    bzr.bzr_pull(install_dir)
+                    repo = git_lib.git_clone("git://github.com/CLEARCORP/odootools", install_dir)
             else:
-                branch.set_parent('lp:~gs.clearcorp/oerptools/3.0_oerptools') #TODO Update branch to correct one
-                bzr.bzr_pull(install_dir)
+                repo = git_lib.git_clone("git://github.com/CLEARCORP/odootools", install_dir)
         
         #Make config directory
         if not os.path.exists('/etc/odootools'):
@@ -125,7 +116,7 @@ def install():
         # Update config
         #TODO: Remove write (group,others) and execute (owner,group,others) permissions
         if not os.path.exists(values['main']['config_file']):
-            shutil.copy(branch_path+"/odootools/install/default-odootools.conf",values['main']['config_file'])
+            shutil.copy(repo_path+"/odootools/install/default-odootools.conf",values['main']['config_file'])
         elif not os.path.isfile(values['main']['config_file']):
             _logger.warning('Config file (%s) not updated because it is not a regular file.' % values['main']['config_file'])
         
@@ -162,10 +153,6 @@ def install():
 
     _logger.debug('Checking if user is root')
     tools.exit_if_not_root('odootools-install')
-    
-    # TODO: Remove after migrating ODOOTOOLS to github
-    _logger.debug('Installing bzr')
-    bzr.bzr_install()
     
     _logger.debug('Installing git')
     git_lib.git_install()

@@ -32,16 +32,12 @@ WARNING:    If you update this file, please remake the installer and
 import os, logging, shutil, tarfile, random, string
 import odootools.lib.config
 import odootools.lib.logger
-from odootools.lib import bzr
+from odootools.lib import git_lib
 
 _logger = logging.getLogger('odootools.install.make')
 
 
 def make_installer():
-    
-    # Import and initialize bzr
-    bzr.bzr_initialize()
-    from bzrlib.branch import Branch
     
     params = odootools.lib.config.params
     
@@ -49,9 +45,6 @@ def make_installer():
     
     _logger.debug("Getting this odootools dir absolute path")
     scripts_path =  os.path.abspath(os.path.dirname(__file__)+'../../..')
-    
-    _logger.debug("Opening this bzr branch: %s" % scripts_path)
-    this_branch = Branch.open(scripts_path)
     
     if 'target' in params:
         target_path = params['target']
@@ -69,17 +62,9 @@ def make_installer():
         _logger.error('The temporary directory path used to build the installer (%s) already exist. Exiting.' % build_path)
         return False
     
-    _logger.debug('Branching this branch to target branch: %s' % build_path)
-    target_branch = this_branch.bzrdir.sprout(build_path).open_branch()
-    
-    # TODO: lp:1133410 Let the user choose the parent branch.
-    #parent_path = 'lp:oerptools/2.0' #TODO rename parent branch
-    parent_path = 'lp:~gs.clearcorp/oerptools/3.0_oerptools'
-    _logger.debug('Set parent location for target branch: %s' % parent_path)
-    target_branch.set_parent(parent_path)
-    _logger.debug('Updating target branch from parent location.')
-    parent_branch = Branch.open(parent_path)
-    target_branch.pull(parent_branch)
+    _logger.debug('Clone git://github.com/CLEARCORP/odootools to %s' % build_path)
+    # TODO: lp:1133410 Let the user choose the parent repo and branch.
+    git_lib.git_clone("git://github.com/CLEARCORP/odootools", build_path)
 
     _logger.debug("Copying setup file to main dir.")
     shutil.copy(build_path+"/odootools/install/setup",

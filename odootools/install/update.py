@@ -51,8 +51,8 @@ def update():
         _logger.error('The Odoo Tools path (%s) is not a valid directory. Exiting.' % oerptools_path)
         return False
         
-    if 'source_branch' in config.params:
-        bzr.bzr_pull(odootools_path, config.params['source_branch'])
+    if 'source_repo' in config.params:
+        bzr.bzr_pull(odootools_path, config.params['source_repo'])
     else:
         bzr.bzr_pull(odootools_path)
         
