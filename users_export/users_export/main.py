@@ -17,7 +17,7 @@ def run(host, main_db, user, password, role, client_email, keyfile_path,
         file_fd, file_path = mkstemp(suffix='.csv', prefix=db)
         writefile(file_path, HEADER, data[db])
         os.close(file_fd)
-        title = db + '-' + current_date + '.csv'
+        title = current_date + '-' + db + '.csv'
         doUpload(
             client_email, keyfile_path, drive_user, file_path, mimetype,
             title=title, description=db, parent_id=parent_id)
