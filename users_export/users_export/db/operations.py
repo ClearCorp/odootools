@@ -19,7 +19,10 @@ def getAllUsers(cursor, db_name):
   usr.login, usr.login_date,
   usr.active
 FROM res_users AS usr, res_partner partner
-WHERE partner.id = usr.partner_id ORDER BY partner.name;""")
+WHERE partner.id = usr.partner_id
+AND usr.share = FALSE
+AND usr.login != 'admin'
+AND usr.login NOT LIKE '%clearcorp%' ORDER BY partner.name;""")
     return cursor.fetchall()
 
 
