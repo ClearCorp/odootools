@@ -5,8 +5,8 @@ from upload.upload_file import doUpload
 from datetime import datetime
 from tempfile import mkstemp
 
-HEADER = ['ID', 'Partner Name', 'Login',
-          'Last Login', 'Active']
+HEADER = ['ID', 'XML_ID', 'Partner Name',
+          'Login', 'Last Login', 'Active']
 
 
 def run(host, main_db, user, password, role, client_email, keyfile_path,
