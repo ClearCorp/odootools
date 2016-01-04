@@ -11,11 +11,12 @@ WHERE rolname = %s AND NOT datname ilike %s""", (rolname, '%\_pruebas'))
     result = cursor.fetchall()
     return [obj[0] for obj in result]
 
-
 def getAllUsers(cursor, db_name):
     """Returns all data from users
     per database given"""
-    cursor.execute("""SELECT usr.id,
+    try:
+        print(db_name)
+        cursor.execute("""SELECT usr.id,
   (SELECT imd.module || '.' ||imd.name AS xml_id
    FROM ir_model_data AS imd
    WHERE imd.model = 'res.users'
@@ -24,11 +25,12 @@ def getAllUsers(cursor, db_name):
   usr.active
 FROM res_users AS usr, res_partner AS partner
 WHERE partner.id = usr.partner_id
-AND usr.share = FALSE
+AND usr.share = FALSE 
 AND usr.login != 'admin'
 AND usr.login NOT LIKE '%clearcorp%' ORDER BY partner.name;""")
-    return cursor.fetchall()
-
+        return cursor.fetchall()
+    except:
+        return {}
 
 def getUsersData(host, main_db, user, password, role):
     conn_string = "host='%s' dbname='%s' user='%s' password='%s'" % (
