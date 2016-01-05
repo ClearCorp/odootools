@@ -6,12 +6,12 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
-if [ ! -d $DATADIR ]; then
+if [ ! -d $1 ]; then
     echo "First argument must be the actual data directory."
     exit 2
 fi
 
-if [ ! -b $DEVICE ]; then
+if [ ! -b $2 ]; then
     echo "Second argument must be the new partion."
     exit 3
 fi
