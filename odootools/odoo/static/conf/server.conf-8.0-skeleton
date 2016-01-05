@@ -10,7 +10,7 @@
 addons_path = @ADDONS@
 
 # (char) The file where the server pid will be stored (default False).
-pidfile = /var/run/odoo/@NAME@/server.pid
+#pidfile = /run/odoo/@NAME@/server.pid
 
 # (char) Use this for big data importation, if it crashes you will be
 # able to continue at the current state. Provide a filename to store
@@ -73,7 +73,7 @@ proxy_mode = True
 ########################################################################
 
 # (char) The file where the server log will be stored (default None).
-logfile = /var/log/odoo/@NAME@/server.log
+#logfile = /var/log/odoo/@NAME@/server.log
 
 # (bool) Rotate the log file (default False).
 #logrotate = False
@@ -139,7 +139,7 @@ admin_passwd = @ADMIN_PASSWD@
 ########################################################################
 
 # (bool) Enable auto reload (default False).
-auto_reload = True
+#auto_reload = False
 
 # (bool) Enable debug mode (default False).
 #debug_mode = False
@@ -172,18 +172,18 @@ workers = 0
 # (int) Maximum allowed virtual memory per worker, when reached the
 # worker be reset after the current request
 # (default 2048 * 1024 * 1024 = 2147483648 = 2GB).
-limit_memory_soft = 536870912
+limit_memory_soft = 805306368
 
 # (int) Maximum allowed virtual memory per worker, when reached, any
 # memory allocation will fail
 # (default 2560 * 1024 * 1024 = 2684354560 = 2.5GB).
-limit_memory_hard = 805306368
+limit_memory_hard = 1073741824
 
-# (int) Maximum allowed CPU time per request (default 60).
-#limit_time_cpu = 60
+# (int) Maximum allowed CPU time per request in seconds (default 60).
+limit_time_cpu = 1800
 
-# (int) Maximum allowed Real time per request (default 120).
-#limit_time_real = 120
+# (int) Maximum allowed Real time per request in seconds (default 120).
+limit_time_real = 3600
 
 # (int) Maximum number of request to be processed per worker
 # (default 8192).
