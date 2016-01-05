@@ -16,14 +16,14 @@ if [ ! -b $2 ]; then
     exit 3
 fi
 
-DATADIR = $(readlink -f $1)
-DEVICE = $2
+DATADIR=$(readlink -f $1)
+DEVICE=$2
 
 #Stop postgres
 service postgresql stop
 
 #Make temp dir
-TEMP = $(mktemp -d)
+TEMP=$(mktemp -d)
 
 #Mount device in temp dir
 /usr/share/google/safe_format_and_mount -m "mkfs.ext4 -F" $DEVICE $TEMP
