@@ -29,7 +29,7 @@ TEMP=$(mktemp -d)
 /usr/share/google/safe_format_and_mount -m "mkfs.ext4 -F" $DEVICE $TEMP
 
 #Move all data to the new device
-rsync -axv $DATADIR ${TEMP}/
+rsync -axv ${DATADIR}/ ${TEMP}/
 
 #Remove all data in datadir
 rm -r ${DATADIR}/*
