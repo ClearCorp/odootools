@@ -21,7 +21,7 @@ $clearcorp_list\
 $custom_list\
 $oca_list\
 $other_list\
-# Addons end - DO NOT REMOVE OR EDIT THIS LINE
+# Addons end - DO NOT REMOVE OR EDIT THIS LINE"
 
 perl -i -0pe 's|# Addons start.*# Addons end - DO NOT REMOVE THIS LINE|'"$addons"'|s' $CONF_FILE
 
