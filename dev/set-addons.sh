@@ -8,7 +8,7 @@ cp -a $CONF_FILE $CONF_FILE.bak
 
 
 # Change addons in file
-odoo_list=$(echo "              /opt/odoo/$VERSION/odoo/odoo-private/addons,"; for repo in `ls -1d /opt/odoo/$VERSION/odoo/* | grep -v odoo-private`;$
+odoo_list=$(echo "              /opt/odoo/$VERSION/odoo/odoo-private/addons,"; for repo in `ls -1d /opt/odoo/$VERSION/odoo/* | grep -v odoo-private`; do echo -n "            "; echo $repo","; done; echo "\n")
 clearcorp_list=$(for repo in `ls -1d /opt/odoo/$VERSION/clearcorp/*`; do echo -n "              "; echo $repo","; done; echo "\n")
 custom_list=$(for repo in `ls -1d /opt/odoo/$VERSION/custom/*`; do echo -n "            "; echo $repo","; done; echo "\n")
 oca_list=$(for repo in `ls -1d /opt/odoo/$VERSION/oca/*`; do echo -n "          "; echo $repo","; done; echo "\n")
