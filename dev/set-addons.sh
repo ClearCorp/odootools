@@ -14,13 +14,14 @@ custom_list=$(for repo in `ls -1d /opt/odoo/$VERSION/custom/*`; do echo -n "		";
 oca_list=$(for repo in `ls -1d /opt/odoo/$VERSION/oca/*`; do echo -n "		"; echo $repo","; done; echo "\n")
 other_list=$(for repo in `ls -1d /opt/odoo/$VERSION/other/*`; do echo -n "		"; echo $repo","; done; echo "\n")
 
-addons="# Addons start - DO NOT REMOVE THIS LINE,\n\
+addons="# Addons start - DO NOT REMOVE OR EDIT THIS LINE\n\
+addons_path =\n\
 $odoo_list\
 $clearcorp_list\
 $custom_list\
 $oca_list\
 $other_list\
-		# Addons end - DO NOT REMOVE THIS LINE"
+# Addons end - DO NOT REMOVE OR EDIT THIS LINE
 
 perl -i -0pe 's|# Addons start.*# Addons end - DO NOT REMOVE THIS LINE|'"$addons"'|s' $CONF_FILE
 

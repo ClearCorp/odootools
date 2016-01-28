@@ -7,7 +7,11 @@
 
 # (char) Specify additional addons paths (separated by commas)
 # (default None).
-addons_path = @ADDONS@
+
+# Addons start - DO NOT REMOVE OR EDIT THIS LINE
+addons_path =
+
+# Addons end - DO NOT REMOVE OR EDIT THIS LINE
 
 # (char) The file where the server pid will be stored (default False).
 #pidfile = /run/odoo/@NAME@/server.pid
