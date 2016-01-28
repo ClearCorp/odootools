@@ -23,7 +23,6 @@ connector-magento
 connector-odoo2odoo
 connector-prestashop
 connector-redmine
-connector-sage
 connector-salesforce
 connector-telephony
 connector-woocommerce
